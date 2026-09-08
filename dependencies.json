@@ -1,0 +1,37 @@
+{
+  "$schema": "./schemas/dependencies.schema.json",
+  "dependencies": [
+    {
+      "id": "pptx-renderer",
+      "package": "@aiden0z/pptx-renderer",
+      "version": "1.2.4",
+      "license": "Apache-2.0",
+      "homepage": "https://github.com/aiden0z/pptx-renderer",
+      "assets": [
+        {
+          "key": "browser",
+          "path": "dist/aiden0z-pptx-renderer.browser.es.js",
+          "mime": "text/javascript",
+          "stripSourceMapComment": true,
+          "compression": "gzip"
+        }
+      ]
+    },
+    {
+      "id": "html2canvas",
+      "package": "html2canvas",
+      "version": "1.4.1",
+      "license": "MIT",
+      "homepage": "https://github.com/niklasvh/html2canvas",
+      "assets": [
+        {
+          "key": "browser",
+          "path": "dist/html2canvas.esm.js",
+          "mime": "text/javascript",
+          "stripSourceMapComment": true,
+          "compression": "gzip"
+        }
+      ]
+    }
+  ]
+}

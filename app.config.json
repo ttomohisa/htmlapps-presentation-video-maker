@@ -1,0 +1,26 @@
+{
+  "$schema": "./schemas/app-config.schema.json",
+  "name": "Presentation Video Maker",
+  "nameJa": "Presentation Video Maker",
+  "slug": "presentation-video-maker",
+  "version": "1.0.0",
+  "description": "A local-first browser app that turns PowerPoint slides into narrated MP4 video using on-device speech, microphone recordings, or local audio files.",
+  "descriptionJa": "PowerPointから、端末内読み上げ・自分の声・ローカル音声ファイルを使ってナレーション付きMP4動画を完全ローカル処理で作成するツールです。",
+  "defaultLanguage": "auto",
+  "repository": {
+    "owner": "ttomohisa",
+    "name": "htmlapps-presentation-video-maker"
+  },
+  "build": {
+    "output": "dist/index.html",
+    "blockRuntimeNetwork": true,
+    "selfExtract": {
+      "enabled": true,
+      "output": "dist/index.self-extract.html"
+    },
+    "sizeBudget": {
+      "readableWarningMb": 12,
+      "selfExtractWarningMb": 6
+    }
+  }
+}

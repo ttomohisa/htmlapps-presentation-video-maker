@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="15" fill="#16624F"/>
+  <g stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+    <!-- presentation / PowerPoint cue: upper-left -->
+    <path d="M8.5 7H25.5l5.5 5.5V28H8.5z"/>
+    <path d="M25.5 7v5.5H31"/>
+    <path d="M14 23V12.8h4.6c3 0 4.7 1.5 4.7 3.8s-1.7 3.8-4.7 3.8H14"/>
+    <!-- conversion arrow: lower-left -->
+    <path d="M12 31.5v8.2c0 5 4 9 9 9h11.5"/>
+    <path d="m28.5 44.7 4 4-4 4"/>
+    <!-- video: upper part of lower-right, kept clear of speaker -->
+    <rect x="37" y="31.5" width="22" height="15" rx="2.8"/>
+    <path d="m44.7 35.7 6.7 3.3-6.7 3.3v-6.6Z" fill="#fff" stroke="none"/>
+    <!-- speaker separated below video -->
+    <path d="M40.5 52h4.2l4.5-3.4v9.8L44.7 55h-4.2z"/>
+    <path d="M53 50.8a4.5 4.5 0 0 1 0 7.4"/>
+    <path d="M56.2 48.5a7.8 7.8 0 0 1 0 12"/>
+  </g>
+</svg>

@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 7,
+  "builderVersion": "1.6.0",
+  "profile": "video-compressor",
+  "displayName": "Video Compressor",
+  "binaryLicense": "GPL-2.0-or-later",
+  "versions": {
+    "emscripten": "6.0.6",
+    "emscriptenCommit": "ce75e06884093bcefb86a6b8fd56a5d62a4cc245",
+    "ffmpegRef": "n9.0.1",
+    "ffmpegCommit": "bf1b838f2ab88b4f8fd83443325c782ea0e0f7fa",
+    "x264Ref": "stable",
+    "x264Commit": "31e19f92f00c7003fa115047ce50978bc98c3a0d",
+    "x264Linked": true,
+    "libwebpRef": "v1.6.0",
+    "libwebpCommit": "4fa21912338357f89e4fd51cf2368325b59e9bd9",
+    "libwebpLinked": false,
+    "libvpxRef": "v1.16.0",
+    "libvpxCommit": "1024874c5919305883187e2953de8fcb4c3d7fa6",
+    "libvpxLinked": true,
+    "libopusRef": "v1.5.2",
+    "libopusCommit": "ddbe48383984d56acd9e1ab6a090c54ca6b735a6",
+    "libopusLinked": true
+  },
+  "runtime": {
+    "frontend": "public-libav-runner",
+    "runnerApiVersion": 1,
+    "threading": "none",
+    "factory": "createFFmpegCore",
+    "requiresSharedArrayBuffer": false,
+    "requiresCrossOriginIsolation": false,
+    "fileProtocolSingleHtml": true,
+    "workerFsInput": true
+  },
+  "capabilities": {"operation":"transcode","streamCopy":false,"outputs":["H.264 + AAC MP4","VP9 + Opus WebM"],"resize":true,"fps":true,"crf":true,"videoBitrate":true,"measuredInputBitrate":true,"audioBitrate":true,"dropAudio":true,"autoRotate":true,"workerFsInput":true,"keyframeAlignedCut":false,"arbitraryFfmpegArgs":false},
+  "files": {
+    "ffmpeg.js": { "bytes": 72356, "sha256": "380d01d3d74bb013a1fa934872adaeb12d393dec508941f6ccc4239944299701" },
+    "ffmpeg.wasm": { "bytes": 5117935, "sha256": "a0942d4fe8b6994c83b95da976f6c9e18aab9347d460625c66170b0b96fa0671" },
+    "ffmpeg.js.gz": { "bytes": 19376 },
+    "ffmpeg.wasm.gz": { "bytes": 2024425 }
+  }
+}

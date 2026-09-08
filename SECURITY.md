@@ -1,0 +1,52 @@
+# Security and privacy notes
+
+Presentation Video Maker is designed as a local-first browser application.
+
+## Trust boundary
+
+The application accepts a local `.pptx` selected by the user and parses it in the browser. Slide text, speaker notes, scene scripts, preview output, narration assets, BGM, intermediate video, and generated MP4 remain on the device and are not uploaded by the application.
+
+The high-fidelity visual path uses pinned standalone browser builds of `@aiden0z/pptx-renderer@1.2.4` and `html2canvas@1.4.1`. Both packages are acquired by repository build tooling, hash-locked, and embedded in the generated HTML. They are not fetched at application runtime. html2canvas uses its normal Canvas renderer with `foreignObjectRendering: false`; local Blob media/Canvas content is normalized before rasterization to avoid exporting a tainted Canvas under `file://` / opaque origins.
+
+Narration can come from three local sources:
+
+- **On-device speech**: local `SpeechSynthesis` voices plus explicit `getDisplayMedia()` system-audio capture.
+- **Microphone**: `getUserMedia({audio:true})` after the user explicitly starts recording the selected slide.
+- **Local audio file**: a user-selected audio file read locally and used as the scene recording.
+
+`AudioContext` is used for local signal measurement, decoding, BGM mixing, and video audio composition. MediaStreams, Files, and Blobs are not transmitted to a server.
+
+The video export path keeps slide snapshots, decoded narration/BGM, the intermediate WebM, and the generated MP4 in browser memory. The bundled FFmpeg JavaScript/WebAssembly runtime is embedded at build time and does not fetch media or code at runtime.
+
+## Network policy
+
+The standalone HTML keeps a restrictive Content Security Policy. In particular:
+
+```text
+connect-src 'none'
+```
+
+`script-src` permits `'wasm-unsafe-eval'` only so the embedded FFmpeg WebAssembly core can compile locally. It does not enable general `'unsafe-eval'`. `frame-src` is limited to local `self`, `data:`, and `blob:` because html2canvas uses an internal clone iframe.
+
+No runtime CDN, analytics, telemetry, external font, cloud TTS API, AI API, or cloud storage API is used.
+
+## File and renderer lifecycle
+
+- Maximum PPTX size: 150 MB.
+- Maximum local narration/BGM audio file size: 100 MB each.
+- Replacing the presentation invalidates stale parsing/rendering work.
+- Presentation/narration/video content is not stored in LocalStorage or IndexedDB.
+- Renderer-owned and recording Blob URLs are revoked when replaced or when the page exits.
+- Microphone and display-capture tracks are stopped when cancelled/replaced or when the page exits.
+- Existing narration audio and generated MP4 are preserved until a replacement succeeds where practical.
+- Export occurs only after an explicit user action.
+
+## Browser permissions
+
+The application does not request microphone or display/system-audio capture on page load. The user must initiate the relevant action, and browser/operating-system permission dialogs remain authoritative.
+
+System-audio capture can include notification sounds or unrelated application audio. The UI asks the user to stop unrelated audio while recording on-device speech.
+
+## Reporting
+
+Please report security issues privately to the repository maintainer rather than opening a public issue containing sensitive presentation data.
