@@ -34,11 +34,27 @@ Use this checklist for every Presentation Video Maker release. Version-specific 
 - Test microphone narration.
 - Test local audio-file narration.
 - Test the three narration sources mixed across scenes.
+- On Windows Chrome/Edge, test **Record this slide** for TTS and confirm only the selected TTS scene is replaced after successful capture.
+- Confirm cancelling/failing selected-scene TTS preserves the previous scene audio.
 - Test preview start/stop, including rapidly pressing Preview twice.
 - Confirm the rate slider changes the SpeechSynthesis rate.
 - While **Record all scenes** is running, move to other slides from both the slide list and Script & voice Previous/Next controls; capture must continue without cancelling the current TTS utterance.
 - Confirm manual speech preview and PowerPoint replacement are unavailable while all-scene capture is active.
 - Confirm script/voice/rate/source changes mark old recordings stale without deleting them immediately.
+
+## Project save / resume and text export
+
+- Load a PPTX, edit at least one script, import/record scene audio, set BGM and output options, then save a `.pvm` project.
+- Reload the app, open the `.pvm`, and confirm source PPTX, slide count, scripts, narration source/status/audio, BGM, selected slide, and output settings are restored.
+- Confirm generated MP4 is not embedded in `.pvm`.
+- Confirm project save/open is blocked while TTS capture, microphone recording, or video generation is active.
+- Confirm opening a project over current work asks for confirmation.
+- Confirm the initial `.pvm` project picker is visually separate from the PPTX drop zone and its file input accepts `.pvm` only.
+- Confirm each scene row exposes the appropriate narration action: TTS record, microphone record/stop, or local-audio selection.
+- Confirm scene playback shows a pointer cursor plus hover feedback and remains keyboard-focusable.
+- Test narration progress counts for ready / unrecorded / stale / failed and **Next item to fix** navigation.
+- Confirm failed/stale narration is corrected from each scene row and no failed-scene batch retry action is shown.
+- Save TXT, SRT, and VTT; verify UTF-8 text, cue ordering, timestamps, and filenames.
 
 ## Video output
 

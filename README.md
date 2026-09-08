@@ -6,7 +6,7 @@
 
 [日本語版 README](README.ja.md)
 
-A privacy-focused, single-HTML app for turning a PowerPoint (PPTX) deck into a narrated MP4 in the browser. Use on-device speech, your own microphone recording, or local audio files without uploading the presentation, narration, BGM, or generated video to the app.
+A privacy-focused, single-HTML app for turning a PowerPoint (PPTX) deck into a narrated MP4 in the browser. Use on-device speech, your own microphone recording, or local audio files, save/resume the work as a local `.pvm` project, and export scripts/subtitles without uploading the presentation, narration, BGM, project, or generated video to the app.
 
 ## 🚀 Live demo
 
@@ -19,7 +19,10 @@ GitHub Pages delivers the initial HTML. After it loads, PPTX parsing, speaker-no
 ## Features
 
 - **Turn speaker notes into narration** — Each PowerPoint slide becomes one scene, with speaker notes used as the initial script and slide text used as a fallback draft when notes are missing.
-- **Choose narration per slide** — Mix on-device Web Speech API voices, microphone recordings, and existing local audio files in the same presentation.
+- **Choose narration per slide** — Mix on-device Web Speech API voices, microphone recordings, and existing local audio files in the same presentation. On-device speech can be captured for only the selected slide or in one all-scene batch.
+- **Resume work later** — Save the source PowerPoint, scripts, narration recordings, BGM, and output settings into a local `.pvm` project and open it later. Project data is not uploaded and generated MP4 is not duplicated inside the project.
+- **Find unfinished narration quickly** — See ready/unrecorded/stale/failed counts and jump directly to the next scene that needs attention.
+- **Export scripts and subtitles** — Save the current scripts as TXT or export the current video timeline as SRT / VTT for use outside the app.
 - **Keep narration work editable** — Adjust scripts, include/exclude slides, before/after padding, voice, and speech rate, with stale-audio tracking when narration settings change.
 - **Preview PowerPoint with higher fidelity** — Use pinned `@aiden0z/pptx-renderer@1.2.4` for the main slide preview and `html2canvas@1.4.1` for origin-clean video snapshots.
 - **Create a finished MP4 locally** — Choose 720p or 1080p, Cut or Fade, burned-in subtitles, and optional local BGM, then create H.264/AAC MP4 through the embedded FFmpeg WASM runtime.
@@ -50,18 +53,34 @@ Node.js, Python, and a local web server are not required for the normal Windows 
 
 ## Usage
 
-1. Drop one `.pptx` file or choose it with the PowerPoint picker. The current UI accepts files up to 150 MB.
+1. Start a new video by dropping one `.pptx` file or choosing it with the PowerPoint picker. To continue previous work, use the separate **Resume saved work** card and choose a `.pvm` project. The two file pickers are intentionally separate. The current PPTX limit is 150 MB.
 2. Select a slide and review the high-fidelity preview and narration script.
 3. Edit the script, before/after padding, and whether the slide is included in the video.
 4. Choose **On-device speech**, **My voice**, or **Audio file** for each slide.
-5. For on-device speech, choose a local OS voice and adjust the 0.8x–1.5x rate slider. You can apply the current voice/rate to all TTS slides.
+5. For on-device speech, choose a local OS voice and adjust the 0.8x–1.5x rate slider. Capture only the selected slide with **Record this slide**, or use **Record all scenes** for the TTS scenes in the deck. Both workflows require **Entire Screen + system audio** on the tested Windows path.
 6. For microphone narration, record the selected slide directly. For local audio, choose an audio file from your device.
-7. For TTS recording, choose **Record all scenes**, then select **Entire Screen** and enable **Share system audio**. Stop notifications, music, and unrelated sounds while recording.
-8. Confirm every included scene has fresh narration. Missing, failed, or stale narration blocks video creation.
-9. Choose 720p/1080p, Cut/Fade, subtitles, and optional BGM with volume/loop settings.
+   The **Narration assets** scene list also provides a row-level action, so each scene can be recorded, stopped, or have its local audio replaced directly from the list.
+7. Use the narration progress summary and **Next item to fix** to move through missing, stale, or failed scenes. Missing, failed, or stale narration blocks video creation.
+8. Use **Save project** whenever you want a local `.pvm` snapshot that can be opened later. The app does not autosave.
+9. Choose 720p/1080p, Cut/Fade, subtitles, and optional BGM with volume/loop settings. TXT, SRT, and VTT can also be saved locally from the output area.
 10. Create the video, preview the generated MP4, set the output filename, and save it.
 
 A three-slide test deck and additional regression fixtures are included under `test-data/`.
+
+
+## Project files and text exports
+
+`.pvm` is a Presentation Video Maker project file used only for explicit save/resume. It contains the source PPTX, per-scene scripts/settings, narration recordings, optional BGM, and video-output settings. The already generated MP4 is not embedded because it can be regenerated from the project.
+
+The project container is written and read locally by the app; no project data is sent to a server. It is not an autosave format, so save a new `.pvm` file when you want a resumable checkpoint.
+
+The output area can also save:
+
+- `TXT` — narration scripts grouped by slide;
+- `SRT` — subtitle cues using the current scene/timeline timing;
+- `VTT` — the same cue timing in WebVTT format.
+
+When a scene has a measured/recorded narration duration it is used for subtitle timing; otherwise the current duration estimate is used.
 
 ## Video creation pipeline
 
@@ -143,7 +162,7 @@ The build process:
 The generated app is designed for **fully local processing** after the HTML has loaded:
 
 - Selected PPTX files are read in browser memory.
-- Speaker notes and scripts are not sent to a server.
+- Speaker notes, scripts, and `.pvm` project files are not sent to a server.
 - Microphone recordings, system-audio recordings, local audio files, and BGM remain on the device.
 - Intermediate WebM and generated MP4 data remain local.
 - CSP includes `connect-src 'none'`.
@@ -159,6 +178,8 @@ The GitHub Pages version still requires the initial HTML request. To use the app
 - Exact pixel parity with desktop Microsoft PowerPoint is not guaranteed.
 - Web Speech API voices and system-audio sharing behavior depend on the browser and operating system. The tested TTS capture workflow uses Windows **Entire Screen + system audio**.
 - System-audio capture can include notification sounds, music, or other applications.
+- `.pvm` is an explicit local save/resume file; the app does not autosave presentation content to LocalStorage or IndexedDB.
+- SRT/VTT cue timing follows the current app timeline and may use estimated narration duration for scenes that have not been measured/recorded yet.
 - Video composition uses MediaRecorder and therefore takes roughly the video duration before the FFmpeg MP4 conversion stage begins.
 - Large or complex PowerPoint decks, high-resolution rendering, and 1080p export can consume substantial device memory.
 - The current UI accepts one PPTX up to 150 MB and local narration/BGM files up to 100 MB each.

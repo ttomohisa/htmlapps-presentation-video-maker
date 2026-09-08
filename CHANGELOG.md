@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.1.0] - 2026-09-09
+
+### Added
+
+- Add **Record this slide** for on-device SpeechSynthesis narration, reusing the established Entire Screen + system-audio capture path for one selected TTS scene. Existing audio is replaced only after a successful capture.
+- Add local `.pvm` project save/open so the source PPTX, scene scripts/settings, narration recordings, BGM, and output settings can be resumed later without upload. Generated MP4 is intentionally not embedded in the project file.
+- Add scene-progress counts for ready, unrecorded, stale, and failed narration plus **Next item to fix** navigation for larger presentations.
+- Add local TXT script export and SRT/VTT subtitle export based on the current video timeline.
+- Add per-row narration actions to the scene recording list: record TTS/microphone scenes directly, stop an active microphone recording, or choose/replace the local audio file for file-backed scenes.
+
+### Changed
+
+- Separate the `.pvm` project opener from the PowerPoint drop zone and restrict its file picker to `.pvm`, so resuming a project cannot accidentally open the PPTX picker.
+- Keep project persistence explicit: the app does not autosave and still stores no presentation content in LocalStorage or IndexedDB.
+- Remove the failed-scene batch re-record action; failed or stale narration is corrected individually from the per-scene narration list.
+- Make scene playback controls clearly interactive with pointer cursors and hover/active feedback.
+- Keep the existing all-scene TTS, microphone, local-audio, high-fidelity rendering, final-frame flush, and FFmpeg WASM MP4 pipeline unchanged.
+
+### Verification
+
+- Verified `.pvm` save/open with an embedded PPTX, imported scene audio, BGM, scripts, and output settings in Chromium.
+- Verified TXT/SRT/VTT download output and project restoration after a fresh page load.
+- Verified 30-slide layouts at 1200 px, 390 px, and 360 px without horizontal page overflow.
+- Confirmed the v1.1.0 release-candidate interaction fixes on the Windows browser flow before promoting the release to stable.
+
 ## [1.0.1] - 2026-09-08
 
 ### Fixed
