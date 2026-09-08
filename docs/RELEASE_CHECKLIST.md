@@ -36,6 +36,8 @@ Use this checklist for every Presentation Video Maker release. Version-specific 
 - Test the three narration sources mixed across scenes.
 - Test preview start/stop, including rapidly pressing Preview twice.
 - Confirm the rate slider changes the SpeechSynthesis rate.
+- While **Record all scenes** is running, move to other slides from both the slide list and Script & voice Previous/Next controls; capture must continue without cancelling the current TTS utterance.
+- Confirm manual speech preview and PowerPoint replacement are unavailable while all-scene capture is active.
 - Confirm script/voice/rate/source changes mark old recordings stale without deleting them immediately.
 
 ## Video output

@@ -4,24 +4,24 @@
 
 Presentation Video Maker is a Browser Kitty app for turning a local PowerPoint deck into a narrated video without uploading the deck, scripts, or narration audio.
 
-Version `1.0.0` is the **first stable release**.
+Version `1.0.1` is the current stable patch release. Version `1.0.0` was the first stable release.
 
 The v1 product promise is:
 
 > Open the PowerPoint. Review the notes. Choose how each slide should sound. Create a narrated video without uploading the deck or audio.
 
-Version `1.0.0` creates H.264/AAC MP4 through the tested local pipeline with optional fade transitions, burned-in subtitles, and local BGM. Native PowerPoint animations/transitions remain out of scope.
+Version `1.0.1` creates H.264/AAC MP4 through the tested local pipeline with optional fade transitions, burned-in subtitles, and local BGM. Native PowerPoint animations/transitions remain out of scope.
 
 ## 2. Release target
 
-- Version: `1.0.0`
+- Version: `1.0.1`
 - Readable one-file build: `dist/index.html`
 - Self-extracting one-file build: `dist/index.self-extract.html`
 - Japanese and English in the same HTML.
 - Intended hosting: GitHub Pages / Azure Static Web Apps.
 - Direct `file://` opening remains supported for PPTX parsing, rendering, scene editing, and SpeechSynthesis preview. Browser capture policy may require HTTP(S) for system-audio capture.
 
-## 3. Primary v1.0.0 flow
+## 3. Primary v1.0.1 flow
 
 1. Open the app.
 2. Drop or choose one `.pptx` file, up to 150 MB.
@@ -75,7 +75,7 @@ Changing the input file is a hard state boundary:
 - clear presentation and scene state;
 - ignore stale parse/render results.
 
-No presentation, narration, intermediate video, or generated MP4 data is persisted in LocalStorage or IndexedDB in v1.0.0. Language preference is the only local preference stored by the current app.
+No presentation, narration, intermediate video, or generated MP4 data is persisted in LocalStorage or IndexedDB in v1.0.1. Language preference is the only local preference stored by the current app.
 
 ## 6. PPTX parser and renderer
 
@@ -94,7 +94,7 @@ The CSP keeps `connect-src 'none'`. `frame-src` is limited to local `self`, `dat
 
 If the high-fidelity renderer is unavailable, the built-in simple preview remains usable for script/narration work.
 
-Known v1.0.0 visual limitations:
+Known v1.0.1 visual limitations:
 
 - PowerPoint animations are static.
 - PowerPoint transitions are not replayed.
@@ -208,6 +208,8 @@ Each scene gets its own MediaRecorder instance/Blob while sharing permission rem
 - successful scenes are retained when another scene fails;
 - video export can consume per-scene audio directly.
 
+At batch start, every target scene is snapshotted with its script, selected local voice, speech rate, include state, and narration source. The user may continue reviewing and moving between slides while capture runs; scene navigation must not cancel the active batch SpeechSynthesis utterance. If narration settings are actually edited during capture, the captured Blob is kept but marked stale when it no longer matches the snapshot. Manual speech preview and PowerPoint replacement are disabled while batch capture is active so they cannot interrupt the shared system-audio recording session.
+
 For each scene:
 
 1. start MediaRecorder;
@@ -226,7 +228,7 @@ A no-signal/empty-data scene is automatically tried one additional time before b
 
 Video export requires all enabled scenes with non-empty narration scripts to have `recordingStatus === "success"` and a local `recordingBlob`. A stale, missing, or failed recording blocks export and directs the user back to narration capture.
 
-Output options in v1.0.0:
+Output options in v1.0.1:
 
 - H.264 + AAC MP4
 - 720p or 1080p height
@@ -260,7 +262,7 @@ The FFmpeg runtime:
 - uses no runtime network access;
 - carries GPL-2.0-or-later terms because the profile links x264.
 
-The application repository is distributed under GPL-3.0 in v1.0.0. See `THIRD_PARTY_NOTICES.md` for exact Builder/runtime revisions and corresponding-source information.
+The application repository is distributed under GPL-3.0 in v1.0.1. See `THIRD_PARTY_NOTICES.md` for exact Builder/runtime revisions and corresponding-source information.
 
 ## 14. Failure, retry, and cancellation
 

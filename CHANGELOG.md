@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.1] - 2026-09-08
+
+### Fixed
+
+- Remove the stable-release feature banner from the application UI.
+- Keep all-scene TTS recording running when the user reviews or moves to another slide from the slide list or Script & voice panel.
+- Snapshot each all-scene TTS recording job at capture start so slide navigation cannot change the script, voice, or rate being recorded mid-run. If narration settings are edited during capture, the resulting audio is preserved as stale instead of being treated as current.
+- Prevent manual speech preview and PowerPoint replacement from interrupting an active all-scene recording.
+
 ## [1.0.0] - 2026-09-08
 
 ### Stable release
