@@ -1,6 +1,6 @@
 # Third-party notices
 
-Presentation Video Maker v1.1.0 embeds the following pinned/runtime components in the generated standalone HTML.
+Presentation Video Maker v1.2.0 embeds the following pinned/runtime components in the generated standalone HTML.
 
 ## PowerPoint renderer
 

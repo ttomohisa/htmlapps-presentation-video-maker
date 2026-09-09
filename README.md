@@ -26,8 +26,22 @@ GitHub Pages delivers the initial HTML. After it loads, PPTX parsing, speaker-no
 - **Keep narration work editable** — Adjust scripts, include/exclude slides, before/after padding, voice, and speech rate, with stale-audio tracking when narration settings change.
 - **Preview PowerPoint with higher fidelity** — Use pinned `@aiden0z/pptx-renderer@1.2.4` for the main slide preview and `html2canvas@1.4.1` for origin-clean video snapshots.
 - **Create a finished MP4 locally** — Choose 720p or 1080p, Cut or Fade, burned-in subtitles, and optional local BGM, then create H.264/AAC MP4 through the embedded FFmpeg WASM runtime.
-- **Work comfortably on desktop and mobile** — Four-step quick navigation, responsive scene editing, smartphone bottom navigation, clear recording states, long-name wrapping, and no horizontal page overflow at supported narrow widths.
+- **Smartphone workflow** — Smartphones use bottom tabs for Slides / Script & audio / Video, default new PPTX scenes to My voice, start video output at 720p, and stream slide snapshots during export to reduce peak memory.
 - **Private, single-HTML operation** — Runtime libraries are embedded, the UI is Japanese/English, and the app keeps `connect-src 'none'` with no runtime CDN, analytics, telemetry, or cloud TTS API.
+
+## Smartphone use
+
+v1.2.0 targets a complete smartphone workflow for:
+
+1. opening PPTX or `.pvm`;
+2. editing scripts;
+3. recording **My voice** or assigning a local **Audio file** per scene;
+4. configuring subtitles / BGM / transitions;
+5. creating and saving MP4, with 720p recommended.
+
+> **TTS/on-device speech cannot be recorded on smartphones.** Speech preview can still work, but the app cannot capture that synthesized voice as a narration asset on mobile. Use **My voice** or **Audio file** for smartphone video narration. TTS capture remains a desktop Chrome / Edge workflow using Entire Screen + system audio.
+
+720p is the smartphone default. 1080p remains selectable but has much higher memory pressure. During smartphone export, slide snapshots are created and released progressively instead of retaining the entire deck in rasterized form, and Wake Lock is requested where available.
 
 ## Quick start
 

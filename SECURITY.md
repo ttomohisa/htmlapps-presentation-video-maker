@@ -10,13 +10,13 @@ The high-fidelity visual path uses pinned standalone browser builds of `@aiden0z
 
 Narration can come from three local sources:
 
-- **On-device speech**: local `SpeechSynthesis` voices plus explicit `getDisplayMedia()` system-audio capture. The same capture engine can target only the selected TTS scene or the full TTS batch.
+- **On-device speech**: local `SpeechSynthesis` voices plus explicit `getDisplayMedia()` system-audio capture on supported desktop browsers. The same capture engine can target only the selected TTS scene or the full TTS batch. Smartphone TTS recording is intentionally unavailable; mobile users are directed to microphone or local audio-file narration.
 - **Microphone**: `getUserMedia({audio:true})` after the user explicitly starts recording the selected slide.
 - **Local audio file**: a user-selected audio file read locally and used as the scene recording.
 
 `AudioContext` is used for local signal measurement, decoding, BGM mixing, and video audio composition. MediaStreams, Files, and Blobs are not transmitted to a server.
 
-The video export path keeps slide snapshots, decoded narration/BGM, the intermediate WebM, and the generated MP4 in browser memory. The bundled FFmpeg JavaScript/WebAssembly runtime is embedded at build time and does not fetch media or code at runtime.
+The video export path keeps decoded narration/BGM, the intermediate WebM, and the generated MP4 in browser memory. Desktop may prepare the deck snapshots before composition. On detected smartphones, v1.2.0 creates slide snapshots progressively so the full rasterized deck is not retained at once, releases temporary Canvas backing stores promptly, and disposes the FFmpeg runner after export to reduce retained WASM memory. The bundled FFmpeg JavaScript/WebAssembly runtime is embedded at build time and does not fetch media or code at runtime.
 
 Project save/resume is also local. A `.pvm` file is created only after an explicit save action and contains the source PPTX, editable scene state, narration assets, optional BGM, and output settings. The app does not autosave presentation content to LocalStorage or IndexedDB, and generated MP4 is intentionally not embedded in the project. TXT/SRT/VTT exports are generated as local Blob downloads.
 
@@ -47,8 +47,12 @@ No runtime CDN, analytics, telemetry, external font, cloud TTS API, AI API, or c
 
 The application does not request microphone or display/system-audio capture on page load. The user must initiate the relevant action, and browser/operating-system permission dialogs remain authoritative.
 
-System-audio capture can include notification sounds or unrelated application audio. The UI asks the user to stop unrelated audio while recording on-device speech.
+System-audio capture can include notification sounds or unrelated application audio. The UI asks the user to stop unrelated audio while recording on-device speech. On smartphones, the UI does not offer TTS/system-audio recording as a supported path and explicitly explains that TTS is preview-only there.
 
 ## Reporting
 
 Please report security issues privately to the repository maintainer rather than opening a public issue containing sensitive presentation data.
+
+## Smartphone execution
+
+On detected smartphones, the app defaults new PPTX scenes to microphone narration and video output to 720p. Microphone permission is still requested only after an explicit record action. Video export may request Screen Wake Lock where available; Wake Lock is optional and is released when export ends or the page exits. No smartphone-specific cloud service or fallback upload is introduced.

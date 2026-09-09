@@ -14,3 +14,7 @@
 Microphone and system-audio capture still require browser/OS permission even when the application is offline.
 
 For local SpeechSynthesis capture on Windows, start recording from the app, choose **Entire Screen**, enable **Share system audio**, and stop unrelated notification/music audio during recording. No cloud TTS service is used.
+
+## Smartphone verification
+
+On a smartphone browser, verify PPTX loading, Script & audio editing, microphone/local-audio narration, `.pvm` save/open, and 720p MP4 export. The app must visibly state that on-device speech/TTS cannot be recorded on smartphones; the desktop system-audio batch controls must not be presented as a mobile recording path. 1080p may remain selectable but must show the mobile memory warning.

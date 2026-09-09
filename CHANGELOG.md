@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.2.0] - 2026-09-09
+
+### Added
+
+- Add a smartphone workflow for opening PPTX/`.pvm`, editing scripts, recording/importing narration, and generating/saving MP4 entirely in the browser.
+- Add an explicit smartphone notice that on-device SpeechSynthesis can be previewed but cannot be captured as narration; use microphone recording or a local audio file on smartphones.
+- Add a 720p smartphone default plus a warning when 1080p is selected because of the higher mobile memory requirement.
+- Add a lower-peak-memory smartphone composition path that rasterizes slide snapshots progressively instead of retaining the full deck in Canvas memory.
+- Request Screen Wake Lock during smartphone video generation when the browser supports it.
+
+### Changed
+
+- Default newly loaded smartphone PPTX scenes to microphone narration while keeping the desktop default on-device SpeechSynthesis behavior unchanged.
+- Simplify smartphone bottom navigation to **Slides / Script & audio / Video** and hide desktop-only TTS capture controls on smartphones.
+- Release temporary Canvas backing stores more aggressively during smartphone export and dispose the FFmpeg WASM runner after the export completes.
+- Use mobile-safe form sizing and temporarily hide the fixed bottom navigation while the virtual keyboard is open.
+
+### Verification
+
+- Confirmed JavaScript syntax and Japanese/English translation-key parity after the smartphone workflow changes.
+- Verified the standalone CSP continues to block runtime connections with `connect-src 'none'` and keeps the tested origin-clean html2canvas path.
+- Verified smartphone UI behavior at 360 px, 390 px, and 430 px without horizontal page overflow in Chromium emulation.
+- Verified a 720p smartphone-path MP4 export with local narration assets in Chromium and a 1080p desktop-path MP4 export with the same three-scene fixture.
+- Verified smartphone `.pvm` save/open restores an edited script, local scene audio, three-slide structure, and the 720p output setting.
+- Real-device iPhone Safari and Android Chrome checks remain part of release-candidate validation because permission dialogs, memory pressure, and save behavior cannot be fully represented by desktop emulation.
+
 ## [1.1.0] - 2026-09-09
 
 ### Added

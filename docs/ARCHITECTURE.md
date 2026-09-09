@@ -39,7 +39,7 @@ No presentation, `.pvm` project, narration, BGM, intermediate video, or generate
 
 ## Project container
 
-The v1.1.0 `.pvm` project format is a local, dependency-free binary container:
+The v1.1.0+ `.pvm` project format is a local, dependency-free binary container:
 
 ```text
 PVMPRJ1\n                       # 8-byte magic
@@ -51,6 +51,20 @@ PVMPRJ1\n                       # 8-byte magic
 The manifest stores schema/version metadata, per-scene editable state, output settings, and byte ranges into the raw payload. The generated MP4 is not duplicated into the project file. Projects are saved only after an explicit user action; presentation content is not autosaved to LocalStorage or IndexedDB.
 
 Opening a project reconstructs the source PPTX locally, runs the normal PPTX parser/renderer, then restores saved scene/audio/BGM/output state. Project save/open is disabled while capture, microphone recording, or video generation is active.
+
+## Smartphone runtime path
+
+The smartphone workflow keeps the same local-only project and media pipeline but changes resource handling and capability presentation:
+
+- Smartphone mode is selected from device/capability signals rather than changing the desktop workflow globally.
+- On-device `SpeechSynthesis` remains available for preview, but smartphone system-audio capture is not supported by this app. The UI hides desktop TTS recording controls and directs users to microphone or local-audio narration.
+- Newly loaded smartphone PPTX scenes default to microphone narration and video output defaults to 720p. Selecting 1080p remains possible but displays a memory-use warning.
+- During smartphone video composition, slide snapshots are rasterized progressively and temporary Canvas backing stores are released as soon as they are no longer needed, reducing peak memory versus keeping all slide snapshots at once.
+- After smartphone MP4 export the FFmpeg WASM runner is disposed so its memory can be reclaimed.
+- The app requests Screen Wake Lock during smartphone export when supported and releases it on completion, failure, cancellation, or page exit.
+- The fixed smartphone bottom navigation is hidden while the virtual keyboard is visibly open to avoid covering editable fields.
+
+These changes do not add network services, cloud TTS, analytics, or remote storage.
 
 ## Build pipeline
 

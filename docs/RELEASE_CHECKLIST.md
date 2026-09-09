@@ -28,6 +28,21 @@ Use this checklist for every Presentation Video Maker release. Version-specific 
 - Confirm Previous / Next scene controls remain usable.
 - Test long file names, long scripts, and a many-slide fixture.
 
+## Smartphone v1.2 workflow
+
+- Test 360 px, 390 px, and 430 px widths with no horizontal page overflow or overlapping fixed controls.
+- On a fresh smartphone PPTX load, confirm narration defaults to microphone and video resolution defaults to 720p.
+- Select on-device speech on smartphone and confirm the UI explicitly states that TTS can be previewed but cannot be captured as narration.
+- Confirm desktop-only TTS capture controls are hidden on smartphone while TTS preview remains usable where SpeechSynthesis is available.
+- Test microphone recording and local-audio narration on smartphone.
+- Save and reopen a `.pvm` project on smartphone and confirm scripts, narration assets, BGM, and output settings survive the round trip.
+- Select 1080p on smartphone and confirm the mobile memory warning is visible; returning to 720p removes the warning.
+- Open an editable field with the software keyboard and confirm the fixed bottom navigation does not cover the field.
+- Generate and save a 720p MP4 using the progressive smartphone composition path; test a longer/many-slide deck for memory pressure.
+- Where supported, confirm Screen Wake Lock is requested during smartphone video generation and released afterward.
+- After smartphone export, confirm a second export can initialize FFmpeg again after the previous runner was disposed.
+- Perform final real-device validation on iPhone Safari and Android Chrome, especially microphone permission, file/project open/save, memory pressure, and MP4 save behavior.
+
 ## Narration
 
 - On Windows Chrome/Edge, test local SpeechSynthesis using **Entire Screen + system audio** sharing.

@@ -4,24 +4,24 @@
 
 Presentation Video Maker is a Browser Kitty app for turning a local PowerPoint deck into a narrated video without uploading the deck, scripts, or narration audio.
 
-Version `1.1.0` is the current feature release target. Version `1.0.0` was the first stable release and `1.0.1` was the navigation-safe recording patch.
+Version `1.2.0` is the current feature release target. Version `1.1.0` added resumable local projects, selected-scene TTS capture, narration progress, and TXT/SRT/VTT export.
 
 The v1 product promise is:
 
 > Open the PowerPoint. Review the notes. Choose how each slide should sound. Create a narrated video without uploading the deck or audio.
 
-Version `1.1.0` keeps the tested H.264/AAC MP4 pipeline and adds selected-scene TTS capture, explicit local project save/resume, narration progress navigation, and TXT/SRT/VTT export. Native PowerPoint animations/transitions remain out of scope.
+Version `1.2.0` keeps the tested v1.1.0 editing/project/export behavior and makes the non-TTS workflow practical on smartphones: mobile-first bottom navigation, microphone/audio-file narration, a 720p smartphone default, lower-peak-memory video composition, and Wake Lock during export where available. Native PowerPoint animations/transitions remain out of scope.
 
 ## 2. Release target
 
-- Version: `1.1.0`
+- Version: `1.2.0`
 - Readable one-file build: `dist/index.html`
 - Self-extracting one-file build: `dist/index.self-extract.html`
 - Japanese and English in the same HTML.
 - Intended hosting: GitHub Pages / Azure Static Web Apps.
 - Direct `file://` opening remains supported for PPTX parsing, rendering, scene editing, and SpeechSynthesis preview. Browser capture policy may require HTTP(S) for system-audio capture.
 
-## 3. Primary v1.1.0 flow
+## 3. Primary v1.2.0 flow
 
 1. Open the app.
 2. Drop or choose one `.pptx` file, up to 150 MB.
@@ -80,7 +80,7 @@ Changing the input file is a hard state boundary:
 - clear presentation and scene state;
 - ignore stale parse/render results.
 
-Presentation content is not persisted automatically in LocalStorage or IndexedDB. Language preference is the only current LocalStorage preference. v1.1.0 adds explicit `.pvm` project save/open: the user chooses when to create or reopen a local project file containing the PPTX, scene settings, narration assets, BGM, and output settings.
+Presentation content is not persisted automatically in LocalStorage or IndexedDB. Language preference is the only current LocalStorage preference. Explicit `.pvm` project save/open remains the persistence path: the user chooses when to create or reopen a local project file containing the PPTX, scene settings, narration assets, BGM, and output settings.
 
 ## 6. PPTX parser and renderer
 
@@ -99,7 +99,7 @@ The CSP keeps `connect-src 'none'`. `frame-src` is limited to local `self`, `dat
 
 If the high-fidelity renderer is unavailable, the built-in simple preview remains usable for script/narration work.
 
-Known v1.1.0 visual limitations:
+Known v1.2.0 visual limitations:
 
 - PowerPoint animations are static.
 - PowerPoint transitions are not replayed.
@@ -151,7 +151,8 @@ Defaults:
 - `prePadding`: 0.4 seconds;
 - `postPadding`: 0.8 seconds;
 - `recordingStatus`: `pending`;
-- recording fields are empty/zero until capture succeeds.
+- recording fields are empty/zero until capture succeeds;
+- new PPTX scenes default to `mic` on detected smartphones and `tts` on desktop. Loading an existing `.pvm` preserves its saved narration source.
 
 The recorded Blob intentionally contains only a small technical lead/tail around speech. `recordingSpeechStartOffset` and `recordingSpeechEndOffset` identify the spoken region for video composition. User-configured pre/post padding is **not waited out during capture**; it remains timeline metadata.
 
@@ -167,7 +168,7 @@ Applying voice/rate to all scenes and restoring source scripts preserve Undo beh
 
 Each scene has `audioSource` with one of `tts`, `mic`, or `file`. A successful audio asset records its provenance in `recordingSource`. If the user switches to a different source, the previous Blob is preserved but marked stale until a matching replacement is created.
 
-- `tts`: uses the existing on-device SpeechSynthesis + Windows system-audio capture path. The selected TTS scene can be recorded alone, or all recordable TTS scenes can be handled in one batch run.
+- `tts`: uses the existing on-device SpeechSynthesis + Windows system-audio capture path on supported desktop browsers. The selected TTS scene can be recorded alone, or all recordable TTS scenes can be handled in one batch run. On smartphones, SpeechSynthesis preview may be available but TTS audio capture is explicitly unsupported; users must use `mic` or `file` for video narration.
 - `mic`: uses `getUserMedia({audio:true})` and MediaRecorder to record the selected slide directly from the microphone. Existing audio is not destroyed until a new recording succeeds.
 - `file`: accepts a local audio file up to 100 MB, reads duration locally, and stores the File directly as the scene audio Blob.
 
@@ -186,6 +187,13 @@ The app:
 - cancels speech when capture is cancelled or source changes.
 
 The user already confirmed on a real Windows environment that Web Speech API narration is recordable through **Entire Screen + system audio**.
+
+Smartphone rule for v1.2.0:
+
+- SpeechSynthesis may still be used for preview when the browser exposes local voices.
+- TTS capture buttons and all-scene system-audio controls are unavailable on detected smartphones.
+- The UI must state that smartphone TTS audio cannot be recorded and direct the user to microphone or local audio-file narration.
+- Do not emulate a mobile TTS recording path with cloud APIs or network services.
 
 ## 11. System-audio preflight
 
@@ -261,7 +269,7 @@ TXT export writes non-empty scripts grouped by slide. SRT/VTT export uses the sa
 
 Video export requires all enabled scenes with non-empty narration scripts to have `recordingStatus === "success"` and a local `recordingBlob`. A stale, missing, or failed recording blocks export and directs the user back to narration capture.
 
-Output options in v1.1.0:
+Output options in v1.2.0:
 
 - H.264 + AAC MP4
 - 720p or 1080p height
@@ -287,6 +295,15 @@ H.264 / AAC MP4
 
 The composition stage intentionally runs approximately in real time because MediaRecorder captures the browser-generated Canvas/Web Audio timeline. MP4 transcoding runs after composition. No intermediate or final media is uploaded.
 
+Smartphone video path in v1.2.0:
+
+- default the resolution selector to 720p for newly opened sessions on detected smartphones;
+- keep 1080p selectable but show an explicit high-memory warning;
+- create slide snapshots progressively while composing instead of pre-rasterizing and retaining every slide Blob at once;
+- keep at most the current/next transition snapshot needed by the mobile composition loop and release temporary Canvas backing stores promptly;
+- dispose the FFmpeg runner after a smartphone export so the WASM heap is not retained unnecessarily between exports;
+- request Screen Wake Lock during video creation when supported, and release it on success, failure, cancellation, or page exit.
+
 The FFmpeg runtime:
 
 - is embedded in the standalone HTML;
@@ -295,7 +312,7 @@ The FFmpeg runtime:
 - uses no runtime network access;
 - carries GPL-2.0-or-later terms because the profile links x264.
 
-The application repository is distributed under GPL-3.0 in v1.1.0. See `THIRD_PARTY_NOTICES.md` for exact Builder/runtime revisions and corresponding-source information.
+The application repository is distributed under GPL-3.0 in v1.2.0. See `THIRD_PARTY_NOTICES.md` for exact Builder/runtime revisions and corresponding-source information.
 
 ## 15. Failure, retry, and cancellation
 
@@ -338,29 +355,31 @@ The output area contains:
 
 ### Smartphone
 
-Use fixed bottom tabs:
+Use fixed bottom tabs in the narrow smartphone layout:
 
 - `スライド / Slides`
-- `台本 / Script`
-- `出力 / Output`
+- `台本・音声 / Script & audio`
+- `動画 / Video`
 
 Smartphone requirements:
 
-- keep Previous / Next scene actions side-by-side with explicit labels;
-- use a 0.8x–1.5x playback-rate slider instead of a dense row of preset buttons;
-- wrap the Current voice summary so long OS voice names remain readable;
-- present the Entire Screen / system-audio requirement as a prominent three-item checklist;
+- hide the desktop four-step quick-navigation card in the narrow mobile layout;
+- keep Previous / Next scene actions side-by-side with explicit labels and at least 44 px tap targets;
+- keep text inputs/selects at a mobile-safe font size to avoid browser zoom during editing;
+- keep selected-slide context near the top of the Script & audio view while editing long scripts;
+- keep the three narration-source choices in one compact row;
+- new PPTX scenes default to microphone narration on detected smartphones; project restore must preserve the source saved in `.pvm`;
+- show an explicit warning in the TTS panel that on-device speech is preview-only on smartphones and cannot be recorded as a video narration asset;
+- hide desktop Entire Screen / system-audio batch-capture controls on detected smartphones while leaving the per-scene narration list available;
+- direct mobile users to per-scene microphone recording or local audio selection from both the editor and per-scene recording rows;
+- keep scene playback and recording controls visibly tappable and keyboard-focusable;
+- show ready / unrecorded / stale / failed status and next-attention navigation;
+- default video output to 720p and warn when 1080p is selected;
+- use progressive snapshot composition to lower peak memory and request Wake Lock during video export when available;
+- preserve project save/open, TXT/SRT/VTT export, BGM, subtitles, Cut/Fade, and MP4 save on mobile;
+- bound long recording lists and wrap filenames/status text so there is no horizontal page overflow.
 
-- keep the three narration-source choices in one compact row instead of vertically stacking them;
-- keep selected-slide context near the top of the Script view while the user scrolls through a long script;
-- expose the selected scene's narration status beside its source summary;
-- show lightweight status indicators on the three bottom tabs so the user can see loaded / attention / working / ready states without opening every tab;
-- keep microphone/file actions at least 44 px high and full-width where narrow layout benefits from it;
-- bound the per-scene recording list so a large deck does not make the entire Output page excessively long;
-- scroll the selected scene into view when the user moves between slides;
-- keep long filenames, narration labels, and status text from creating horizontal overflow.
-
-No horizontal page overflow at 360–390 px. Full TTS-to-system-audio recording remains primarily targeted at desktop Chrome/Edge on Windows; unsupported mobile behavior must fail clearly rather than pretending capture is available.
+No horizontal page overflow at 360–390 px. Smartphone TTS capture is intentionally unsupported in v1.2.0; this limitation must be stated in the in-app UI, Help, README, and release notes.
 
 ## 17. Application phases
 
@@ -416,6 +435,11 @@ Required for the current stable line:
 - microphone permission is requested only after an explicit user action;
 - local narration/BGM files remain local and are limited to 100 MB each;
 - Japanese/English UI works without horizontal page overflow at 360–390 px;
+- smartphone UI shows Slides / Script & audio / Video tabs without horizontal overflow at 360–390 px;
+- new PPTX scenes default to microphone narration on detected smartphones while `.pvm` restore preserves saved sources;
+- smartphone UI explicitly states that TTS/on-device speech can be previewed but cannot be captured as narration; desktop system-audio capture controls are hidden on smartphones;
+- smartphone video output defaults to 720p, shows a 1080p memory warning, uses progressive snapshot composition, and releases the FFmpeg runner after export;
+- smartphone video creation requests Wake Lock when available without making Wake Lock a hard requirement;
 - the PPTX drop area closes after a successful load while the loaded-file summary and Replace action remain available;
 - quick navigation can be collapsed/reopened and scene Previous / Next controls remain usable;
 - playback-rate changes are passed to `SpeechSynthesisUtterance.rate`, and repeated Preview presses do not disable Stop for the current preview;
