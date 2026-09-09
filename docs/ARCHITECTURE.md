@@ -31,8 +31,8 @@ Generated files under `dist/` must not be edited directly.
 6. The user may explicitly save/open a local `.pvm` project containing the source PPTX, scene settings, narration assets, optional BGM, and output settings.
 7. TXT scripts and SRT/VTT subtitle cues can be generated locally from the current scene/timeline data.
 8. Slide visuals are rasterized to an origin-clean Canvas with `html2canvas` and `foreignObjectRendering: false`.
-9. Canvas frames and Web Audio are composed into an intermediate WebM with `MediaRecorder`.
-10. The embedded FFmpeg WASM runtime converts the intermediate WebM to H.264/AAC MP4.
+9. The exporter probes local WebCodecs H.264/AAC support. On supported browsers, Canvas frames are encoded with `VideoEncoder`, narration/BGM PCM is encoded with `AudioEncoder`, and the app’s built-in ISO BMFF muxer writes those encoded tracks directly into MP4 without starting FFmpeg WASM.
+10. If H.264/AAC WebCodecs support is missing or the accelerated path fails, the compatibility exporter composes Canvas/Web Audio into an intermediate WebM with `MediaRecorder` and then transcodes that WebM to H.264/AAC with the bundled FFmpeg WASM runtime.
 11. The MP4 remains in browser memory until the user saves it.
 
 No presentation, `.pvm` project, narration, BGM, intermediate video, or generated MP4 is uploaded by the application.
@@ -51,6 +51,21 @@ PVMPRJ1\n                       # 8-byte magic
 The manifest stores schema/version metadata, per-scene editable state, output settings, and byte ranges into the raw payload. The generated MP4 is not duplicated into the project file. Projects are saved only after an explicit user action; presentation content is not autosaved to LocalStorage or IndexedDB.
 
 Opening a project reconstructs the source PPTX locally, runs the normal PPTX parser/renderer, then restores saved scene/audio/BGM/output state. Project save/open is disabled while capture, microphone recording, or video generation is active.
+
+## Accelerated export path
+
+The v1.3.0 accelerated path is intentionally dependency-light and preserves the existing FFmpeg fallback:
+
+- `VideoEncoder.isConfigSupported()` probes H.264 profiles appropriate to the selected 720p/1080p output.
+- `AudioEncoder.isConfigSupported()` probes AAC-LC at 48 kHz stereo.
+- Visual frames, subtitles, and fade frames are submitted to WebCodecs without wall-clock waits.
+- Narration audio is decoded one scene at a time, resampled into small PCM blocks, mixed with optional local BGM, and submitted to `AudioEncoder` without playing the whole timeline in real time.
+- AAC chunks receive local ADTS headers and H.264 is requested in Annex-B form.
+- The built-in ISO BMFF muxer receives WebCodecs AVC/AAC packets and writes the MP4 container directly. FFmpeg WASM is reserved for the compatibility path.
+- If any capability/configuration/mux step fails, auto mode falls back to the compatibility pipeline instead of losing the export.
+- `PVMPerformance.getLastReport()` exposes development timing data; `PVMPerformance.setMode("fast" | "legacy" | "auto")` is intentionally console-only and is not part of the general-user UI.
+
+No accelerated-export stage performs network access.
 
 ## Smartphone runtime path
 

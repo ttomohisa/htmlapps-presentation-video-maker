@@ -80,6 +80,16 @@ Use this checklist for every Presentation Video Maker release. Version-specific 
 - Confirm cancelling or failing a replacement export does not delete the previous successful MP4.
 - Confirm the output filename is editable and the saved file opens normally.
 
+## Accelerated export v1.3
+
+- On a browser with H.264/AAC WebCodecs support, confirm auto mode selects `webcodecs-fast` in `PVMPerformance.getLastReport()`.
+- Generate the same fixture with `PVMPerformance.setMode("fast")` and `setMode("legacy")`; record total time and stage timing for both.
+- Confirm the fast-path MP4 contains both H.264 video and AAC audio and opens in a normal player.
+- Confirm Cut, Fade, burned-in subtitles, pre/post padding, local BGM volume/loop, and the final slide match the compatibility output.
+- Confirm a forced/real fast-path failure falls back automatically in `auto` mode without deleting the previous successful MP4.
+- Confirm browsers without `VideoEncoder` or `AudioEncoder` continue through the compatibility exporter.
+- Confirm no runtime network request is introduced and `connect-src 'none'` remains intact.
+
 ## Final packaging
 
 - Exclude `.cache/`, transient regression outputs, and generated diagnostic files from the release ZIP.

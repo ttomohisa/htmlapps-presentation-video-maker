@@ -25,13 +25,13 @@ GitHub Pages delivers the initial HTML. After it loads, PPTX parsing, speaker-no
 - **Export scripts and subtitles** — Save the current scripts as TXT or export the current video timeline as SRT / VTT for use outside the app.
 - **Keep narration work editable** — Adjust scripts, include/exclude slides, before/after padding, voice, and speech rate, with stale-audio tracking when narration settings change.
 - **Preview PowerPoint with higher fidelity** — Use pinned `@aiden0z/pptx-renderer@1.2.4` for the main slide preview and `html2canvas@1.4.1` for origin-clean video snapshots.
-- **Create a finished MP4 locally** — Choose 720p or 1080p, Cut or Fade, burned-in subtitles, and optional local BGM, then create H.264/AAC MP4 through the embedded FFmpeg WASM runtime.
+- **Create a finished MP4 locally** — Choose 720p or 1080p, Cut or Fade, burned-in subtitles, and optional local BGM. Supported browsers use accelerated WebCodecs export; other environments automatically keep the established MediaRecorder + FFmpeg WASM compatibility path.
 - **Smartphone workflow** — Smartphones use bottom tabs for Slides / Script & audio / Video, default new PPTX scenes to My voice, start video output at 720p, and stream slide snapshots during export to reduce peak memory.
 - **Private, single-HTML operation** — Runtime libraries are embedded, the UI is Japanese/English, and the app keeps `connect-src 'none'` with no runtime CDN, analytics, telemetry, or cloud TTS API.
 
 ## Smartphone use
 
-v1.2.0 targets a complete smartphone workflow for:
+v1.2.0 introduced the smartphone workflow for:
 
 1. opening PPTX or `.pvm`;
 2. editing scripts;
@@ -184,6 +184,11 @@ The generated app is designed for **fully local processing** after the HTML has 
 
 The GitHub Pages version still requires the initial HTML request. To use the app without a network connection, open the generated `dist/index.html` locally.
 
+### Accelerated video export
+
+On supported browsers, H.264 and AAC are encoded locally with WebCodecs and written directly into MP4 by the app’s built-in ISO BMFF muxer. The accelerated path does not create an intermediate WebM and does not start FFmpeg WASM. Unchanged slide intervals use variable-duration video samples instead of encoding the same image 30 times per second; new frames are emitted for subtitle changes and during fades. If the browser cannot provide the required codecs or the accelerated path cannot complete, the app automatically falls back to the v1.2.0 compatibility exporter. Neither path uploads presentation or audio data.
+
+
 ## Limitations
 
 - PowerPoint animations are shown as static content and are not replayed.
@@ -194,7 +199,7 @@ The GitHub Pages version still requires the initial HTML request. To use the app
 - System-audio capture can include notification sounds, music, or other applications.
 - `.pvm` is an explicit local save/resume file; the app does not autosave presentation content to LocalStorage or IndexedDB.
 - SRT/VTT cue timing follows the current app timeline and may use estimated narration duration for scenes that have not been measured/recorded yet.
-- Video composition uses MediaRecorder and therefore takes roughly the video duration before the FFmpeg MP4 conversion stage begins.
+- When H.264/AAC WebCodecs encoding is unavailable, the app falls back to the compatibility exporter; that path uses real-time MediaRecorder composition and may take roughly the video duration or longer.
 - Large or complex PowerPoint decks, high-resolution rendering, and 1080p export can consume substantial device memory.
 - The current UI accepts one PPTX up to 150 MB and local narration/BGM files up to 100 MB each.
 
@@ -204,7 +209,7 @@ The GitHub Pages version still requires the initial HTML request. To use the app
 | --- | ---: | --- | --- |
 | @aiden0z/pptx-renderer | 1.2.4 | Apache-2.0 | PPTX parsing and high-fidelity DOM/SVG preview |
 | html2canvas | 1.4.1 | MIT | Origin-clean slide rasterization for video snapshots |
-| FFmpeg WASM Builder generated core | Builder 1.6.0 / `video-compressor` | GPL-2.0-or-later | H.264/AAC MP4 conversion |
+| FFmpeg WASM Builder generated core | Builder 1.6.0 / `video-compressor` | GPL-2.0-or-later | H.264/AAC MP4 conversion on the compatibility fallback |
 
 See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the pinned FFmpeg/x264 revisions and corresponding-source information.
 

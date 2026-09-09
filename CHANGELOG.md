@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.3.0] - 2026-09-09
+
+### Added
+
+- Add an automatically selected WebCodecs fast-export path on browsers that can encode H.264 and AAC locally.
+- Add internal export-stage timing so development builds can compare slide rasterization, video encoding, audio encoding, muxing, and the legacy MediaRecorder/FFmpeg path via `PVMPerformance.getLastReport()`.
+- Add a developer-only `PVMPerformance.setMode("auto" | "fast" | "legacy")` switch for repeatable performance comparisons without adding technical controls to the general-user UI.
+
+### Changed
+
+- Avoid real-time MediaRecorder composition on supported browsers: slide frames and narration audio are encoded as fast as the device allows with WebCodecs.
+- Use variable-duration video samples on the fast path: unchanged slide regions are encoded once for their full display duration, while new frames are emitted only for subtitle changes and fade steps. This avoids encoding 30 identical frames per second during static presentation content.
+- Write WebCodecs H.264/AAC directly into MP4 with the built-in ISO BMFF muxer on the fast path, removing both the intermediate WebM and the FFmpeg step from accelerated export.
+- Keep the v1.2.0 MediaRecorder + FFmpeg transcoding pipeline as an automatic compatibility fallback when WebCodecs H.264/AAC is unavailable or the accelerated path cannot complete.
+- Keep smartphone progressive slide rasterization and all existing local-processing, project, narration, subtitle, BGM, transition, and final-frame behavior.
+
+### Fixed
+
+- Stabilize VFR fade timing by making each long variable-duration visual span an H.264 key-frame anchor and starting every fade with a new GOP. This prevents codec frame reordering from affecting transition pacing while keeping static-frame reduction.
+- Remove the early fast-path attempt to pass generic FFmpeg CLI arguments into the specialized `video-compressor` WASM runner. The accelerated path now muxes WebCodecs AVC/AAC directly and does not invoke that runner.
+
+### Verification
+
+- Confirm JavaScript syntax, CSP, translation parity, the built-in H.264/AAC MP4 muxer against FFmpeg/ffprobe, and the unchanged compatibility export path after adding the accelerated exporter.
+- Confirm variable-duration MP4 sample tables with one-frame and three-frame H.264 fixtures plus AAC; ffprobe reports the intended duration and FFmpeg decodes the complete file without errors.
+- Confirm the fast path performs capability detection at runtime and never contacts an external service.
+- Expose the actual encoded-frame count, 30 fps-equivalent frame count, and frame-reduction percentage in the developer performance report for VFR regression checks.
+- On the same Windows Chrome fixture used during optimization, confirm the accelerated exporter at 2.932 s total / 1.874 s video encoding versus the previous 16.957 s total / 15.718 s video encoding baseline before VFR static-span reduction. Real-device browser codec support remains capability-dependent.
+
 ## [1.2.0] - 2026-09-09
 
 ### Added

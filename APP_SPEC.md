@@ -4,24 +4,24 @@
 
 Presentation Video Maker is a Browser Kitty app for turning a local PowerPoint deck into a narrated video without uploading the deck, scripts, or narration audio.
 
-Version `1.2.0` is the current feature release target. Version `1.1.0` added resumable local projects, selected-scene TTS capture, narration progress, and TXT/SRT/VTT export.
+Version `1.3.0` is the current stable feature release. Version `1.2.0` added the practical smartphone workflow while preserving the v1.1.0 project and narration features.
 
 The v1 product promise is:
 
 > Open the PowerPoint. Review the notes. Choose how each slide should sound. Create a narrated video without uploading the deck or audio.
 
-Version `1.2.0` keeps the tested v1.1.0 editing/project/export behavior and makes the non-TTS workflow practical on smartphones: mobile-first bottom navigation, microphone/audio-file narration, a 720p smartphone default, lower-peak-memory video composition, and Wake Lock during export where available. Native PowerPoint animations/transitions remain out of scope.
+Version `1.3.0` keeps the tested v1.2.0 smartphone/project/narration behavior and adds an accelerated local video-export path. On browsers that can encode H.264 and AAC with WebCodecs, the app avoids real-time MediaRecorder composition and writes encoded tracks directly into MP4 with a built-in ISO BMFF muxer; FFmpeg WASM is not started on this path. The v1.2.0 MediaRecorder + FFmpeg pipeline remains the compatibility fallback. Native PowerPoint animations/transitions remain out of scope.
 
-## 2. Release target
+## 2. Current release
 
-- Version: `1.2.0`
+- Version: `1.3.0`
 - Readable one-file build: `dist/index.html`
 - Self-extracting one-file build: `dist/index.self-extract.html`
 - Japanese and English in the same HTML.
 - Intended hosting: GitHub Pages / Azure Static Web Apps.
 - Direct `file://` opening remains supported for PPTX parsing, rendering, scene editing, and SpeechSynthesis preview. Browser capture policy may require HTTP(S) for system-audio capture.
 
-## 3. Primary v1.2.0 flow
+## 3. Primary v1.3.0 flow
 
 1. Open the app.
 2. Drop or choose one `.pptx` file, up to 150 MB.
@@ -45,9 +45,10 @@ Version `1.2.0` keeps the tested v1.1.0 editing/project/export behavior and make
 18. Verify that every included scene that requires narration has a fresh successful recording from its currently selected source before video creation.
 19. Render each included slide to a 720p or 1080p snapshot using the high-fidelity renderer plus origin-clean html2canvas rasterization when available; keep the simple preview only as an editing fallback.
 20. Choose Cut or Fade transitions, optional burned-in subtitles, and optional local BGM with volume/loop settings.
-21. Create a Canvas video stream and Web Audio mix, apply each scene's pre-padding, recorded narration, subtitles, transition, post-padding, and BGM, and record an intermediate WebM locally with MediaRecorder.
-22. Convert the intermediate WebM to H.264/AAC MP4 with the embedded FFmpeg WASM Builder v1.6.0 `video-compressor` core.
-23. Preview the resulting MP4, edit the output filename, and save it through an explicit user action.
+21. Probe local H.264/AAC WebCodecs encoder support. When both codecs are available, encode the visual timeline and mixed narration/BGM as fast as the device allows without real-time waiting.
+22. On the accelerated path, write AVC samples and AAC access units directly into an ISO BMFF/MP4 container with the built-in muxer. No intermediate WebM, FFmpeg startup, or second video/audio encode is performed.
+23. If the accelerated path is unavailable or cannot complete, automatically use the v1.2.0 Canvas + Web Audio + MediaRecorder intermediate-WebM path and FFmpeg H.264/AAC transcode.
+24. Preview the resulting MP4, edit the output filename, and save it through an explicit user action.
 
 ## 4. Local-processing boundary
 
@@ -269,7 +270,7 @@ TXT export writes non-empty scripts grouped by slide. SRT/VTT export uses the sa
 
 Video export requires all enabled scenes with non-empty narration scripts to have `recordingStatus === "success"` and a local `recordingBlob`. A stale, missing, or failed recording blocks export and directs the user back to narration capture.
 
-Output options in v1.2.0:
+Output options in v1.3.0:
 
 - H.264 + AAC MP4
 - 720p or 1080p height
@@ -277,23 +278,35 @@ Output options in v1.2.0:
 - editable filename, with `.mp4` added separately
 - explicit save after successful generation
 
-The video pipeline is:
+The preferred video pipeline is:
 
 ```text
 slide snapshot(s)
 + per-scene recorded narration
-+ pre/post padding metadata
++ pre/post padding / subtitles / fade / BGM
         ↓
-Canvas + Web Audio + MediaRecorder
+WebCodecs H.264 + AAC encoding
         ↓
-intermediate WebM
-        ↓
-embedded FFmpeg WASM Builder v1.6.0 video-compressor core
+built-in ISO BMFF MP4 mux
         ↓
 H.264 / AAC MP4
 ```
 
-The composition stage intentionally runs approximately in real time because MediaRecorder captures the browser-generated Canvas/Web Audio timeline. MP4 transcoding runs after composition. No intermediate or final media is uploaded.
+This path is selected only after runtime capability checks for both `VideoEncoder` H.264 and `AudioEncoder` AAC. It runs faster than media duration because frames and PCM are submitted to the encoders without waiting for wall-clock playback. Static presentation regions use variable-duration video samples: one encoded frame can represent the full unchanged interval, subtitle changes create a new frame only when the visible text changes, and fades retain a short multi-frame sequence. This substantially reduces the number of H.264 frames submitted for typical slide decks. The FFmpeg stage is not used on the fast path.
+
+Compatibility fallback remains:
+
+```text
+Canvas + Web Audio + MediaRecorder
+        ↓
+intermediate WebM
+        ↓
+embedded FFmpeg WASM H.264/AAC transcode
+        ↓
+MP4
+```
+
+The fallback intentionally runs approximately in real time during MediaRecorder composition. No intermediate or final media is uploaded on either path.
 
 Smartphone video path in v1.2.0:
 
@@ -312,7 +325,7 @@ The FFmpeg runtime:
 - uses no runtime network access;
 - carries GPL-2.0-or-later terms because the profile links x264.
 
-The application repository is distributed under GPL-3.0 in v1.2.0. See `THIRD_PARTY_NOTICES.md` for exact Builder/runtime revisions and corresponding-source information.
+The application repository is distributed under GPL-3.0 in v1.3.0. See `THIRD_PARTY_NOTICES.md` for exact Builder/runtime revisions and corresponding-source information.
 
 ## 15. Failure, retry, and cancellation
 
