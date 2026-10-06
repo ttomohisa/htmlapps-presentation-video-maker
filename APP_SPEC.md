@@ -264,7 +264,11 @@ The project includes:
 
 The generated MP4 is excluded because it is reproducible and can be much larger than the editable project state.
 
-TXT export writes non-empty scripts grouped by slide. SRT/VTT export uses the same scene ordering, pre-padding, scene duration, and app transition durations as the current video timeline. Recorded/measured narration duration is preferred; otherwise the current estimate is used. All exports are created locally through explicit download actions.
+TXT export writes non-empty scripts grouped by slide. SRT/VTT export uses enabled-scene ordering, pre-padding, scene duration, and the existing subtitle-export transition timing. Recorded/measured narration duration is preferred; otherwise the current estimate is used. External cues retain equal segment timing and the existing 45 ms Cut gap, so exact synchronization with burned-in subtitles or the accelerated video path is not guaranteed. All exports are created locally through explicit download actions.
+
+The text-export card includes a native, initially collapsed subtitle preview with a labeled SRT/VTT selector, localized cue count, and a read-only, selectable, scrollable text field. It displays the complete current download text (without the invisible UTF-8 BOM), using the same serializer as the download actions. Opening or changing the format recomputes the preview; while open, script, inclusion, padding, measured/recorded duration, narration rate/source, transition, language, project-open and source changes refresh it without moving focus. Source invalidation clears old content immediately. Collapsed previews do not serialize scripts. Preview actions never create downloads or mutate project/media state, and preview preferences are not saved in the project format.
+
+Subtitle timestamps round nonnegative finite seconds to a single integer-millisecond total before deriving hours/minutes/seconds/milliseconds, so carry propagates correctly at second, minute and hour boundaries. Invalid/non-finite values produce zero, milliseconds always have three digits, and hours above 99 are retained. Narration is assigned to the text field as literal text, never HTML. The preview and in-app help explain that unmeasured narration uses estimates and that exported timing may differ from burned-in subtitles.
 
 ## 14. Local video generation
 
