@@ -94,7 +94,9 @@ The output area can also save:
 - `SRT` — subtitle cues using the current scene/timeline timing;
 - `VTT` — the same cue timing in WebVTT format.
 
-When a scene has a measured/recorded narration duration it is used for subtitle timing; otherwise the current duration estimate is used.
+When a scene has a measured/recorded narration duration it is used for subtitle timing; otherwise the current duration estimate is used. Open **Subtitle preview** in the output area and choose SRT / VTT to inspect the complete download text and cue count before saving. The preview is read-only and updates as scripts, included scenes, padding, audio duration, and transition settings change. Edit narration in the script field; opening the preview does not download anything.
+
+The preview shares the download serializer (the invisible UTF-8 BOM is omitted from display). Timestamps round to whole milliseconds with correct second/minute/hour carry. Exported cue timing keeps equal segment durations and the existing 45 ms Cut gap, so it may differ from burned-in subtitles and the accelerated video timeline.
 
 ## Video creation pipeline
 
@@ -216,6 +218,10 @@ See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the pinned FFmpeg/x264 
 ## Contributing
 
 Bug reports and feature proposals are welcome through GitHub Issues. See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidance.
+
+### Subtitle regression checks
+
+Run `node --test tests/subtitle-export.test.cjs` with Node.js 20 or later. The canonical `scripts/check-repository.ps1` check runs this suite before building. These dependency-free tests cover actual source functions and event handlers using DOM/media doubles; they do not replace desktop/mobile browser or real-media testing.
 
 ## License
 

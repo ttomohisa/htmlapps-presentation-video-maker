@@ -1,5 +1,21 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Add a collapsible, read-only SRT/VTT preview with localized cue counts, full selectable text, and a note about estimated timing. It refreshes with narration/timeline changes and shares serialization with subtitle downloads.
+- Add dependency-free Node.js subtitle regressions to the canonical repository check.
+
+### Fixed
+
+- Round subtitle timestamps once in integer milliseconds so values such as 59.9996 seconds become 00:01:00,000 rather than 00:00:59,1000. Preserve SRT/VTT separators and large-hour formatting, and guard non-finite input.
+- Clear preview contents when replacing the presentation, including while the preview is collapsed.
+
+### Scope
+
+- Preserve existing cue splitting, equal segment timing, and the 45 ms external-subtitle Cut gap. Exact parity with burned-in subtitles and the accelerated video timeline remains a separate concern. Media engines, dependencies, local-only privacy, and the project schema are unchanged.
+
 ## [1.3.0] - 2026-09-09
 
 ### Added
