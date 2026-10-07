@@ -176,10 +176,10 @@ try {
   Remove-Item -Force -ErrorAction SilentlyContinue $tempVerifyPath
 }
 
-# Subtitle export and read-only preview regressions use Node's built-in test runner.
-if (-not (Get-Command node -ErrorAction SilentlyContinue)) { throw "Node.js 20+ is required for subtitle regression tests." }
-& node --test (Join-Path $Root "tests/subtitle-export.test.cjs")
-if ($LASTEXITCODE -ne 0) { throw "Subtitle export regression tests failed." }
+# Application regressions use Node's built-in test runner.
+if (-not (Get-Command node -ErrorAction SilentlyContinue)) { throw "Node.js 20+ is required for application regression tests." }
+& node --test (Join-Path $Root "tests/subtitle-export.test.cjs") (Join-Path $Root "tests/header-language.test.cjs") (Join-Path $Root "tests/video-result-stale.test.cjs")
+if ($LASTEXITCODE -ne 0) { throw "Application regression tests failed." }
 
 $app = Get-Content -Raw -Encoding UTF8 (Join-Path $Root "app.config.json") | ConvertFrom-Json
 if ([string]::IsNullOrWhiteSpace([string]$app.name)) { throw "app.config.json: name is required" }
