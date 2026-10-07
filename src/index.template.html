@@ -256,6 +256,7 @@
     .video-result video { display:block; width:100%; max-height:360px; margin-top:10px; border-radius:9px; background:#111; }
     .video-result-meta { display:flex; flex-wrap:wrap; gap:8px 14px; margin-top:8px; color:var(--muted); font-size:11px; }
     .video-result-stale { display:flex; align-items:flex-start; gap:8px; margin-top:10px; padding:9px 10px; border:1px solid #d8bd7b; border-radius:9px; background:#fff8e7; color:#735717; font-size:11px; line-height:1.55; }
+    .video-result-stale[hidden] { display:none !important; }
     .video-result-stale svg { width:17px; height:17px; flex:0 0 auto; margin-top:1px; }
     .export-warning { display:flex; gap:8px; align-items:flex-start; margin-top:11px; color:var(--muted); font-size:10px; }
     .export-warning svg { width:15px; height:15px; flex:0 0 auto; margin-top:1px; }
@@ -578,8 +579,8 @@
         </div>
       </div>
       <div class="header-actions">
-        <button class="language-button" id="languageButton" type="button" aria-label="英語に切り替え">EN</button>
-        <button class="header-icon-button" id="helpButton" type="button" data-i18n-aria-label="help" aria-label="使い方と注意事項">
+        <button class="language-button" id="languageButton" type="button" aria-label="英語に切り替え" title="英語に切り替え">EN</button>
+        <button class="header-icon-button" id="helpButton" type="button" data-i18n-aria-label="help" data-i18n-title="help" aria-label="使い方と注意事項" title="使い方と注意事項">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.3 2.3 0 0 1 4.4 1c0 1.7-2.2 2-2.2 3.6M12 17h.01"/></svg>
         </button>
       </div>
@@ -1088,9 +1089,12 @@
         document.documentElement.lang = language;
         $$('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
         $$('[data-i18n-aria-label]').forEach(el => el.setAttribute('aria-label',t(el.dataset.i18nAriaLabel)));
+        $$('[data-i18n-title]').forEach(el => el.setAttribute('title',t(el.dataset.i18nTitle)));
         $$('[data-i18n-placeholder]').forEach(el => el.setAttribute('placeholder',t(el.dataset.i18nPlaceholder)));
-        $('#languageButton').textContent = language === 'ja' ? 'EN' : '日本語';
-        $('#languageButton').setAttribute('aria-label', language === 'ja' ? '英語に切り替え' : 'Switch to Japanese');
+        $('#languageButton').textContent = language === 'ja' ? 'EN' : 'JA';
+        const languageTarget = language === 'ja' ? '英語に切り替え' : 'Switch to Japanese';
+        $('#languageButton').setAttribute('aria-label', languageTarget);
+        $('#languageButton').setAttribute('title', languageTarget);
         document.title = language === 'ja' ? APP_CONFIG.nameJa : APP_CONFIG.name;
         $('#brandName').textContent = language === 'ja' ? APP_CONFIG.nameJa : APP_CONFIG.name;
         $('#footerName').textContent = language === 'ja' ? APP_CONFIG.nameJa : APP_CONFIG.name;

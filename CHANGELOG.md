@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.3.1] - 2026-10-07
 
 ### Added
 
@@ -9,6 +9,8 @@
 
 ### Fixed
 
+- Standardize the header language switch as EN / JA, add localized target-language tooltips, and provide a localized tooltip for Help without changing the header layout.
+- Hide the outdated-output warning after successful MP4 generation; its flex layout now respects the hidden attribute. Preserve the warning after output-setting edits and add result-lifecycle regressions.
 - Round subtitle timestamps once in integer milliseconds so values such as 59.9996 seconds become 00:01:00,000 rather than 00:00:59,1000. Preserve SRT/VTT separators and large-hour formatting, and guard non-finite input.
 - Clear preview contents when replacing the presentation, including while the preview is collapsed.
 
