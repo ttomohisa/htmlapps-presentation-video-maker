@@ -49,3 +49,18 @@ test('repeated language updates preserve scene data and local privacy translatio
   assert.equal(translations.ja.localBadge,'完全ローカル処理');
   assert.equal(translations.en.localBadge,'Fully local processing');
 });
+
+// Keep the supplied artwork, favicon, and header in sync across shipped representations.
+test('app icon preserves the supplied SVG and canonical header/favicon artwork', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const crypto = require('node:crypto');
+  const icon = fs.readFileSync(path.join(__dirname, '../assets/favicon.svg'));
+  assert.equal(crypto.createHash('sha256').update(icon).digest('hex'), '7c1b269ced10078f8ddb7e578ebb75e976fdb69b6255bc59f886e0f2aa873a9a');
+  const html = source;
+  const favicon = html.match(/<link\b[^>]*rel="icon"[^>]*href="([^"]+)"/)[1];
+  const expectedUri = 'data:image/svg+xml;base64,' + icon.toString('base64');
+  const header = html.match(/<img\b[^>]*id="appBrandIcon"[^>]*src="([^"]+)"/)[1];
+  assert.equal(header, favicon);
+  assert.equal(favicon, html.includes('__APP_ICON_DATA_URI__') ? '__APP_ICON_DATA_URI__' : expectedUri);
+});

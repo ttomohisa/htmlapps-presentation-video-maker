@@ -4,7 +4,7 @@
 
 Presentation Video Maker is a Browser Kitty app for turning a local PowerPoint deck into a narrated video without uploading the deck, scripts, or narration audio.
 
-Version `1.3.1` is the current stable release. Version `1.2.0` added the practical smartphone workflow while preserving the v1.1.0 project and narration features.
+Version `1.3.2` is the current stable release. Version `1.2.0` added the practical smartphone workflow while preserving the v1.1.0 project and narration features.
 
 The v1 product promise is:
 
@@ -14,7 +14,7 @@ Version `1.3.0` keeps the tested v1.2.0 smartphone/project/narration behavior an
 
 ## 2. Current release
 
-- Version: `1.3.1`
+- Version: `1.3.2`
 - Readable one-file build: `dist/index.html`
 - Self-extracting one-file build: `dist/index.self-extract.html`
 - Japanese and English in the same HTML. The header language switch shows `EN` in Japanese and `JA` in English, with a localized target-language accessible name and tooltip. Help retains its localized title and tooltip.
