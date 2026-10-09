@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.3.2] - 2026-10-09
+
+- Refresh the app icon and favicon with the supplied SVG artwork, preserving the original viewBox and standalone/offline behavior.
+- Add icon consistency coverage for the canonical asset, header, and favicon.
+
 ## [1.3.1] - 2026-10-07
 
 ### Added
