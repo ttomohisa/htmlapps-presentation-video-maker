@@ -18,6 +18,7 @@ $required = @(
   "docs\DEPENDENCIES.ja.md",
   "docs\RELEASE_CHECKLIST.md",
   "src\index.template.html",
+  "tests\help-modal-layout.test.cjs",
   "build-standalone.ps1",
   "scripts\build-self-extract.ps1",
   "scripts\check-powershell-syntax.ps1",
@@ -178,8 +179,18 @@ try {
 
 # Application regressions use Node's built-in test runner.
 if (-not (Get-Command node -ErrorAction SilentlyContinue)) { throw "Node.js 20+ is required for application regression tests." }
-& node --test (Join-Path $Root "tests/subtitle-export.test.cjs") (Join-Path $Root "tests/header-language.test.cjs") (Join-Path $Root "tests/video-result-stale.test.cjs")
-if ($LASTEXITCODE -ne 0) { throw "Application regression tests failed." }
+function Invoke-ApplicationRegressionTests {
+  param([string]$HtmlPath)
+  $previousTestHtml = $env:PVM_TEST_HTML
+  try {
+    $env:PVM_TEST_HTML = $HtmlPath
+    & node --test (Join-Path $Root "tests/subtitle-export.test.cjs") (Join-Path $Root "tests/header-language.test.cjs") (Join-Path $Root "tests/video-result-stale.test.cjs") (Join-Path $Root "tests/help-modal-layout.test.cjs")
+    if ($LASTEXITCODE -ne 0) { throw "Application regression tests failed for $HtmlPath." }
+  } finally {
+    $env:PVM_TEST_HTML = $previousTestHtml
+  }
+}
+Invoke-ApplicationRegressionTests -HtmlPath (Join-Path $Root "src/index.template.html")
 
 $app = Get-Content -Raw -Encoding UTF8 (Join-Path $Root "app.config.json") | ConvertFrom-Json
 if ([string]::IsNullOrWhiteSpace([string]$app.name)) { throw "app.config.json: name is required" }
@@ -189,6 +200,9 @@ if ([string]::IsNullOrWhiteSpace([string]$app.version)) { throw "app.config.json
 $buildArguments = @{}
 if ($ForceDownload) { $buildArguments.ForceDownload = $true }
 & (Join-Path $Root "build-standalone.ps1") @buildArguments
+
+# The builder verifies that the self-extract payload restores these same bytes.
+Invoke-ApplicationRegressionTests -HtmlPath (Join-Path $Root ([string]$app.build.output))
 
 Write-Host "[OK] Repository check passed." -ForegroundColor Green
 

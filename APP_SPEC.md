@@ -4,7 +4,7 @@
 
 Presentation Video Maker is a Browser Kitty app for turning a local PowerPoint deck into a narrated video without uploading the deck, scripts, or narration audio.
 
-Version `1.3.2` is the current stable release. Version `1.2.0` added the practical smartphone workflow while preserving the v1.1.0 project and narration features.
+Version `1.3.3` is the current stable release. Version `1.2.0` added the practical smartphone workflow while preserving the v1.1.0 project and narration features.
 
 The v1 product promise is:
 
@@ -14,7 +14,7 @@ Version `1.3.0` keeps the tested v1.2.0 smartphone/project/narration behavior an
 
 ## 2. Current release
 
-- Version: `1.3.2`
+- Version: `1.3.3`
 - Readable one-file build: `dist/index.html`
 - Self-extracting one-file build: `dist/index.self-extract.html`
 - Japanese and English in the same HTML. The header language switch shows `EN` in Japanese and `JA` in English, with a localized target-language accessible name and tooltip. Help retains its localized title and tooltip.
@@ -343,6 +343,10 @@ The application repository is distributed under GPL-3.0 in v1.3.0. See `THIRD_PA
 - Any scene left in transient `recording` state after interruption is normalized to `stale` when an older Blob exists, otherwise `pending`.
 
 ## 16. UI / UX
+
+### Help
+
+Help uses the existing native dialog with a viewport-bounded grid shell, a visible Close header, and an independently scrolling body. While a native dialog is modal, both the root and body prevent background scrolling and overscroll chaining. Closing it restores ordinary page scrolling without changing the page position. Close, Escape, geometric backdrop dismissal, native keyboard behavior, and the existing shield-marked local-processing badge remain unchanged. Japanese and English Help must remain readable to the final paragraph at narrow, short viewport sizes.
 
 ### Desktop
 
