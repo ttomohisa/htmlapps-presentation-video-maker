@@ -18,6 +18,12 @@ dist/index.self-extract.html Gzip self-extracting single-HTML variant
 
 Generated files under `dist/` must not be edited directly.
 
+## Help modal
+
+The native Help dialog keeps its existing grid shell, header, independently scrolling body, and desktop/mobile height bounds. CSS `html:has(dialog:modal)` and `body:has(dialog:modal)` disable background overflow and overscroll only while a native modal is present. No JavaScript scroll-state tracking or changes to the native open/close, Escape, backdrop, or focus behavior are needed. Ordinary scrolling resumes when the dialog closes.
+
+The canonical repository check runs the application regressions against the source and generated readable HTML. Help tests are static guards; actual wheel behavior, end-of-content reachability, focus return, and repeated dismissal must also be verified in a browser. The self-extract verifier checks equality with the tested readable HTML.
+
 ## Runtime flow
 
 1. The user selects a local `.pptx` file.

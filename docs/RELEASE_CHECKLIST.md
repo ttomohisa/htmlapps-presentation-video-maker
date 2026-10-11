@@ -22,6 +22,9 @@ Use this checklist for every Presentation Video Maker release. Version-specific 
 ## Desktop and smartphone UI
 
 - Test Japanese and English desktop UI.
+- Open Help on a scrollable desktop page and at a narrow, short viewport such as 393 × 252 px, in both languages. Scroll to the final paragraph; confirm the header and Close button remain reachable.
+- Wheel at the Help body edge and outside the dialog; the background page must stay still. Close by button, Escape, and backdrop, checking normal page scrolling and opener focus after each route. Repeat opening and forward/reverse keyboard navigation. A resized viewport is not a physical-device or software-keyboard test.
+- Confirm the local-processing badge retains its decorative shield icon.
 - Test at least 390 px and 360 px widths with no horizontal page overflow.
 - Confirm the PPTX drop area closes after a successful load.
 - Confirm Quick navigation can be collapsed and reopened.

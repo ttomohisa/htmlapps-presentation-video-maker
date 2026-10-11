@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.3] - 2026-10-11
+
+### Fixed
+
+- Prevent background-page scrolling while native Help is modal by locking root and body overflow and overscroll. Preserve the existing viewport-bounded Help shell, internal scrolling, Close/Escape/backdrop dismissal, and shield-marked local-processing badge.
+- Update Japanese/English Help and documentation, and add static modal-layout regression coverage to source and generated-readable checks. Self-extract verification continues to require byte-for-byte restoration.
+- Keep presentation rendering, narration/capture permissions, project import/export, subtitles, and video/audio engines unchanged.
+
 ## [1.3.2] - 2026-10-09
 
 - Refresh the app icon and favicon with the supplied SVG artwork, preserving the original viewBox and standalone/offline behavior.

@@ -67,6 +67,8 @@ Node.js, Python, and a local web server are not required for the normal Windows 
 
 ## Usage
 
+In v1.3.3, Help keeps the background page still while you scroll its contents. The existing Close button stays reachable; close Help with that button, Esc, or a click outside the dialog to resume normal page scrolling. The local-processing badge retains its shield icon.
+
 1. Start a new video by dropping one `.pptx` file or choosing it with the PowerPoint picker. To continue previous work, use the separate **Resume saved work** card and choose a `.pvm` project. The two file pickers are intentionally separate. The current PPTX limit is 150 MB.
 2. Select a slide and review the high-fidelity preview and narration script.
 3. Edit the script, before/after padding, and whether the slide is included in the video.
@@ -219,9 +221,9 @@ See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the pinned FFmpeg/x264 
 
 Bug reports and feature proposals are welcome through GitHub Issues. See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidance.
 
-### Subtitle regression checks
+### Application regression checks
 
-Run `node --test tests/subtitle-export.test.cjs` with Node.js 20 or later. The canonical `scripts/check-repository.ps1` check runs this suite before building. These dependency-free tests cover actual source functions and event handlers using DOM/media doubles; they do not replace desktop/mobile browser or real-media testing.
+Run `node --test tests/*.test.cjs` with Node.js 20 or later. The canonical `scripts/check-repository.ps1` check runs all application suites against the source and again against the generated readable HTML. The build verifies that the self-extracting payload restores the same readable bytes. `PVM_TEST_HTML` selects another readable HTML for a focused artifact check. These dependency-free tests cover actual source functions and event handlers using DOM/media doubles, plus static Help-layout guards; they do not replace native desktop/mobile wheel, focus, viewport, or real-media testing.
 
 ## License
 
