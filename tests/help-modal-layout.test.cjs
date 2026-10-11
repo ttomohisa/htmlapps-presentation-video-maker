@@ -54,10 +54,10 @@ test('the existing local-processing badge keeps its decorative shield and labels
   assert.equal(translations.en.localBadge, 'Fully local processing');
 });
 
-test('Japanese and English Help explain background locking and dismissal', () => {
+test('Help omits implementation commentary and retains user instructions', () => {
   assert.match(source, /<!-- APP:HELP:BEGIN -->[\s\S]*?data-i18n="helpDialogText"[\s\S]*?<!-- APP:HELP:END -->/);
-  assert.match(translations.ja.helpDialogText || '', /背景ページ.*スクロールしません/);
+  assert.doesNotMatch(translations.ja.helpDialogText || '', /背景ページ.*スクロールしません/);
   assert.match(translations.ja.helpDialogText || '', /閉じるボタン.*Esc.*枠外/);
-  assert.match(translations.en.helpDialogText || '', /background page does not scroll/);
+  assert.doesNotMatch(translations.en.helpDialogText || '', /background page does not scroll/);
   assert.match(translations.en.helpDialogText || '', /Close button.*Esc.*outside/);
 });

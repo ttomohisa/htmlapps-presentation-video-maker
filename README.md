@@ -67,7 +67,7 @@ Node.js, Python, and a local web server are not required for the normal Windows 
 
 ## Usage
 
-In v1.3.3, Help keeps the background page still while you scroll its contents. The existing Close button stays reachable; close Help with that button, Esc, or a click outside the dialog to resume normal page scrolling. The local-processing badge retains its shield icon.
+Close Help with the Close button, Esc, or a click outside the dialog.
 
 1. Start a new video by dropping one `.pptx` file or choosing it with the PowerPoint picker. To continue previous work, use the separate **Resume saved work** card and choose a `.pvm` project. The two file pickers are intentionally separate. The current PPTX limit is 150 MB.
 2. Select a slide and review the high-fidelity preview and narration script.
@@ -82,7 +82,6 @@ In v1.3.3, Help keeps the background page still while you scroll its contents. T
 10. Create the video, preview the generated MP4, set the output filename, and save it.
 
 A three-slide test deck and additional regression fixtures are included under `test-data/`.
-
 
 ## Project files and text exports
 
@@ -191,7 +190,6 @@ The GitHub Pages version still requires the initial HTML request. To use the app
 ### Accelerated video export
 
 On supported browsers, H.264 and AAC are encoded locally with WebCodecs and written directly into MP4 by the app’s built-in ISO BMFF muxer. The accelerated path does not create an intermediate WebM and does not start FFmpeg WASM. Unchanged slide intervals use variable-duration video samples instead of encoding the same image 30 times per second; new frames are emitted for subtitle changes and during fades. If the browser cannot provide the required codecs or the accelerated path cannot complete, the app automatically falls back to the v1.2.0 compatibility exporter. Neither path uploads presentation or audio data.
-
 
 ## Limitations
 
