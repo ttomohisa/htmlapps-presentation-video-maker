@@ -1,5 +1,11 @@
 # APP_SPEC.md — Presentation Video Maker
 
+## Phone footer and Help metadata
+
+- Hide only the informational footer at the existing 600px phone breakpoint. Preserve functional navigation and controls.
+- Show existing build metadata quietly at the very end of How to use & Notes on both desktop and phone. No new phone metadata hiding.
+- Use `Fully local processing` for the existing `完全ローカル処理` badge. Keep distinct privacy statements, app versions, dependencies and application behavior unchanged.
+
 ## 1. Product summary
 
 Presentation Video Maker is a Browser Kitty app for turning a local PowerPoint deck into a narrated video without uploading the deck, scripts, or narration audio.
