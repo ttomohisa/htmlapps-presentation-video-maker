@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Standardize the phone informational footer, final Help build metadata, and equivalent local-processing badge wording.
+
 ## [1.3.3] - 2026-10-11
 
 ### Fixed
