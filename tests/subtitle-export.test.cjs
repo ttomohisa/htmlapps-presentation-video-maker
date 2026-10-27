@@ -16,7 +16,7 @@ function extract(name, required = true) {
 }
 function element() {
   return { value:'', textContent:'', checked:true, open:false, hidden:false, dataset:{}, children:[], handlers:{},
-    classList:{ add(){},remove(){},toggle(){} }, setAttribute(){}, append(...children){this.children.push(...children);},
+    removeAttribute(){}, classList:{ add(){},remove(){},toggle(){} }, setAttribute(){}, append(...children){this.children.push(...children);},
     addEventListener(type, fn){ this.handlers[type]=fn; }, focus(){throw new Error('Preview must not move focus');} };
 }
 function scene(overrides = {}) {
@@ -28,7 +28,7 @@ function harness() {
   $('#videoTransition').value='fade'; $('#videoOutputName').value='Synthetic title'; $('#subtitlePreviewFormat').value='SRT';
   for (const id of ['#subtitlePreviewText','#subtitlePreviewCount']) Object.defineProperty($(id),'innerHTML',{set(){throw new Error('Narration must remain literal text');}});
   const translations = JSON.parse(source.match(/const translations = (\{[^\n]+\});/)[1]);
-  const ctx = vm.createContext({Blob,File,console,URL,TextEncoder,TextDecoder,DataView,Uint8Array,DecompressionStream,
+  const ctx = vm.createContext({BrowserKittyUI:require('../components/ui-conventions.js'),Blob,File,console,URL,TextEncoder,TextDecoder,DataView,Uint8Array,DecompressionStream,
     language:'en', state:{slides:[],selectedSlideIndex:-1,rate:1,sourceGeneration:0,videoTransition:'fade'}, $, $$:()=>[],
     window:{}, HTMLCanvasElement:{prototype:{}}, document:{createElement:element,documentElement:{}}, APP_CONFIG:{name:'Test',nameJa:'Test'},
     projectBaseName:()=>'presentation', downloadBlob:(blob,filename)=>downloads.push({blob,filename}), showToast:message=>toasts.push(message),
@@ -37,11 +37,11 @@ function harness() {
     speak:(text,callback)=>{ctx.speechCallback=callback;return true;}, captureIsBusy:()=>false,
     sceneRecordingVisualState:()=> 'pending', sceneRecordingStatusLabel:()=> 'Pending', sceneListActionState:()=>({action:'record',label:'Record'}),
     isSmartphoneMode:()=>false, bytesLabel:String, setChip(){},
-    projectOperationBusy:()=>false, AppToast:{show(){}},
+    confirmProjectChange:async()=>true, projectOperationBusy:()=>false, AppToast:{show(){}},
     t:key=>translations[ctx.language][key]||key,
     format:(key,values={})=>Object.entries(values).reduce((text,[k,v])=>text.replaceAll(`{${k}}`,String(v)),translations[ctx.language][key]||key)
   });
-  for (const name of ['updateMobileResolutionWarning','updateMobileNavIndicators','updateWorkflowNavIndicators','updateProjectButtons','updateCurrentSceneAudioStatus','updateSceneProgress','updateRecordingPlan','renderSlides','selectSlide','updateSceneEditor','updateCompatibility','renderSelectedSlide','setRendererState','updateDeckSummary','refreshVoices','applyDeviceUi','refreshCaptureReady','cancelSpeech','cancelMicRecording','stopDisplayStream','cleanupRecording','clearVideoResult','cancelVideo','disposeRendererState','setWorkflowNavCollapsed','markVideoResultStale']) ctx[name]=()=>{};
+  for (const name of ['updateProjectSaveStatus','updateMobileResolutionWarning','updateMobileNavIndicators','updateWorkflowNavIndicators','updateProjectButtons','updateCurrentSceneAudioStatus','updateSceneProgress','updateRecordingPlan','renderSlides','selectSlide','updateSceneEditor','updateCompatibility','renderSelectedSlide','setRendererState','updateDeckSummary','refreshVoices','applyDeviceUi','refreshCaptureReady','cancelSpeech','cancelMicRecording','stopDisplayStream','cleanupRecording','clearVideoResult','cancelVideo','disposeRendererState','setWorkflowNavCollapsed','markVideoResultStale']) ctx[name]=()=>{};
   const names=['formatSubtitleTime','subtitleTimelineEntries','exportSubtitles','textExportBase','safeOutputBase','videoSceneIndexes','sceneVideoDuration','estimateSpeechSeconds','splitSubtitleSegments','videoTransitionSeconds','videoEstimatedSeconds','formatClock','videoValidation','setVideoExportChip','renderVideoTimeline','updateVideoExportState','narrationSource','sourceLabel','narrationSourceLabel','recordingSourceLabel','renderSceneRecordings','saveCurrentScript','resetCurrentScript','applyNarrationToAll','updateNarrationDuration','markSceneRecordingStale','invalidateSource','commitSceneAudio','restoreProjectSlide','openProjectFile','applyLanguage'];
   vm.runInContext(names.map(name=>extract(name)).join('\n')+'\n'+['serializeSubtitles','updateSubtitlePreview'].map(name=>extract(name,false)).join('\n'),ctx);
   const eventLines=source.split('\n').filter(line=>line.startsWith("      $('#")&&line.includes(".addEventListener(")&&['#subtitlePreview','#videoTransition','#previewVoiceButton','#rateRange'].some(id=>line.includes(`$('${id}')`)));
@@ -120,7 +120,7 @@ test('source invalidation immediately clears the previous deck while open or col
 test('project opening replaces old preview with restored scripts, timings and output format settings',async()=>{
   const h=harness();h.ctx.state.slides=[scene({script:'Old deck.'})];open(h);
   const file=new File(['synthetic'],'fixture.pvm');h.ctx.readProjectManifest=async()=>({payloadStart:0,manifest:{slideCount:1,source:{name:'fixture.pptx',asset:{}},slides:[{script:'Restored 日本語.',enabled:true,narrationDuration:3,prePadding:2}],settings:{videoTransition:'cut'}}});
-  h.ctx.projectAssetBlob=()=>new Blob(['synthetic']);h.ctx.loadPptx=async()=>{h.ctx.invalidateSource();assert.equal(preview(h),'');h.ctx.state.slides=[scene()];};
+  h.ctx.parsePptxBuffer=async()=>({slides:[scene()]});h.ctx.projectAssetBlob=()=>new Blob(['synthetic']);h.ctx.loadPptx=async()=>{h.ctx.invalidateSource();assert.equal(preview(h),'');h.ctx.state.slides=[scene()];};
   await h.ctx.openProjectFile(file);assert.ok(preview(h).includes('Restored 日本語.'));assert.ok(!preview(h).includes('Old deck.'));assert.match(preview(h),/00:00:02,000 --> 00:00:05,000/);
 });
 test('language changes refresh cue count and keep complete large content',()=>{

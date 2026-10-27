@@ -184,7 +184,7 @@ function Invoke-ApplicationRegressionTests {
   $previousTestHtml = $env:PVM_TEST_HTML
   try {
     $env:PVM_TEST_HTML = $HtmlPath
-    & node --test (Join-Path $Root "tests/subtitle-export.test.cjs") (Join-Path $Root "tests/header-language.test.cjs") (Join-Path $Root "tests/video-result-stale.test.cjs") (Join-Path $Root "tests/help-modal-layout.test.cjs")
+    & node --test @((Get-ChildItem -LiteralPath (Join-Path $Root "tests") -Filter "*.test.cjs").FullName)
     if ($LASTEXITCODE -ne 0) { throw "Application regression tests failed for $HtmlPath." }
   } finally {
     $env:PVM_TEST_HTML = $previousTestHtml

@@ -1,0 +1,98 @@
+const assert = require('node:assert/strict');
+const {test} = require('node:test');
+const fs = require('node:fs');
+const path = require('node:path');
+const vm = require('node:vm');
+const source = fs.readFileSync(process.env.PVM_TEST_HTML || path.join(__dirname,'../src/index.template.html'),'utf8');
+const translations = JSON.parse(source.match(/const translations = (\{[^\n]+\});/)[1]);
+function extract(name) {
+  const m = new RegExp(`^      (?:async )?function ${name}\\(`,'m').exec(source);
+  assert.ok(m, `Missing production function ${name}`);
+  const next = source.slice(m.index+7).search(/\n      (?:async )?function /);
+  return source.slice(m.index,m.index+7+next);
+}
+function context(extra={}) {
+  const controls = new Map();
+  const $ = id => {if(!controls.has(id)) controls.set(id,{disabled:false,dataset:{},value:'',checked:false,textContent:'',setAttribute(){}});return controls.get(id);};
+  const ctx=vm.createContext({$,state:{slides:[],sourceGeneration:1,projectBusy:false,capturePhase:'idle',videoExportPhase:'idle'}, Blob,File,TextEncoder,TextDecoder,Uint8Array,DataView,URL,console:{error(){},warn(){}},language:'en', t:key=>translations.en[key], showToast(){}, captureIsBusy:()=>false, ...extra});
+  return {ctx,$};
+}
+test('language resolution and explicit choice use common preference without rewriting legacy storage',()=>{
+  assert.match(source,/BrowserKittyUI\.resolveLanguage\(\{legacyKeys:\['pvm-language'\]\}\)/);
+  assert.match(source,/BrowserKittyUI\.chooseLanguage\(language\)/);
+  assert.doesNotMatch(source,/localStorage\.setItem\('pvm-language'/);
+});
+test('manual save shows retention instructions and honest download notifications',()=>{
+  assert.match(source,/id="projectSaveStatus"/);
+  assert.match(source,/mode:'manual'/);
+  assert.equal(translations.en.saveProject,'Save project');
+  assert.equal(translations.en.openProject,'Open project');
+  for(const key of ['projectSaved','videoSaved','textExportSaved','saved']) assert.match(translations.en[key],/download started/i);
+});
+test('saving failures keep work and expose a persistent recovery message',async()=>{
+  const h=context({updateProjectButtons(){},updateProjectSaveStatus(){},createProjectBlob:async()=>{throw Error('write');}});
+  h.ctx.state.sourceFile={name:'keep.pptx'}; h.ctx.state.slides=[{script:'keep'}];
+  vm.runInContext(extract('projectOperationBusy')+'\n'+extract('saveProject'),h.ctx);
+  await h.ctx.saveProject();
+  assert.equal(h.ctx.state.slides[0].script,'keep');
+  assert.equal(h.ctx.state.projectSaveState,'error');
+  assert.equal(h.ctx.state.projectBusy,false);
+});
+test('invalid project archive preserves loaded work before asking to replace it',async()=>{
+  let replaced=0,asked=0;
+  const h=context({updateProjectButtons(){},updateProjectSaveStatus(){},readProjectManifest:async()=>{throw Error('PROJECT_MAGIC');},loadPptx:async()=>{replaced++;},AppConfirm:{ask:async()=>{asked++;return true;}}});
+  h.ctx.state.slides=[{script:'keep loaded work'}];
+  vm.runInContext(extract('projectOperationBusy')+'\n'+extract('openProjectFile'),h.ctx);
+  await h.ctx.openProjectFile(new Blob(['invalid']));
+  assert.equal(replaced,0);assert.equal(asked,0);assert.equal(h.ctx.state.slides[0].script,'keep loaded work');
+});
+for(const problem of ['mismatch','asset','cancel']) test(`project ${problem} leaves current PPTX, narration and MP4 intact`,async()=>{
+  let replaced=0,asked=0;
+  const h=context({updateProjectButtons(){},updateProjectSaveStatus(){},
+    readProjectManifest:async()=>({manifest:{slideCount:problem==='mismatch'?2:1,source:{asset:{},name:'new.pptx'},slides:[{recordingAsset:{bad:problem==='asset'}}]},payloadStart:0}),
+    projectAssetBlob(file,start,asset){if(asset.bad) throw Error('PROJECT_ASSET_BOUNDS');return new Blob(['PPTX']);},
+    parsePptxBuffer:async()=>({slides:[{}]}),confirmProjectChange:async()=>{asked++;return false;},loadPptx:async()=>{replaced++;}});
+  const audio=new Blob(['existing recording']),video=new Blob(['existing MP4']);
+  h.ctx.state.slides=[{script:'keep',recordingBlob:audio}];h.ctx.state.videoResultBlob=video;
+  vm.runInContext(extract('projectOperationBusy')+'\n'+extract('openProjectFile'),h.ctx);
+  await h.ctx.openProjectFile(new Blob(['project']));
+  assert.equal(replaced,0);assert.equal(asked,problem==='cancel'?1:0);assert.equal(h.ctx.state.slides[0].recordingBlob,audio);assert.equal(h.ctx.state.videoResultBlob,video);assert.equal(h.ctx.state.projectBusy,false);
+});
+test('live translated progress keeps values, script and active controller',()=>{
+  const h=context();h.ctx.language='ja';h.ctx.format=(key,values)=>Object.entries(values).reduce((text,[k,v])=>text.replaceAll(`{${k}}`,v),translations.ja[key]);
+  h.ctx.translations=translations;h.$('#captureStatusMessage').textContent='2 / 5 · Slide 3';
+  const controller={abort(){throw Error('Language must not abort');}};h.ctx.state.videoAbortController=controller;h.ctx.state.slides=[{script:'literal narration'}];
+  vm.runInContext(extract('translateLiveMessages'),h.ctx);h.ctx.translateLiveMessages('en');
+  assert.equal(h.$('#captureStatusMessage').textContent,'2 / 5 · スライド 3');assert.equal(h.ctx.state.slides[0].script,'literal narration');assert.equal(h.ctx.state.videoAbortController,controller);
+});
+test('capture cancellation sends one stop request and preserves completed scene audio',()=>{
+  let stops=0;
+  const h=context({captureIsBusy:()=>true,cancelSpeech(){},stopDisplayStream(){stops++;},BrowserKittyUI:require('../components/ui-conventions.js')});
+  h.$('#cancelCaptureButton').removeAttribute=()=>{};
+  const audio=new Blob(['completed recording']);h.ctx.state.slides=[{recordingBlob:audio}];
+  vm.runInContext(extract('cancelCapture'),h.ctx);h.ctx.cancelCapture();h.ctx.cancelCapture();
+  assert.equal(stops,1);assert.equal(h.$('#cancelCaptureButton').disabled,true);assert.equal(h.ctx.state.slides[0].recordingBlob,audio);
+});
+test('MP4 cancellation immediately disables repeated requests while retaining the previous result',()=>{
+  let aborted=0;
+  const h=context({BrowserKittyUI:{setButtonState(button,state){button.disabled=state!=='ready';button.dataset.bkState=state;},text:key=>key}});
+  const result=new Blob(['old MP4']);h.ctx.state.videoResultBlob=result;h.ctx.state.videoExportPhase='composing';h.ctx.state.videoAbortController={abort(){aborted++;}};
+  vm.runInContext(extract('cancelVideo'),h.ctx);h.ctx.cancelVideo();h.ctx.cancelVideo();
+  assert.equal(aborted,1);assert.equal(h.$('#cancelVideoButton').disabled,true);assert.equal(h.$('#cancelVideoButton').dataset.bkState,'stopping');assert.equal(h.ctx.state.videoResultBlob,result);
+});
+test('PVM v1 binary container round-trips unchanged source and narration bytes',async()=>{
+  const h=context({APP_CONFIG:{version:'1.3.3'},saveCurrentScript(){},safeOutputBase:x=>x,narrationSource:s=>s.audioSource||'tts'});
+  h.ctx.state.sourceFile=new File(['PPTX bytes'],'deck.pptx');h.ctx.state.sourceBuffer=new ArrayBuffer(1);h.ctx.state.selectedSlideIndex=0;h.ctx.state.slides=[{script:'日本語 script',audioSource:'mic',recordingBlob:new Blob(['recorded audio']),recordingMime:'audio/webm',recordingStatus:'success'}];
+  const constants="const PROJECT_MAGIC_TEXT='PVMPRJ1\\n',PROJECT_SCHEMA='presentation-video-maker-project',PROJECT_SCHEMA_VERSION=1;";
+  vm.runInContext(constants+['addProjectAsset','projectSlideData','createProjectBlob','projectAssetBlob','readProjectManifest'].map(extract).join('\n'),h.ctx);
+  const blob=await h.ctx.createProjectBlob(),{manifest,payloadStart}=await h.ctx.readProjectManifest(blob);
+  assert.equal(manifest.schemaVersion,1);assert.equal(manifest.slides[0].script,'日本語 script');assert.equal(manifest.slides[0].audioSource,'mic');
+  assert.equal(await h.ctx.projectAssetBlob(blob,payloadStart,manifest.source.asset).text(),'PPTX bytes');
+  assert.equal(await h.ctx.projectAssetBlob(blob,payloadStart,manifest.slides[0].recordingAsset).text(),'recorded audio');
+});
+test('all destructive confirmations use the app dialog with safe initial cancellation',()=>{
+  assert.doesNotMatch(source,/(?<![\w.])confirm\(/);
+  assert.match(source,/window\.AppConfirm = Object\.freeze/);
+  assert.match(source,/cancelButton\.focus\(/);
+  assert.match(source,/dialog\.addEventListener\('cancel'/);
+});

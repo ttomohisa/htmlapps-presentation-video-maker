@@ -1,5 +1,9 @@
 # Presentation Video Maker
 
+共通UIの試行版では、作業領域の上部に .pvm の手動保存案内を表示します。言語はURL、サイト共通設定、従来設定、ブラウザーの順に決まり、切替時も作業や処理を維持します。保存通知はダウンロード開始を示します。続きの編集には保存した .pvm が必要です。不正な作業ファイル・PPTXで現在の作業を失いません。
+
+共通UI 1.0.0を `components/ui-conventions.lock.json` で固定し、ビルド時に埋め込みます。実行時の通信は追加しません。
+
 [![GitHub Pages](https://github.com/ttomohisa/htmlapps-presentation-video-maker/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/ttomohisa/htmlapps-presentation-video-maker/actions/workflows/deploy-pages.yml)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](LICENSE)
 [![Single HTML](https://img.shields.io/badge/distribution-single%20HTML-0ea5e9)](https://ttomohisa.github.io/htmlapps-presentation-video-maker/)

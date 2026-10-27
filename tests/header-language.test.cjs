@@ -19,11 +19,11 @@ function harness() {
     return controls.get(selector);
   }
   const help = $('#helpButton');
-  const ctx = vm.createContext({language:'ja', state:{selectedSlideIndex:-1,slides:[{script:'Keep narration',enabled:true}],bgmName:'local.wav'},
+  const ctx = vm.createContext({BrowserKittyUI:require('../components/ui-conventions.js'),language:'ja', state:{selectedSlideIndex:-1,slides:[{script:'Keep narration',enabled:true}],bgmName:'local.wav'},
     APP_CONFIG:{name:'Presentation Video Maker',nameJa:'Presentation Video Maker'}, document:{documentElement:{}}, $,
     $$:selector=>selector==='[data-i18n-aria-label]'?[help]:selector==='[data-i18n-title]' && help.dataset.i18nTitle?[help]:[],
     t:key=>translations[ctx.language][key]});
-  for (const name of ['renderSlides','updateSceneEditor','updateCompatibility','renderSelectedSlide','setRendererState','updateDeckSummary','renderSceneRecordings','updateRecordingPlan','refreshVoices','applyDeviceUi','refreshCaptureReady','updateVideoExportState','updateWorkflowNavIndicators']) ctx[name]=()=>{};
+  for (const name of ['renderSlides','updateSceneEditor','updateCompatibility','renderSelectedSlide','setRendererState','updateDeckSummary','renderSceneRecordings','updateRecordingPlan','refreshVoices','applyDeviceUi','refreshCaptureReady','updateVideoExportState','updateWorkflowNavIndicators','updateProjectButtons','updateProjectSaveStatus']) ctx[name]=()=>{};
   vm.runInContext(updater,ctx,{timeout:1000});
   return {ctx,$};
 }

@@ -1,5 +1,12 @@
 # APP_SPEC.md — Presentation Video Maker
 
+## Common UI pilot (2026-10-27)
+
+- Pin BrowserKittyUI 1.0.0 at build time. Resolve URL > shared language preference > pvm-language > navigator languages > English; explicit choice alone writes the common key. Preserve narration, input, recordings, and active processing across language switches.
+- Show manual .pvm retention guidance above the workspace, persistent project save failures, and download-start notifications. Keep project v1 bytes and no-autosave behavior.
+- Use common opt-in button colors, native disabled states, busy/stopping states, and 44px header targets. A stop request stays disabled until cleanup. Keep previous MP4 on failure/cancellation.
+- Reuse the template AppConfirm dialog for irreversible replacement/removal, with Cancel focus, Escape/backdrop cancellation and focus return. Validate project source and assets before replacement; invalid input leaves current work intact.
+
 ## Phone footer and Help metadata
 
 - Hide only the informational footer at the existing 600px phone breakpoint. Preserve functional navigation and controls.

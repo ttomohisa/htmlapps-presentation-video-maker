@@ -1,5 +1,9 @@
 # Presentation Video Maker
 
+The common UI pilot shows manual .pvm save guidance above the workspace. Language follows URL, shared site preference, legacy preference, then browser languages. Explicit switches preserve active work and processing. Save notifications mean download started; keep the downloaded project to resume later. Invalid project/PPTX replacements leave current work intact.
+
+Shared UI 1.0.0 is pinned in `components/ui-conventions.lock.json` and embedded by `scripts/embed-ui-conventions.ps1`; there is no runtime fetch.
+
 [![GitHub Pages](https://github.com/ttomohisa/htmlapps-presentation-video-maker/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/ttomohisa/htmlapps-presentation-video-maker/actions/workflows/deploy-pages.yml)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](LICENSE)
 [![Single HTML](https://img.shields.io/badge/distribution-single%20HTML-0ea5e9)](https://ttomohisa.github.io/htmlapps-presentation-video-maker/)
