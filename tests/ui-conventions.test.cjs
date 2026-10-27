@@ -13,8 +13,9 @@ function extract(name) {
 }
 function context(extra={}) {
   const controls = new Map();
-  const $ = id => {if(!controls.has(id)) controls.set(id,{disabled:false,dataset:{},value:'',checked:false,textContent:'',setAttribute(){}});return controls.get(id);};
+  const $ = id => {if(!controls.has(id)) controls.set(id,{disabled:false,dataset:{},style:{},value:'',checked:false,textContent:'',setAttribute(){},removeAttribute(){}});return controls.get(id);};
   const ctx=vm.createContext({$,state:{slides:[],sourceGeneration:1,projectBusy:false,capturePhase:'idle',videoExportPhase:'idle'}, Blob,File,TextEncoder,TextDecoder,Uint8Array,DataView,URL,console:{error(){},warn(){}},language:'en', t:key=>translations.en[key], showToast(){}, captureIsBusy:()=>false, ...extra});
+  if(source.includes('function videoIsBusy('))vm.runInContext(extract('videoIsBusy'),ctx);
   return {ctx,$};
 }
 test('language resolution and explicit choice use common preference without rewriting legacy storage',()=>{
@@ -95,4 +96,72 @@ test('all destructive confirmations use the app dialog with safe initial cancell
   assert.match(source,/window\.AppConfirm = Object\.freeze/);
   assert.match(source,/cancelButton\.focus\(/);
   assert.match(source,/dialog\.addEventListener\('cancel'/);
+});
+
+function deferred(){let resolve;const promise=new Promise(done=>{resolve=done;});return {promise,resolve};}
+async function flush(){for(let n=0;n<30;n++)await Promise.resolve();}
+function loadBusyPredicates(ctx){
+  // The optional boundary lets this regression demonstrate the original missing guard.
+  if(source.includes('function videoIsBusy('))vm.runInContext(extract('videoIsBusy'),ctx);
+  vm.runInContext(extract('captureIsBusy')+'\n'+extract('projectOperationBusy'),ctx);
+}
+for(const rejection of ['oversize','load-false'])test(`project ${rejection} cannot overwrite current scripts or clear audio`,async()=>{
+  let asked=0,parsed=0,loaded=0;
+  const sourceBlob={size:rejection==='oversize'?150*1024*1024+1:12,arrayBuffer:async()=>new ArrayBuffer(1)};
+  class FileBoundary{constructor(parts,name){this.name=name;this.size=parts[0].size;}arrayBuffer(){return sourceBlob.arrayBuffer();}}
+  const h=context({File:FileBoundary,updateProjectButtons(){},updateProjectSaveStatus(){},setChip(){},
+    readProjectManifest:async()=>({payloadStart:0,manifest:{slideCount:1,source:{name:'incoming.pptx',asset:{}},slides:[{script:'incoming script'}],settings:{}}}),
+    projectAssetBlob:()=>sourceBlob,parsePptxBuffer:async()=>{parsed++;return {slides:[{}]};},confirmProjectChange:async()=>{asked++;return true;},
+    projectBaseName:()=>'old',renderSlides(){},selectSlide(){},renderSceneRecordings(){},updateRecordingPlan(){},updateVideoExportState(){}});
+  const audio=new Blob(['existing narration']),slide={script:'keep current script',recordingBlob:audio};
+  h.ctx.state.slides=[slide];h.ctx.state.sourceFile={name:'keep.pptx'};
+  loadBusyPredicates(h.ctx);
+  vm.runInContext(extract('restoreProjectSlide')+'\n'+extract('loadPptx')+'\n'+extract('openProjectFile'),h.ctx);
+  if(rejection==='load-false')h.ctx.loadPptx=async()=>{loaded++;return false;};
+  await h.ctx.openProjectFile(new Blob(['project']));
+  assert.equal(slide.script,'keep current script');assert.equal(slide.recordingBlob,audio);assert.equal(h.ctx.state.sourceFile.name,'keep.pptx');
+  assert.equal(asked,rejection==='oversize'?0:1);assert.equal(parsed,rejection==='oversize'?0:1);assert.equal(loaded,rejection==='oversize'?0:1);
+});
+test('capture stays busy through asynchronous monitor cleanup and cannot stop a newer stream',async()=>{
+  const cleanup=deferred();let shares=0,closing=false,streamStops=0;
+  const h=context({navigator:{mediaDevices:{getDisplayMedia:async()=>{shares++;return {getVideoTracks:()=>[{getSettings:()=>({displaySurface:'monitor'})}],getAudioTracks:()=>[{label:'audio'}]};}}},
+    MediaStream:class {},performance:{now:()=>0},isSmartphoneMode:()=>false,saveCurrentScript(){},recordableSceneIndexes:()=>[0],voiceForScene:()=>({}),createCaptureJob:()=>({}),
+    stopDisplayStream(){streamStops++;h.ctx.state.displayStream=null;},setCaptureMetrics(){},setCaptureProgress(){},chooseRecordingMime:()=>'',
+    createSignalMonitor:async()=>({close(){closing=true;return cleanup.promise;}}),runPreflight:async()=>{throw Error('CAPTURE_CANCELLED');},
+    cancelSpeech(){},renderSceneRecordings(){},refreshCaptureReady(){},updateProjectButtons(){},setChip(){}});
+  h.ctx.state.slides=[{script:'keep'}];h.ctx.state.voices=[];h.ctx.state.captureRunId=0;
+  loadBusyPredicates(h.ctx);vm.runInContext(extract('setCapturePhase')+'\n'+extract('runBatchCapture'),h.ctx);
+  const run=h.ctx.runBatchCapture();await flush();assert.equal(closing,true);
+  let retry;try{
+    assert.equal(h.ctx.captureIsBusy(),true,'cleanup must still own capture readiness');
+    assert.equal(h.ctx.projectOperationBusy(),true);retry=h.ctx.runBatchCapture();await flush();assert.equal(shares,1);
+  }finally{cleanup.resolve();await run;if(retry)await retry;}
+  assert.equal(h.ctx.captureIsBusy(),false);assert.equal(streamStops,2);
+});
+test('video cleanup keeps restart disabled through AudioContext close and wake-lock release',async()=>{
+  const audioCleanup=deferred(),wakeCleanup=deferred();let contexts=0,closing=false,releasing=false;
+  class AudioBoundary{constructor(){contexts++;this.state='running';}close(){closing=true;return audioCleanup.promise;}}
+  const h=context({BrowserKittyUI:require('../components/ui-conventions.js'),AbortController,window:{AudioContext:AudioBoundary,MediaRecorder:function(){},BrowserFFmpeg:{}},HTMLCanvasElement:{prototype:{captureStream(){}}},DecompressionStream:function(){},
+    PVM_PERFORMANCE:{mode:'fast'},videoValidation:()=>({ready:true,indexes:[0]}),outputDimensions:()=>({width:1280,height:720}),markVideoResultStale(){},
+    performanceReportStart:()=>({details:{}}),performanceStageStart:()=>0,performanceStageEnd(){},performanceReportFinish(){},setVideoProgress(){},
+    acquireVideoWakeLock:async()=>{},fastExportCapability:async()=>({}),createVideoFast:async()=>{const e=Error('cancelled');e.name='AbortError';throw e;},
+    releaseVideoWakeLock:async()=>{releasing=true;await wakeCleanup.promise;},isSmartphoneMode:()=>false,
+    updateSubtitlePreview(){},updateMobileResolutionWarning(){},videoEstimatedSeconds:()=>1,formatClock:String,renderVideoTimeline(){},setVideoExportChip(){},updateMobileNavIndicators(){}});
+  loadBusyPredicates(h.ctx);vm.runInContext(['setVideoPhase','updateVideoExportState','createVideo'].map(extract).join('\n'),h.ctx);
+  const run=h.ctx.createVideo();await flush();assert.equal(closing,true);const owner=h.ctx.state.videoAbortController;
+  try{
+    h.ctx.updateVideoExportState();assert.equal(h.$('#createVideoButton').disabled,true,'language-style rerender must not enable restart');
+    assert.equal(h.ctx.projectOperationBusy(),true);await h.ctx.createVideo();assert.equal(contexts,1);assert.equal(h.ctx.state.videoAbortController,owner);
+    audioCleanup.resolve();await flush();assert.equal(releasing,true);h.ctx.updateVideoExportState();assert.equal(h.$('#createVideoButton').disabled,true);assert.equal(h.ctx.state.videoAbortController,owner);
+  }finally{audioCleanup.resolve();wakeCleanup.resolve();await run;}
+  assert.equal(h.ctx.projectOperationBusy(),false);assert.equal(h.ctx.state.videoAbortController,null);assert.equal(h.$('#createVideoButton').disabled,false);
+});
+
+test('invalid project feedback persists beside manual retention and follows language changes',async()=>{
+  const h=context({BrowserKittyUI:require('../components/ui-conventions.js'),updateProjectButtons(){},readProjectManifest:async()=>{throw Error('PROJECT_MAGIC');}});
+  h.ctx.state.slides=[{script:'keep'}];h.ctx.t=key=>translations[h.ctx.language][key];loadBusyPredicates(h.ctx);
+  vm.runInContext(['updateProjectSaveStatus','openProjectFile'].map(extract).join('\n'),h.ctx);
+  await h.ctx.openProjectFile(new Blob(['invalid']));h.ctx.updateProjectSaveStatus();
+  assert.equal(h.$('#projectOpenFeedback').hidden,false);assert.match(h.$('#projectOpenFeedback').textContent,/another|different/);assert.match(h.$('#projectSaveStatus').textContent,/not saved automatically/);
+  h.ctx.language='ja';h.ctx.updateProjectSaveStatus();assert.match(h.$('#projectOpenFeedback').textContent,/別の|正しい/);assert.equal(h.ctx.state.slides[0].script,'keep');
 });

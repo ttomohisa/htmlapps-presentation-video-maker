@@ -2,6 +2,8 @@
 
 ## Unreleased — common UI pilot (2026-10-27)
 
+- Reject oversized .pvm sources before replacement; restore fields only after explicit PPTX load success. Keep capture/video starts blocked through asynchronous cancellation cleanup. Refresh the canonical disabled-hover CSS pin and include UI/rules version metadata.
+
 - Embed pinned BrowserKittyUI 1.0.0 with shared language choice and native button busy/stopping states.
 - Show no-autosave/manual .pvm retention guidance, persistent save recovery, and download-start wording.
 - Stage replacement PPTX/project validation before discarding current work; reuse AppConfirm for scoped destructive changes and preserve prior MP4 on stop/failure.

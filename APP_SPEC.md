@@ -2,6 +2,9 @@
 
 ## Common UI pilot (2026-10-27)
 
+- Failed .pvm imports retain a localized reason and recovery beside project actions while preserving manual-retention guidance.
+
+- Reject oversized embedded PPTX before project-replacement confirmation and require explicit successful source installation before restoring project fields. Capture/video readiness remains busy until all asynchronous audio, stream and wake-lock cleanup completes.
 - Pin BrowserKittyUI 1.0.0 at build time. Resolve URL > shared language preference > pvm-language > navigator languages > English; explicit choice alone writes the common key. Preserve narration, input, recordings, and active processing across language switches.
 - Show manual .pvm retention guidance above the workspace, persistent project save failures, and download-start notifications. Keep project v1 bytes and no-autosave behavior.
 - Use common opt-in button colors, native disabled states, busy/stopping states, and 44px header targets. A stop request stays disabled until cleanup. Keep previous MP4 on failure/cancellation.
