@@ -4,6 +4,7 @@
 
 - Failed .pvm imports retain a localized reason and recovery beside project actions while preserving manual-retention guidance.
 
+- Source import reserves operation ownership before asynchronous parsing and holds it through confirmation/application. Conflicting recording/export/save actions remain disabled; ownership and conflicts are rechecked immediately before source replacement, and only the owning import can release its reservation. Project restore retains its separate busy lock while installing a prepared source.
 - Reject oversized embedded PPTX before project-replacement confirmation and require explicit successful source installation before restoring project fields. Capture/video readiness remains busy until all asynchronous audio, stream and wake-lock cleanup completes.
 - Pin BrowserKittyUI 1.0.0 at build time. Resolve URL > shared language preference > pvm-language > navigator languages > English; explicit choice alone writes the common key. Preserve narration, input, recordings, and active processing across language switches.
 - Show manual .pvm retention guidance above the workspace, persistent project save failures, and download-start notifications. Keep project v1 bytes and no-autosave behavior.

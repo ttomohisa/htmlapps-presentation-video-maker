@@ -13,7 +13,7 @@ function extract(name) {
 }
 function context(extra={}) {
   const controls = new Map();
-  const $ = id => {if(!controls.has(id)) controls.set(id,{disabled:false,dataset:{},style:{},value:'',checked:false,textContent:'',setAttribute(){},removeAttribute(){}});return controls.get(id);};
+  const $ = id => {if(!controls.has(id)) controls.set(id,{disabled:false,dataset:{},style:{},classList:{add(){},remove(){},toggle(){}},value:'',checked:false,textContent:'',setAttribute(){},removeAttribute(){}});return controls.get(id);};
   const ctx=vm.createContext({$,state:{slides:[],sourceGeneration:1,projectBusy:false,capturePhase:'idle',videoExportPhase:'idle'}, Blob,File,TextEncoder,TextDecoder,Uint8Array,DataView,URL,console:{error(){},warn(){}},language:'en', t:key=>translations.en[key], showToast(){}, captureIsBusy:()=>false, ...extra});
   if(source.includes('function videoIsBusy('))vm.runInContext(extract('videoIsBusy'),ctx);
   return {ctx,$};
@@ -164,4 +164,41 @@ test('invalid project feedback persists beside manual retention and follows lang
   await h.ctx.openProjectFile(new Blob(['invalid']));h.ctx.updateProjectSaveStatus();
   assert.equal(h.$('#projectOpenFeedback').hidden,false);assert.match(h.$('#projectOpenFeedback').textContent,/another|different/);assert.match(h.$('#projectSaveStatus').textContent,/not saved automatically/);
   h.ctx.language='ja';h.ctx.updateProjectSaveStatus();assert.match(h.$('#projectOpenFeedback').textContent,/別の|正しい/);assert.equal(h.ctx.state.slides[0].script,'keep');
+});
+
+function sourceImportContext(extra={}){
+  const h=context({updateProjectButtons(){},refreshCaptureReady(){},updateVideoExportState(){},updateMobileResolutionWarning(){},updateWorkflowNavIndicators(){},
+    bytesLabel:String,format:key=>key,isSmartphoneMode:()=>false,safeOutputBase:x=>x,buildHighFidelityPresentation:async()=>true,
+    setChip(){},renderSlides(){},selectSlide(){},updateDeckSummary(){},renderSceneRecordings(){},updateRecordingPlan(){},setWorkflowNavCollapsed(){},innerWidth:1024,...extra});
+  loadBusyPredicates(h.ctx);vm.runInContext(extract('loadPptx'),h.ctx);return h;
+}
+test('standalone source parsing reserves project readiness against capture, export and save',async()=>{
+  const parsing=deferred();let parsed=false,saveCalls=0,invalidations=0;
+  const h=sourceImportContext({parsePptxBuffer:async()=>{parsed=true;return parsing.promise;},confirmProjectChange:async()=>false,
+    invalidateSource(){invalidations++;},videoValidation:()=>({ready:true,indexes:[0]}),createProjectBlob:async()=>{saveCalls++;return new Blob();}});
+  const source={name:'keep.pptx'},slide={script:'keep narration'},output=new Blob(['keep MP4']);
+  h.ctx.state.sourceFile=source;h.ctx.state.slides=[slide];h.ctx.state.videoResultBlob=output;
+  vm.runInContext(['runBatchCapture','createVideo','saveProject'].map(extract).join('\n'),h.ctx);
+  const loading=h.ctx.loadPptx(new File(['next'],'next.pptx'));await flush();assert.equal(parsed,true);
+  try{
+    assert.equal(h.ctx.projectOperationBusy(),true,'parsing itself must reserve readiness');
+    await h.ctx.runBatchCapture();await h.ctx.createVideo();await h.ctx.saveProject();assert.equal(saveCalls,0);
+  }finally{parsing.resolve({slides:[{notesText:''}]});await loading;}
+  assert.equal(invalidations,0);assert.equal(h.ctx.state.sourceFile,source);assert.equal(h.ctx.state.slides[0],slide);assert.equal(h.ctx.state.videoResultBlob,output);assert.equal(h.ctx.projectOperationBusy(),false);
+});
+for(const conflict of ['capture','new-owner'])test(`source parse rechecks ${conflict} ownership before replacement`,async()=>{
+  const parsing=deferred();let invalidations=0,asked=0;
+  const h=sourceImportContext({parsePptxBuffer:async()=>parsing.promise,confirmProjectChange:async()=>{asked++;return true;},invalidateSource(){invalidations++;}});
+  const source={name:'keep.pptx'},slide={script:'keep narration'},output=new Blob(['keep MP4']);h.ctx.state.sourceFile=source;h.ctx.state.slides=[slide];h.ctx.state.videoResultBlob=output;
+  const loading=h.ctx.loadPptx(new File(['next'],'next.pptx'));await flush();const newerOwner={id:'newer'};
+  if(conflict==='capture'){h.ctx.state.captureActive=true;h.ctx.state.capturePhase='recording';}else h.ctx.state.sourceImportOperation=newerOwner;
+  parsing.resolve({slides:[{notesText:''}]});assert.equal(await loading,false);assert.equal(asked,0);assert.equal(invalidations,0);
+  assert.equal(h.ctx.state.sourceFile,source);assert.equal(h.ctx.state.slides[0],slide);assert.equal(h.ctx.state.videoResultBlob,output);
+  if(conflict==='new-owner')assert.equal(h.ctx.state.sourceImportOperation,newerOwner,'old cleanup cannot release a newer import reservation');
+});
+test('prepared project source import can own its reservation while projectBusy remains set',async()=>{
+  const h=sourceImportContext();h.ctx.state.projectBusy=true;h.ctx.invalidateSource=()=>{h.ctx.state.sourceGeneration++;};
+  const file=new File(['project PPTX'],'project.pptx'),buffer=new ArrayBuffer(1),slides=[{notesText:'',script:'project narration'}];
+  assert.equal(await h.ctx.loadPptx(file,{prepared:{buffer,parsed:{slides}},replaceConfirmed:true}),true);
+  assert.equal(h.ctx.state.sourceFile,file);assert.equal(h.ctx.state.slides[0],slides[0]);assert.equal(h.ctx.state.projectBusy,true);assert.equal(h.ctx.state.sourceImportOperation,null);
 });

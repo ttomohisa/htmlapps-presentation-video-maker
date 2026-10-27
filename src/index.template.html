@@ -1274,7 +1274,7 @@
         updateVirtualKeyboardState();
       }
       const state = {
-        sourceGeneration: 0, sourceFile: null, sourceBuffer: null, slides: [], selectedSlideIndex: -1,
+        sourceGeneration: 0, sourceImportOperation: null, sourceFile: null, sourceBuffer: null, slides: [], selectedSlideIndex: -1,
         voices: [], selectedVoiceURI: '', rate: 1, speechRunId: 0,
         rendererModule: null, rendererModulePromise: null, rendererModuleUrl: '', rendererMode: 'loading', html2canvasModule: null, html2canvasModulePromise: null, html2canvasModuleUrl: '',
         presentation: null, mediaUrlCache: new Map(), mainSlideHandle: null, thumbHandles: new Map(), thumbObserver: null,
@@ -1338,7 +1338,7 @@
       const PROJECT_MAGIC_TEXT='PVMPRJ1\n';
       const PROJECT_SCHEMA='presentation-video-maker-project';
       const PROJECT_SCHEMA_VERSION=1;
-      function projectOperationBusy(){ return Boolean(state.projectBusy||state.micPending||state.micRecorder||captureIsBusy()||videoIsBusy()); }
+      function projectOperationBusy(){ return Boolean(state.sourceImportOperation||state.projectBusy||state.micPending||state.micRecorder||captureIsBusy()||videoIsBusy()); }
       function updateProjectButtons(){
         const hasSource=Boolean(state.sourceFile&&state.sourceBuffer&&state.slides.length), busy=projectOperationBusy();
         if($('#projectActions')) $('#projectActions').hidden=!hasSource;
@@ -1590,12 +1590,17 @@
       async function loadPptx(file,{prepared=null,replaceConfirmed=false}={}){
         if(!file || !/\.pptx$/i.test(file.name)){ showToast(t('invalidPptx')); return false; }
         if(file.size>150*1024*1024){ showToast(t('fileTooLarge')); return false; }
-        if(!replaceConfirmed&&projectOperationBusy()){ showToast(t('projectBusy')); return false; }
+        if(state.sourceImportOperation||state.micPending||state.micRecorder||captureIsBusy()||videoIsBusy()||(!replaceConfirmed&&state.projectBusy)){ showToast(t('projectBusy')); return false; }
+        const operation={}; state.sourceImportOperation=operation;
+        const ownsReady=()=>state.sourceImportOperation===operation&&!state.micPending&&!state.micRecorder&&!captureIsBusy()&&!videoIsBusy()&&(replaceConfirmed||!state.projectBusy);
+        const refreshReadiness=()=>{updateProjectButtons();refreshCaptureReady();updateVideoExportState();};
+        try{
+          refreshReadiness();
         const requestedGeneration=state.sourceGeneration, requestId=(state.sourceLoadRequestId||0)+1; state.sourceLoadRequestId=requestId;
         if(!prepared){ try{ const buffer=await file.arrayBuffer(), parsed=await parsePptxBuffer(buffer,requestedGeneration); if(!parsed?.slides.length) throw new Error('NO_SLIDES'); prepared={buffer,parsed}; }catch(error){ console.error(error); showToast(t('parseFailed')); return false; } }
-        if(requestedGeneration!==state.sourceGeneration||requestId!==state.sourceLoadRequestId) return false;
+        if(requestedGeneration!==state.sourceGeneration||requestId!==state.sourceLoadRequestId||!ownsReady()) return false;
         if(!replaceConfirmed&&state.slides.length&&!await confirmProjectChange('confirmReplacePptx')) return false;
-        if(requestedGeneration!==state.sourceGeneration||requestId!==state.sourceLoadRequestId) return false;
+        if(requestedGeneration!==state.sourceGeneration||requestId!==state.sourceLoadRequestId||!ownsReady()) return false;
         invalidateSource(); const generation=state.sourceGeneration; state.sourceFile=file; setChip('#pptxStatusChip','statusLoading','working');
         $('#dropZone').hidden=true; $('#fileSummary').classList.add('show'); $('#fileName').textContent=file.name; $('#fileDetail').textContent=bytesLabel(file.size); $('#slideWorkspace').hidden=true;
         try{
@@ -1607,6 +1612,9 @@
           await rendererPromise; if(generation!==state.sourceGeneration) return false;
           $('#fileDetail').textContent=format('loadedSummary',{slides:slides.length,notes,size:bytesLabel(file.size)}); $('#dropZone').hidden=true; $('#projectActions').hidden=false; $('#slideWorkspace').hidden=false; $('#workflow').classList.add('editor-ready'); $('#sceneEditorContent').hidden=false; $('#sceneEditorEmpty').hidden=true; setChip('#pptxStatusChip','statusReady','success'); renderSlides(); selectSlide(0); updateDeckSummary(); renderSceneRecordings(); updateRecordingPlan(); updateVideoExportState(); updateWorkflowNavIndicators(); updateProjectButtons(); setWorkflowNavCollapsed(true); if(innerWidth<=600) showMobilePage('slides',{scroll:false}); return true;
         }catch(error){ console.error(error); if(generation!==state.sourceGeneration) return false; setChip('#pptxStatusChip','statusError','error'); $('#fileDetail').textContent=t('parseFailed'); $('#dropZone').hidden=false; $('#slideWorkspace').hidden=true; updateWorkflowNavIndicators(); return false; }
+        }finally{
+          if(state.sourceImportOperation===operation){ state.sourceImportOperation=null; refreshReadiness(); }
+        }
       }
 
       function renderSlides(){
