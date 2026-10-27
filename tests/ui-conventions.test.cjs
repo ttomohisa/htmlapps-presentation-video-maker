@@ -157,6 +157,28 @@ test('video cleanup keeps restart disabled through AudioContext close and wake-l
   assert.equal(h.ctx.projectOperationBusy(),false);assert.equal(h.ctx.state.videoAbortController,null);assert.equal(h.$('#createVideoButton').disabled,false);
 });
 
+test('microphone stop keeps restart disabled until audio metadata finishes',async()=>{
+  const metadata=deferred();let requests=0;
+  class Recorder{constructor(){this.mimeType='audio/webm';this.state='inactive';}start(){this.state='recording';}stop(){this.state='inactive';}}
+  const h=context({BrowserKittyUI:require('../components/ui-conventions.js'),window:{MediaRecorder:Recorder},MediaRecorder:Recorder,
+    navigator:{mediaDevices:{getUserMedia:async()=>{requests++;return {};}}},performance:{now:()=>1000},
+    saveCurrentScript(){},confirmProjectChange:async()=>true,chooseRecordingMime:()=>'',updateProjectSaveStatus(){},
+    updateNarrationSourceUI(){},renderSceneRecordings(){},stopMicStream(){},audioBlobDuration:()=>metadata.promise,
+    markVideoResultStale(){},updateRecordingPlan(){},updateVideoExportState(){},updateSceneEditor(){}});
+  const old=new Blob(['previous audio']),slide={audioSource:'mic',recordingSource:'mic',recordingStatus:'success',recordingBlob:old};
+  Object.assign(h.ctx.state,{sourceFile:{name:'deck.pptx'},sourceBuffer:new ArrayBuffer(1),selectedSlideIndex:0,slides:[slide]});
+  loadBusyPredicates(h.ctx);vm.runInContext(['updateProjectButtons','startMicRecording','stopMicRecording','commitSceneAudio'].map(extract).join('\n'),h.ctx);
+  await h.ctx.startMicRecording();const recorder=h.ctx.state.micRecorder;
+  recorder.ondataavailable({data:new Blob(['replacement audio'])});h.ctx.stopMicRecording();const cleanup=recorder.onstop();await flush();
+  try{
+    assert.equal(h.ctx.state.micPending,true);assert.equal(slide.recordingBlob,old);
+    assert.equal(h.$('#startMicRecordingButton').disabled,true,'audio metadata cleanup must keep the native button disabled');
+    await h.ctx.startMicRecording();assert.equal(requests,1);
+  }finally{metadata.resolve(.8);await cleanup;}
+  assert.equal(h.ctx.state.micPending,false);assert.equal(h.$('#startMicRecordingButton').disabled,false);
+  assert.equal(slide.recordingStatus,'success');assert.equal(await slide.recordingBlob.text(),'replacement audio');
+});
+
 test('invalid project feedback persists beside manual retention and follows language changes',async()=>{
   const h=context({BrowserKittyUI:require('../components/ui-conventions.js'),updateProjectButtons(){},readProjectManifest:async()=>{throw Error('PROJECT_MAGIC');}});
   h.ctx.state.slides=[{script:'keep'}];h.ctx.t=key=>translations[h.ctx.language][key];loadBusyPredicates(h.ctx);

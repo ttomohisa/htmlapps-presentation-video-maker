@@ -2,6 +2,7 @@
 
 ## Unreleased — common UI pilot (2026-10-27)
 
+- Keep the microphone start button disabled while stopped audio metadata is finalized; retain the previous recording until the replacement is ready.
 - Reserve source-import ownership throughout asynchronous parsing/confirmation/application; block conflicting media/save actions and reject obsolete replacement/cleanup.
 - Reject oversized .pvm sources before replacement; restore fields only after explicit PPTX load success. Keep capture/video starts blocked through asynchronous cancellation cleanup. Refresh the canonical disabled-hover CSS pin and include UI/rules version metadata.
 
