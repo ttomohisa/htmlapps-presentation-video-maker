@@ -49,7 +49,7 @@ test('Help continues using native showModal, Close and geometric backdrop dismis
 test('the existing local-processing badge keeps its decorative shield and labels', () => {
   const badge = source.match(/<span class="local-badge">([\s\S]*?)<span data-i18n="localBadge">/)[1];
   assert.match(badge, /aria-hidden="true"/);
-  assert.match(badge, /M12 3 5 6v5c0 4\.6 2\.8 8\.2 7 10 4\.2-1\.8 7-5\.4 7-10V6l-7-3Z/);
+  assert.match(badge, /M12 3 5 6v5c0 4\.6 2\.8 8 7 10 4\.2-2 7-5\.4 7-10V6z/);
   assert.equal(translations.ja.localBadge, '完全ローカル処理');
   assert.equal(translations.en.localBadge, 'Fully local processing');
 });
