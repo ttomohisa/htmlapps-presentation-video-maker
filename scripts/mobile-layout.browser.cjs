@@ -51,19 +51,34 @@ await page.locator('#guideNarrationHeading').waitFor({timeout:30000});
 assert.equal(await page.locator('[aria-current="step"]').getAttribute('data-guide-step'),'script');
 assert.equal(await page.locator('[data-guide-page]:visible').count(),1);
 assert.equal(await page.locator('#slideList button').count(),30);
-if(width<=cfg.bp) await page.locator('#guidePreview > summary').click();
+if(width<=cfg.bp) {
+  await page.locator('#guideSlides > summary').click();
+  await page.locator('#guidePreview > summary').click();
+}
+await page.waitForFunction(()=>{
+  const mount=document.querySelector('#slideList [data-thumb-index="0"]');
+  return mount?.clientWidth>=54 && mount.querySelector('.pptx-render-frame,.fallback-slide')?.getBoundingClientRect().width>=50;
+});
+assert.match(await page.locator('#guideModelSetup').innerText(),language==='ja'?/Hugging Face\(外部サイト\)/:/Hugging Face \(external site\)/);
 await page.waitForFunction(()=>{
   const frame=document.querySelector('#slidePreviewMount .pptx-render-frame,#slidePreviewMount .fallback-slide');
   return frame?.getBoundingClientRect().width>70;
 });
+await page.locator('#slideList button').nth(1).click();
+assert.match(await page.locator('#selectedSlideLabel').innerText(),/2$/);
+if(width<=cfg.bp) {
+  assert.equal(await page.locator('#guideSlides').evaluate(el=>el.open),false);
+  assert.equal(await page.locator('#guideSlideHeader').evaluate(el=>el===document.activeElement),true);
+}
+await page.locator('#prevSceneButton').click();
+assert.match(await page.locator('#selectedSlideLabel').innerText(),/1$/);
 await bounds(page.locator('#workflowNav'),width,height,label,false);
 assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),label+': loaded page width');
 await page.locator('[data-guide-step="output"]').click();
 assert.equal(await page.locator('[data-guide-page]:visible').count(),1);
 await page.locator('#guideVideoIssue').click();
 assert.equal(await page.locator('[aria-current="step"]').getAttribute('data-guide-step'),'script');
-assert.equal(await page.locator('#guideSlideSettings').getAttribute('open'),'');
-assert.equal(await page.locator('#guideSlideSettings > summary').evaluate(el=>el===document.activeElement),true);
+assert.equal(await page.locator('[data-model-file="model_quantized.onnx"] [data-load-local-file]').evaluate(el=>el===document.activeElement),true);
 }
 assert.deepEqual(errors,[],label+': console errors');assert.deepEqual(requests,[],label+': runtime requests');console.log('PASS '+label);
 }catch(e){await page.screenshot({path:path.join(evidence,'failure.png')}).catch(()=>{});throw new Error(label+': '+e.message,{cause:e});}finally{await context.close();}}

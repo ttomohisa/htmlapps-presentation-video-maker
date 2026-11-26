@@ -210,9 +210,14 @@ async function main() {
     assert.equal(await phone.locator('[data-model-file="jf_alpha.bin"]').isVisible(),true);
     assert.equal(await phone.locator('[data-model-file="af_heart.bin"]').isVisible(),false);
     assert.equal(await phone.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
-    await phone.getByText('Only downloads connect to Hugging Face. Audio is generated on your device.').waitFor();
+    await phone.getByText('Only downloads connect to Hugging Face (external site). Audio is generated on your device.').waitFor();
+    assert.equal(await phone.locator('#guideModelCount').innerText(),'0 of 2 loaded');
     await loadKokoroFile(phone,'model_quantized.onnx');
+    assert.equal(await phone.locator('#guideModelCount').innerText(),'1 of 2 loaded');
     await loadKokoroFile(phone,'jf_alpha.bin');
+    await phone.locator('[data-guide-step="output"]').click();
+    await phone.getByRole('button',{name:'Prepare audio from notes'}).click();
+    assert.equal(await phone.locator('#guidePrimary[data-action="batch"]').evaluate(button=>button===document.activeElement),true);
     await watchSpeechProgress(phone);
     await phone.locator('#guidePrimary[data-action="batch"]').click();
     await phone.locator('#guidePrimary[data-action="output"]').waitFor({timeout});

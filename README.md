@@ -10,7 +10,7 @@ A privacy-focused, single-HTML app for turning a PowerPoint (PPTX) deck into a n
 
 ## Generate Japanese and English narration from speaker notes
 
-Open a PowerPoint in a supported browser. **Generate narration from notes** is selected for new decks on supported phones and desktop browsers. Download the shared model and the required voices from Hugging Face, then load each file from its own row. Audio is generated on your device.
+Open a PowerPoint in a supported browser. **Generate narration from notes** is selected for new decks on supported phones and desktop browsers. Download the shared model and the required voices from Hugging Face (external site), then load each file from its own row. Audio is generated on your device.
 
 | File | Used for |
 | --- | --- |
@@ -33,7 +33,7 @@ GitHub Pages delivers the initial HTML. After it loads, PPTX parsing, speaker-no
 - **Turn speaker notes into narration** — Each PowerPoint slide becomes one scene, with speaker notes used as the initial script and slide text used as a fallback draft when notes are missing.
 - **Choose narration per slide** — Mix local model synthesis, on-device browser speech, microphone recordings, and existing audio files. The local model reads Japanese and US English and can infer the pronunciation of unfamiliar English words in Japanese scripts.
 - **Resume work later** — Save the source PowerPoint, scripts, narration recordings, BGM, and output settings into a local `.pvm` project and open it later. Project data is not uploaded and generated MP4 is not duplicated inside the project.
-- **Find unfinished narration quickly** — See ready/unrecorded/stale/failed counts and jump directly to the next scene that needs attention.
+- **Find unfinished narration quickly** — Filter the slide list to show only slides that need audio. On the Video screen, **Prepare audio from notes** takes you back to the missing files or the batch generation button.
 - **Export scripts and subtitles** — Save the current scripts as TXT or export the current video timeline as SRT / VTT for use outside the app.
 - **Keep narration work editable** — Adjust scripts, include/exclude slides, before/after padding, voice, and speech rate, with stale-audio tracking when narration settings change.
 - **Preview PowerPoint with higher fidelity** — Use pinned `@aiden0z/pptx-renderer@1.2.4` for the main slide preview and `html2canvas@1.4.1` for origin-clean video snapshots.

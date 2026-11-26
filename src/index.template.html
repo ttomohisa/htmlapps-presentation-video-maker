@@ -336,7 +336,7 @@
     .scene-rail-head { display:flex; justify-content:space-between; gap:8px; padding:9px 10px; border-bottom:1px solid var(--line); color:var(--muted); font-size:11px; }
     .scene-list { max-height:520px; border:0; border-radius:0; }
     .scene-list .slide-item { display:block; padding:9px; }
-    .scene-thumb-wrap { position:relative; width:100%; aspect-ratio:16/9; margin-bottom:7px; overflow:hidden; border:1px solid var(--line); border-radius:7px; background:#fff; }
+    .scene-thumb-wrap { display:block; position:relative; width:100%; aspect-ratio:16/9; overflow:hidden; border:1px solid var(--line); border-radius:5px; background:#fff; }
     .scene-thumb-mount { position:absolute; inset:0; display:grid; place-items:center; overflow:hidden; }
     .scene-thumb-number { position:absolute; left:5px; bottom:5px; z-index:2; min-width:22px; padding:2px 5px; border-radius:6px; background:rgba(25,28,24,.78); color:#fff; font-size:9px; font-weight:800; text-align:center; }
     .slide-item[aria-current="true"] .scene-thumb-wrap { border-color:var(--accent); box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 16%,transparent); }
@@ -345,17 +345,9 @@
     .scene-list .slide-note-state { display:block; margin-top:2px; }
     .preview-column { min-width:0; display:grid; gap:10px; }
     .preview-card { border:1px solid var(--line); border-radius:12px; overflow:hidden; background:#f0f0ed; }
-    .preview-toolbar { min-height:44px; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 9px; border-bottom:1px solid var(--line); background:var(--surface); }
-    .preview-title { min-width:0; display:flex; align-items:center; gap:8px; }
-    .preview-title strong { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; }
     .renderer-badge,.source-badge { display:inline-flex; align-items:center; padding:3px 7px; border-radius:999px; background:var(--surface-muted); color:var(--muted); font-size:9px; font-weight:800; white-space:nowrap; }
     .renderer-badge[data-state="primary"] { background:var(--accent-soft); color:var(--accent); }
     .renderer-badge[data-state="fallback"] { background:var(--warning-soft); color:var(--warning); }
-    .preview-actions { display:flex; gap:5px; }
-    .icon-button { width:34px; height:34px; display:grid; place-items:center; border:1px solid var(--line); border-radius:9px; background:var(--surface); cursor:pointer; }
-    .icon-button:hover:not(:disabled) { background:var(--surface-hover); }
-    .icon-button:disabled { opacity:.35; cursor:not-allowed; }
-    .icon-button svg { width:17px; height:17px; }
     .slide-preview-stage { padding:14px; background:linear-gradient(135deg,#e8e8e4,#f3f3f0); }
     .slide-preview-mount { position:relative; width:100%; aspect-ratio:16/9; overflow:hidden; border-radius:8px; background:#fff; box-shadow:0 8px 26px rgba(25,28,24,.16); }
     .preview-empty { position:absolute; inset:0; display:grid; place-items:center; padding:22px; color:var(--muted); font-size:12px; text-align:center; }
@@ -539,19 +531,21 @@
     #helpDialog .help-build { margin-top:20px; padding-top:12px; border-top:1px solid var(--line); color:var(--muted); font-size:11px; overflow-wrap:anywhere; }
     [hidden] { display:none !important; }
     [data-guide-page] { min-width:0; }
-    .guide-document { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:0 0 12px; }
+    .page-intro { width:min(760px,100%); margin:6px auto 0; padding:0; }
+    .guide-document { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:0 0 4px; }
     #guideDocumentName { font-size:14px; font-weight:750; overflow-wrap:anywhere; }
     .guide-document .button { flex:none; }
-    .guide-nav { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:4px; padding:4px; margin-bottom:16px; border:1px solid var(--line); border-radius:12px; background:var(--surface); }
-    .guide-nav button { display:flex; justify-content:center; align-items:center; gap:7px; min-height:44px; min-width:0; border:0; border-radius:8px; background:transparent; color:var(--text); font:inherit; font-weight:650; cursor:pointer; }
-    .guide-nav button > span:first-child { color:var(--muted); font-variant-numeric:tabular-nums; }
+    .guide-nav { display:flex; gap:8px; margin-bottom:18px; border-bottom:1px solid var(--line); }
+    .guide-nav button { display:flex; justify-content:center; align-items:center; gap:8px; min-height:46px; min-width:0; padding:0 16px; border:0; border-bottom:3px solid transparent; background:transparent; color:var(--muted); font:inherit; font-weight:650; cursor:pointer; }
+    .guide-nav button > span:first-child { display:grid; place-items:center; width:20px; height:20px; border:1px solid var(--line-strong); border-radius:50%; font-size:12px; font-variant-numeric:tabular-nums; }
     .guide-nav button:hover { background:var(--surface-hover); }
-    .guide-nav button[aria-current="step"] { background:var(--accent-soft); color:var(--accent); font-weight:800; }
-    .guide-nav button[aria-current="step"] > span:first-child { color:inherit; }
+    .guide-nav button[aria-current="step"] { border-bottom-color:var(--accent); color:var(--accent-strong); }
+    .guide-nav button[aria-current="step"] > span:first-child { border-color:var(--accent); background:var(--accent); color:white; }
     .guide-import { max-width:760px; width:100%; margin:0 auto; }
     .guide-import .panel-body { padding:0; }
-    .guide-import .drop-zone { min-height:245px; margin-top:16px; display:grid; justify-items:center; align-content:center; text-align:center; gap:12px; cursor:default; }
-    .guide-import .drop-zone > svg { width:35px; height:35px; }
+    .guide-import .drop-zone { min-height:245px; margin-top:14px; display:grid; justify-items:center; align-content:center; text-align:center; gap:12px; cursor:default; background:var(--surface); }
+    .guide-import .drop-zone.is-dragover { background:var(--accent-soft); }
+    .guide-import .drop-zone > svg { width:52px; height:52px; padding:10px; border-radius:12px; background:var(--accent-soft); }
     .guide-import .guide-drop-label { margin:0; color:var(--text); font-size:1rem; font-weight:750; }
     .guide-import .project-start-card { display:flex; justify-content:center; border:0; background:none; padding:14px 0; }
     .guide-file-actions { display:flex; gap:8px; flex-wrap:wrap; margin:14px 0; }
@@ -559,40 +553,58 @@
     .guide-stage { padding:clamp(15px,2.8vw,30px); border:1px solid var(--line); border-radius:14px; background:var(--surface); }
     .guide-stage h2 { margin:0 0 5px; font-size:1.45rem; line-height:1.25; }
     .guide-stage p { margin:0; line-height:1.55; }
-    .guide-method { display:flex; flex-wrap:wrap; align-items:end; gap:10px; margin:16px 0 10px; }
-    .guide-method .field { min-width:0; width:min(100%,285px); }
-    .guide-method select { min-height:42px; }
+    .guide-method { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); align-items:end; max-width:530px; gap:10px; margin:18px 0 10px; }
+    .guide-method .field { min-width:0; }
+    .guide-method select { width:100%; min-height:44px; }
     .guide-stage .guide-coverage { margin:10px 0; color:var(--accent); font-weight:750; font-variant-numeric:tabular-nums; }
     #guideMethod { width:100%; }
     .guide-main-actions { margin-top:12px; }
     .guide-main-actions:not(:has(button:not([hidden]))) { display:none; }
-    .guide-model { max-width:730px; padding:14px 16px; margin-top:12px; border-radius:10px; background:var(--accent-soft); }
-    .guide-model h3 { font-size:1rem; margin:0 0 4px; }
-    .guide-model ul { display:grid; gap:5px; list-style:none; padding:0; margin:12px 0; }
-    .guide-model li { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px 12px; align-items:center; padding:8px 0; border-bottom:1px solid var(--line); }
+    .guide-model { padding:16px 20px; margin-top:14px; border-radius:10px; background:#f3f6f3; }
+    .guide-model-heading { display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:4px 12px; }
+    .guide-model h3 { font-size:1.05rem; margin:0; }
+    #guideModelCount { color:var(--accent-strong); font-size:.8rem; font-variant-numeric:tabular-nums; }
+    .guide-model p[data-i18n] { margin-top:5px; color:var(--muted); font-size:.84rem; }
+    .guide-model ul { list-style:none; padding:0; margin:12px 0 2px; border-top:1px solid var(--line); }
+    .guide-model li { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:4px 12px; align-items:center; padding:10px 0; border-bottom:1px solid var(--line); }
     .guide-model-name { display:grid; gap:2px; min-width:0; }
-    .guide-model small { overflow-wrap:anywhere; }
+    .guide-model small { color:var(--muted); overflow-wrap:anywhere; }
     .guide-model-actions { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; }
-    .guide-model-actions .button { min-height:40px; font-size:.8rem; }
-    .guide-model a { color:var(--accent); font-weight:700; }
+    .guide-model-actions .button { min-height:44px; border-color:#9eb8ad; color:var(--accent-strong); font-size:.87rem; }
+    .guide-model a { display:inline-flex; align-items:center; min-height:44px; color:var(--accent-strong); font-size:.84rem; text-underline-offset:3px; }
+    #localTtsNotices { min-height:36px; padding:4px 0; border:0; background:transparent; text-decoration:underline; text-underline-offset:3px; font-weight:500; }
     .guide-model .guide-file-ready { color:var(--accent); font-size:.8rem; }
     .guide-model .guide-file-status { margin-top:6px; font-size:.88rem; }
     .guide-stage .field-label,.guide-stage .text-button,.guide-export .video-export-summary span,.guide-export .range-head { font-size:.8rem; }
     @media (min-width:931px) {
       .guide-narration > .guide-stage:has(#guideModelSetup:not([hidden])) {
-        display:grid; grid-template-columns:minmax(255px,.66fr) minmax(0,1fr); align-items:start; column-gap:28px;
+        display:grid; grid-template-columns:minmax(290px,.8fr) minmax(0,1fr); align-items:start; column-gap:32px;
       }
       .guide-narration > .guide-stage:has(#guideModelSetup:not([hidden])) .guide-model { margin-top:0; }
+      .guide-main-actions,.local-tts-run { grid-column:1/-1; }
     }
     .guide-editor { display:grid; align-items:start; grid-template-columns:minmax(165px,.31fr) minmax(0,1fr); gap:18px; margin-top:18px; }
     .guide-slide { display:grid; grid-template-columns:minmax(0,1fr) minmax(240px,.86fr); align-items:start; gap:16px; padding:16px; border:1px solid var(--line); border-radius:14px; background:var(--surface); min-width:0; }
     .guide-slides,.guide-preview,.guide-disclosure { min-width:0; }
-    .guide-slides > summary,.guide-preview > summary,.guide-disclosure > summary { cursor:pointer; padding:10px 0; color:var(--text); font-weight:750; }
+    .guide-slides > summary,.guide-preview > summary,.guide-disclosure > summary { display:flex; align-items:center; gap:8px; min-height:44px; cursor:pointer; padding:8px 2px; color:var(--text); font-weight:700; }
+    :is(.guide-slides,.guide-preview,.guide-disclosure) > summary::-webkit-details-marker { display:none; }
+    :is(.guide-slides,.guide-preview,.guide-disclosure) > summary::after { content:""; width:7px; height:7px; flex:none; margin:0 5px 3px auto; border:solid var(--muted); border-width:0 1.5px 1.5px 0; transform:rotate(45deg); }
+    :is(.guide-slides,.guide-preview,.guide-disclosure)[open] > summary::after { margin-bottom:-3px; transform:rotate(225deg); }
+    #slideCountLabel { color:var(--muted); font-weight:500; font-variant-numeric:tabular-nums; }
     .guide-filter { display:flex; align-items:center; gap:6px; padding:6px 10px; font-size:.8rem; }
+    .guide-slides .scene-list { display:block; overflow:auto; max-height:min(62vh,540px); padding:0; }
+    .guide-slides .slide-item { display:grid; grid-template-columns:clamp(64px,6vw,82px) minmax(0,1fr); align-items:center; gap:10px; padding:9px; border:0; border-bottom:1px solid var(--line); border-radius:0; background:var(--surface); }
+    .guide-slides .slide-item[aria-current="true"] { background:var(--accent-soft); }
+    .guide-slides .slide-item:hover { background:var(--surface-hover); }
+    .guide-slides .slide-title { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; line-clamp:2; white-space:normal; overflow-wrap:anywhere; font-size:.84rem; line-height:1.35; }
+    .guide-slides .slide-note-state { font-size:.75rem; }
+    .guide-slides .scene-thumb-number { bottom:2px; left:2px; min-width:16px; padding:0 3px; border-radius:3px; font-size:10px; }
     #guideNoIssues { margin:8px 10px; font-size:.8rem; }
     .slide-note-state[data-audio-state="ready"] { color:var(--accent); }
     .slide-note-state[data-audio-state="error"] { color:var(--danger); }
-    .guide-slide .scene-editor-meta { margin:0 0 10px; }
+    .guide-slide .scene-editor-meta { grid-column:1/-1; grid-template-columns:minmax(0,1fr) auto; margin:0; padding:0 0 10px; border:0; border-bottom:1px solid var(--line); border-radius:0; background:transparent; }
+    .guide-slide .scene-nav { display:flex; width:auto; gap:5px; }
+    .guide-preview .renderer-badge[data-state="primary"] { display:none; }
     .guide-slide .narration-section-head { margin-top:12px; }
     .guide-slide textarea { min-height:190px; }
     .guide-listen-slide { margin-top:10px; }
@@ -603,23 +615,35 @@
     .guide-export .video-export-card { border:0; box-shadow:none; margin:0; background:none; }
     .guide-export .video-export-head { padding:0 0 12px; }
     .guide-export .video-export-body { padding:0; }
-    .guide-export .video-export-summary { margin:12px 0 18px; }
+    .guide-export .video-export-summary { display:flex; flex-wrap:wrap; gap:6px 20px; margin:12px 0 18px; }
+    .guide-export .video-export-summary > div { display:flex; align-items:baseline; gap:6px; padding:0; border:0; }
+    .guide-export #videoExportNotice { margin:12px 0; }
     .guide-export .export-tools-card { margin:0; }
     .guide-export .export-tools-copy > strong { display:none; }
     .guide-export #videoResult { margin:12px 0; }
-    #scriptInput,#localTtsStatus,#guideSlideSettings,#guideCapture { scroll-margin-top:90px; }
+    #scriptInput,#localTtsStatus,#guideSlideHeader,#guideSlideSettings,#guideCapture,[data-load-local-file] { scroll-margin-top:90px; }
     .guide-stage h2:focus { outline:none; }
     @media (max-width:930px) {
       .guide-slide { grid-template-columns:minmax(0,1fr); }
       .guide-slide .preview-card { width:min(100%,480px); }
     }
     @media (max-width:600px) {
-      .guide-nav { margin-bottom:12px; }
-      .guide-nav button { font-size:12px; }
+      .brand-name { white-space:normal; font-size:clamp(14px,4vw,17px); }
+      .version-badge { display:none; }
+      .header-inner,.header-actions { gap:4px; }
+      .language-button,.header-icon-button { min-width:36px; min-height:44px; }
+      .guide-nav { gap:0; margin-bottom:12px; }
+      .guide-nav button { flex:1; gap:5px; padding:0 2px; font-size:13px; }
+      .guide-slides .scene-list { max-height:40vh; }
+      .guide-slide .scene-nav-button { min-width:40px; justify-content:center; }
+      .guide-slide .scene-nav-button span { display:none; }
       .guide-editor,.guide-slide { grid-template-columns:minmax(0,1fr); gap:10px; }
       .guide-slide { padding:12px; }
-      .guide-model { padding:12px; }
-      .guide-model li { grid-template-columns:minmax(0,1fr); }
+      .guide-model { padding:12px 14px; }
+      .guide-model li { grid-template-columns:minmax(0,1fr) auto; row-gap:0; }
+      .guide-model-actions { display:contents; }
+      .guide-model-actions a { grid-column:1; grid-row:auto; justify-self:start; min-height:34px; }
+      .guide-model-actions .button,.guide-model-actions [data-local-ready] { grid-column:2; grid-row:1 / span 2; }
       .guide-model-actions .button { min-height:44px; }
       .guide-main-actions .button { min-height:44px; }
       .guide-import .drop-zone { min-height:176px; }
@@ -627,6 +651,10 @@
     }
     @media (max-width:420px) {
       .guide-main-actions { display:grid; grid-template-columns:minmax(0,1fr); }
+      :lang(en) .guide-method { grid-template-columns:minmax(0,1fr); }
+    }
+    @media (max-width:360px) {
+      .guide-method { grid-template-columns:minmax(0,1fr); }
     }
 </style>
 </head>
@@ -722,14 +750,17 @@
           <p id="guideStepNote" hidden></p>
           </div>
           <div id="guideModelSetup" class="guide-model" hidden>
-            <h3 data-i18n="guideModelTitle">声の準備</h3>
-            <p data-i18n="guideModelSteps">ダウンロード時のみHugging Faceに接続します。音声は端末内で生成します。</p>
+            <div class="guide-model-heading">
+              <h3 data-i18n="guideModelTitle">声の準備</h3>
+              <span id="guideModelCount" role="status"></span>
+            </div>
+            <p data-i18n="guideModelSteps">ダウンロード時のみHugging Face(外部サイト)に接続します。音声は端末内で生成します。</p>
             <ul id="guideModelFiles">
               <li data-model-file="model_quantized.onnx" hidden>
                 <div class="guide-model-name"><strong data-i18n="guideModel">共通モデル</strong><small>model_quantized.onnx · 92 MB</small></div>
                 <div class="guide-model-actions">
                   <a href="https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/1939ad2a8e416c0acfeecc08a694d14ef25f2231/onnx/model_quantized.onnx?download=true" target="_blank" rel="noopener noreferrer" data-i18n="guideDownload" data-i18n-aria-label="guideDownloadModel" aria-label="共通モデルをダウンロード">ダウンロード</a>
-                  <button class="button" type="button" data-load-local-file data-i18n="guideReadModel">モデルを読み込む</button>
+                  <button class="button" type="button" data-load-local-file data-i18n="guideLoadFile" data-i18n-aria-label="guideReadModel" aria-label="モデルを読み込む">読み込む</button>
                   <strong class="guide-file-ready" data-local-ready data-i18n="guideFileReady" hidden>読み込み済み</strong>
                 </div>
                 <input type="file" data-local-file="model_quantized.onnx" accept=".onnx" hidden>
@@ -738,7 +769,7 @@
                 <div class="guide-model-name"><strong data-i18n="guideJaVoice">日本語の声</strong><small>jf_alpha.bin · 522 kB</small></div>
                 <div class="guide-model-actions">
                   <a href="https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/1939ad2a8e416c0acfeecc08a694d14ef25f2231/voices/jf_alpha.bin?download=true" target="_blank" rel="noopener noreferrer" data-i18n="guideDownload" data-i18n-aria-label="guideDownloadJaVoice" aria-label="日本語の声をダウンロード">ダウンロード</a>
-                  <button class="button" type="button" data-load-local-file data-i18n="guideReadJaVoice">日本語の声を読み込む</button>
+                  <button class="button" type="button" data-load-local-file data-i18n="guideLoadFile" data-i18n-aria-label="guideReadJaVoice" aria-label="日本語の声を読み込む">読み込む</button>
                   <strong class="guide-file-ready" data-local-ready data-i18n="guideFileReady" hidden>読み込み済み</strong>
                 </div>
                 <input type="file" data-local-file="jf_alpha.bin" accept=".bin" hidden>
@@ -747,7 +778,7 @@
                 <div class="guide-model-name"><strong data-i18n="guideEnVoice">英語の声</strong><small>af_heart.bin · 522 kB</small></div>
                 <div class="guide-model-actions">
                   <a href="https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/1939ad2a8e416c0acfeecc08a694d14ef25f2231/voices/af_heart.bin?download=true" target="_blank" rel="noopener noreferrer" data-i18n="guideDownload" data-i18n-aria-label="guideDownloadEnVoice" aria-label="英語の声をダウンロード">ダウンロード</a>
-                  <button class="button" type="button" data-load-local-file data-i18n="guideReadEnVoice">英語の声を読み込む</button>
+                  <button class="button" type="button" data-load-local-file data-i18n="guideLoadFile" data-i18n-aria-label="guideReadEnVoice" aria-label="英語の声を読み込む">読み込む</button>
                   <strong class="guide-file-ready" data-local-ready data-i18n="guideFileReady" hidden>読み込み済み</strong>
                 </div>
                 <input type="file" data-local-file="af_heart.bin" accept=".bin" hidden>
@@ -773,25 +804,26 @@
         </div>
         <div id="slideWorkspace" class="guide-editor" hidden>
             <details class="guide-slides" id="guideSlides" open>
-              <summary data-i18n="guidePickSlide">スライドを選ぶ</summary>
+              <summary><span data-i18n="guidePickSlide">スライドを選ぶ</span> <span id="slideCountLabel">0</span></summary>
               <aside class="scene-rail" data-i18n-aria-label="slidesHeading" aria-label="スライド">
-              <div class="scene-rail-head"><strong data-i18n="slidesHeading">スライド</strong><span id="slideCountLabel">0</span></div>
               <label class="guide-filter"><input type="checkbox" id="guideFilter"> <span data-i18n="guideFilter">音声が必要なスライドだけ</span></label>
               <p id="guideNoIssues" hidden data-i18n="guideNoIssues">音声が必要なスライドはありません。</p>
               <div class="slide-list scene-list" id="slideList"></div>
               </aside>
             </details>
           <div class="guide-slide">
+            <div class="scene-editor-meta" id="guideSlideHeader" role="group" aria-labelledby="selectedSlideLabel" tabindex="-1">
+              <div>
+                <div class="scene-position-row"><strong id="selectedSlideLabel">—</strong><span class="scene-position-pill" id="selectedSlidePosition">—</span><span class="source-badge" id="scriptSourceBadge">—</span></div>
+              </div>
+              <div class="scene-nav">
+                <button class="scene-nav-button" id="prevSceneButton" type="button" data-i18n-aria-label="previousSlide" aria-label="前のスライド"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span data-i18n="previousShort">前へ</span></button>
+                <button class="scene-nav-button" id="nextSceneButton" type="button" data-i18n-aria-label="nextSlide" aria-label="次のスライド"><span data-i18n="nextShort">次へ</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+              </div>
+            </div>
             <details class="preview-column guide-preview" id="guidePreview" open>
-              <summary data-i18n="guidePreview">スライドのプレビュー</summary>
+              <summary><span data-i18n="guidePreview">スライドのプレビュー</span><span class="renderer-badge" id="rendererBadge" data-state="loading"></span></summary>
               <div class="preview-card">
-                <div class="preview-toolbar">
-                  <div class="preview-title"><strong id="previewSlideLabel">—</strong><span class="renderer-badge" id="rendererBadge" data-state="loading">—</span></div>
-                  <div class="preview-actions">
-                    <button class="icon-button" id="prevSlideButton" type="button" data-i18n-aria-label="previousSlide" aria-label="前のスライド"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
-                    <button class="icon-button" id="nextSlideButton" type="button" data-i18n-aria-label="nextSlide" aria-label="次のスライド"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
-                  </div>
-                </div>
                 <div class="slide-preview-stage" id="slidePreviewStage">
                   <div class="slide-preview-mount" id="slidePreviewMount"><div class="preview-empty" data-i18n="previewPreparing">スライドを準備しています。</div></div>
                 </div>
@@ -801,16 +833,6 @@
             </details>
             <div id="sceneEditorEmpty" hidden></div>
             <div id="sceneEditorContent" hidden>
-            <div class="scene-editor-meta">
-              <div>
-                <span class="field-label" data-i18n="selectedSlide">選択中のスライド</span>
-                <div class="scene-position-row"><strong id="selectedSlideLabel">—</strong><span class="scene-position-pill" id="selectedSlidePosition">—</span><span class="source-badge" id="scriptSourceBadge">—</span></div>
-              </div>
-              <div class="scene-nav">
-                <button class="scene-nav-button" id="prevSceneButton" type="button" data-i18n-aria-label="previousSlide" aria-label="前のスライド"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span data-i18n="previousShort">前へ</span></button>
-                <button class="scene-nav-button" id="nextSceneButton" type="button" data-i18n-aria-label="nextSlide" aria-label="次のスライド"><span data-i18n="nextShort">次へ</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
-              </div>
-            </div>
             <label class="field" for="scriptInput">
               <span class="field-label-row"><span class="field-label" data-i18n="scriptLabel">ナレーション原稿</span><span class="script-meta"><span class="duration-pill" id="narrationDurationLabel">未計測</span><span class="helper" id="scriptCharCount">0</span></span></span>
               <textarea id="scriptInput" maxlength="12000" data-i18n-placeholder="scriptPlaceholder" placeholder="発表者ノートがここに入ります。"></textarea>
@@ -971,14 +993,13 @@
         <div class="guide-stage guide-export">
           <div class="video-export-card" id="videoExportCard">
             <div class="video-export-head">
-              <h2 id="guideVideoHeading" tabindex="-1" data-i18n="guideVideo">動画</h2>
+              <h2 id="guideVideoHeading" tabindex="-1" data-i18n="guideExportVideo">動画を書き出す</h2>
               <span class="status-chip" id="videoExportStatusChip" data-state="idle" data-i18n="videoExportIdle">準備待ち</span>
             </div>
             <div class="video-export-body">
               <div class="video-export-summary">
                 <div><span data-i18n="videoScenes">動画シーン</span><strong id="videoSceneCount">—</strong></div>
                 <div><span data-i18n="videoEstimatedDuration">推定時間</span><strong id="videoEstimatedDuration">—</strong></div>
-                <div><span data-i18n="videoResolution">解像度</span><strong id="guideOutputResolution">1080p</strong></div>
               </div>
               <div class="video-export-settings">
                 <label class="field" for="videoOutputName"><span class="field-label" data-i18n="videoFilename">ファイル名</span><span class="output-name-row"><input id="videoOutputName" type="text" value="presentation-video" maxlength="160" autocomplete="off"><span class="output-extension">.mp4</span></span></label>
@@ -1148,7 +1169,9 @@
         guideReadLanguage:['読み上げる言語','Narration language'],
         guideDeckMethod:['音声の作り方','Narration method for this deck'],
         guideModelTitle:['声の準備','Set up the voice'],
-        guideModelSteps:['ダウンロード時のみHugging Faceに接続します。音声は端末内で生成します。','Only downloads connect to Hugging Face. Audio is generated on your device.'],
+        guideModelSteps:['ダウンロード時のみHugging Face(外部サイト)に接続します。音声は端末内で生成します。','Only downloads connect to Hugging Face (external site). Audio is generated on your device.'],
+        guideModelCount:['読み込み済み {ready} / {total}','{ready} of {total} loaded'],
+        guideLoadFile:['読み込む','Load'],
         guideModel:['共通モデル','Shared model'],
         guideJaVoice:['日本語の声','Japanese voice'],
         guideEnVoice:['英語の声','English voice'],
@@ -1176,6 +1199,8 @@
         guideCapture:['読み上げの録音','Record computer speech'],
         guideAudioList:['スライドの音声一覧','Slide audio list'],
         guideCreate:['MP4を作る','Create MP4'],
+        guideExportVideo:['動画を書き出す','Export video'],
+        guidePrepareNotes:['ノートの音声を準備する','Prepare audio from notes'],
         guideFinishing:['仕上げの設定','Finishing settings'],
         guideNotes:['発表者ノートを{count}枚分取り込みました','Imported speaker notes from {count} {unit}'],
         guideDrafts:['発表者ノートのない{count}枚は、スライド本文を台本に使います。','The script uses slide text for {count} {unit} without speaker notes.'],
@@ -1710,7 +1735,15 @@
           const button=document.createElement('button'); button.type='button'; button.className='slide-item'; button.setAttribute('aria-current',index===state.selectedSlideIndex?'true':'false');
           const title=(slide.slideText.split(/\n+/).find(Boolean)||format('slideN',{n:index+1})).slice(0,100);
           button.innerHTML=`<span class="scene-thumb-wrap"><span class="scene-thumb-mount" data-thumb-index="${index}" data-rendered="0"></span><span class="scene-thumb-number">${index+1}</span></span><span class="slide-copy"><span class="slide-title"></span><span class="slide-note-state"></span></span>`;
-          button.querySelector('.slide-title').textContent=title; button.addEventListener('click',()=>selectSlide(index)); list.append(button);
+          button.querySelector('.slide-title').textContent=title;
+          button.addEventListener('click',()=>{
+            selectSlide(index);
+            if(compactGuide.matches&&state.selectedSlideIndex===index){
+              $('#guideSlides').open=false;
+              focusGuideControl('#guideSlideHeader');
+            }
+          });
+          list.append(button);
         });
         if('IntersectionObserver' in window){
           state.thumbObserver=new IntersectionObserver(entries=>{ for(const entry of entries){ if(entry.isIntersecting){ const mount=entry.target; renderThumbnail(Number(mount.dataset.thumbIndex),mount); } } },{root:list,rootMargin:'120px'});
@@ -1759,7 +1792,17 @@
       }
       function selectSlide(index){
         if(index<0||index>=state.slides.length) return; if((state.micRecorder||state.micStarting)&&index!==state.selectedSlideIndex){ showToast(t('micStopBeforeSwitch')); return; } if(!captureIsBusy()) cancelSpeech(); saveCurrentScript(); state.selectedSlideIndex=index; const slide=state.slides[index];
-        $('#previewSlideLabel').textContent=format('slideN',{n:index+1}); $$('.slide-item').forEach((button,i)=>button.setAttribute('aria-current',i===index?'true':'false')); const selectedItem=$$('.slide-item')[index]; selectedItem?.scrollIntoView?.({block:'nearest',inline:'nearest'}); const atStart=index<=0, atEnd=index>=state.slides.length-1; $('#prevSlideButton').disabled=atStart; $('#nextSlideButton').disabled=atEnd; $('#prevSceneButton').disabled=atStart; $('#nextSceneButton').disabled=atEnd; updateSceneEditor(); updateCompatibility(slide); renderSelectedSlide(index); refreshCaptureReady();
+        const items=$$('.slide-item');
+        items.forEach((button,i)=>button.setAttribute('aria-current',i===index?'true':'false'));
+        const list=$('#slideList'), selectedItem=items[index];
+        if(list.clientHeight&&selectedItem?.offsetHeight){
+          const bounds=list.getBoundingClientRect(), item=selectedItem.getBoundingClientRect();
+          if(item.top<bounds.top) list.scrollTop+=item.top-bounds.top;
+          else if(item.bottom>bounds.bottom) list.scrollTop+=item.bottom-bounds.bottom;
+        }
+        $('#prevSceneButton').disabled=index===0;
+        $('#nextSceneButton').disabled=index===state.slides.length-1;
+        updateSceneEditor(); updateCompatibility(slide); renderSelectedSlide(index); refreshCaptureReady();
       }
       function saveCurrentScript({voiceChanged=false}={}){
         const index=state.selectedSlideIndex; if(index<0||!state.slides[index]) return; const slide=state.slides[index]; const nextScript=$('#scriptInput').value; const nextVoiceURI=voiceChanged?$('#voiceSelect').value:(slide.voiceURI||''); const nextRate=state.rate; const nextEnabled=$('#sceneEnabledInput')?.checked!==false;
@@ -2395,6 +2438,10 @@
       }
       function renderModelSetup(required){
         $('#guideModelSetup').hidden=!required.size;
+        const count=$('#guideModelCount');
+        const loaded=Array.from(required).filter(name=>state.localFiles.has(name)).length;
+        const summary=required.size?format('guideModelCount',{ready:loaded,total:required.size}):'';
+        if(count.textContent!==summary) count.textContent=summary;
         const status=$('#localTtsFileStatus'), message=localMessageText(state.localFileMessage);
         if(status.textContent!==message) status.textContent=message;
         const busy=projectOperationBusy()||state.localChecking;
@@ -2423,7 +2470,6 @@
         $('#guideDrafts').hidden=!drafts;
         $('#guideDrafts span').textContent=guideSlideCount('guideDrafts',drafts);
         $('#guideCoverage').textContent=format('guideCoverage',{ready,total:required.length});
-        $('#guideCoverage').hidden=Boolean(state.localRun);
         const method=$('#guideMethod'), methodKey=language+'|'+state.deckMethod;
         if(method.dataset.key!==methodKey){
           method.dataset.key=methodKey;
@@ -2485,6 +2531,7 @@
         }
         $('#guideLanguage').hidden=!local||!(state.deckMethod==='local'||slides.some(slide=>narrationSource(slide)==='local'));
         renderModelSetup(requiredFiles);
+        $('#guideCoverage').hidden=Boolean(state.localRun)||Boolean(requiredFiles.size&&!ready);
         const primary=$('#guidePrimary'), sampleButton=$('#guideSample'), note=$('#guideStepNote'), useFile=$('#guideUseFile');
         const ttsTargets=pending.filter(index=>narrationSource(slides[index])==='tts');
         const missingVoice=ttsTargets.find(index=>!voiceForScene(slides[index]));
@@ -2555,26 +2602,28 @@
       }
       function renderGuidedVideo(validation,supported,busy){
         const issue=$('#guideVideoIssue'), index=validation.issues[0];
-        $('#guideOutputResolution').textContent=$('#videoResolution').value+'p';
         issue.hidden=!supported||validation.ready||busy;
         issue.disabled=projectOperationBusy()||state.micStarting||state.fileLoading;
-        issue.textContent=index===undefined?t('guideInclude'):format('guideFix',{n:index+1});
+        const missingSlide=state.slides[index];
+        const useBatch=missingSlide&&canUseMethod('local')&&narrationSource(missingSlide)==='local'&&guidedAudioState(missingSlide,'local')==='missing';
+        issue.dataset.action=useBatch?'notes':'slide';
+        issue.textContent=index===undefined?t('guideInclude'):useBatch?t('guidePrepareNotes'):format('guideFix',{n:index+1});
         const fresh=state.videoResultBlob&&!state.videoResultStale;
         for(const control of $$('#videoExportCard input,#videoExportCard select,#chooseBgmButton,#clearBgmButton')){
           control.disabled=busy;
         }
         $('#sceneEditorContent').inert=busy;
+        $('#guideSlideHeader').inert=busy;
         const create=$('#createVideoButton');
         create.hidden=(!issue.hidden||busy||Boolean(fresh));
         create.disabled||=projectOperationBusy()||state.micStarting||state.fileLoading;
         $('#cancelVideoButton').hidden=!busy;
         $('#saveVideoButton').classList.toggle('primary',!state.videoResultStale);
         const notice=$('#videoExportNotice');
-        notice.hidden=supported&&!busy&&Boolean(fresh);
-        if(supported&&validation.ready&&!validation.indexes.some(index=>sceneHasExportAudio(state.slides[index]))){
+        const silent=supported&&validation.ready&&!validation.indexes.some(index=>sceneHasExportAudio(state.slides[index]));
+        notice.hidden=supported&&(!silent||Boolean(fresh));
+        if(silent){
           $('#videoExportNoticeText').textContent=t('guideSilentVideo');
-        }else if(supported&&!validation.ready){
-          notice.hidden=true;
         }
       }
       function updateVideoResultStaleNotice(){ const notice=$('#videoResultStale'); if(notice) notice.hidden=!state.videoResultBlob||!state.videoResultStale; }
@@ -3175,7 +3224,13 @@
           activateGuidePrimary();
           return;
         }
-        openGuideSlide(index,{settings:true});
+        if($('#guideVideoIssue').dataset.action==='notes'){
+          showGuidePage('script',{focus:false});
+          selectSlide(index);
+          focusGuideControl($('#guideModelSetup').hidden?'#guidePrimary':'#guideModelFiles li:not([hidden]) [data-load-local-file]:not([hidden])');
+        }else{
+          openGuideSlide(index,{settings:true});
+        }
       });
       const compactGuide=matchMedia('(max-width: 600px)');
       function syncGuideDisclosures(){
@@ -3184,16 +3239,20 @@
       }
       compactGuide.addEventListener('change',syncGuideDisclosures);
       syncGuideDisclosures();
-      const previewMount=$('#slidePreviewMount');
-      const resizePreview=()=>{
-        const frame=previewMount.querySelector('.pptx-render-frame');
-        if(frame?.firstElementChild&&previewMount.clientWidth&&previewMount.clientHeight){
-          fitRenderFrame(previewMount,frame,frame.firstElementChild);
+      const previewMount=$('#slidePreviewMount'), slideList=$('#slideList');
+      function refitPreviews(){
+        for(const frame of $$('[data-thumb-index] > .pptx-render-frame,#slidePreviewMount > .pptx-render-frame')){
+          const mount=frame.parentElement;
+          if(frame.firstElementChild&&mount.clientWidth&&mount.clientHeight) fitRenderFrame(mount,frame,frame.firstElementChild);
         }
-      };
-      if('ResizeObserver' in window) new ResizeObserver(resizePreview).observe(previewMount);
-      else window.addEventListener('resize',resizePreview);
-      $('#guidePreview').addEventListener('toggle',resizePreview);
+      }
+      if('ResizeObserver' in window){
+        const observer=new ResizeObserver(refitPreviews);
+        observer.observe(previewMount);
+        observer.observe(slideList);
+      }else window.addEventListener('resize',refitPreviews);
+      $('#guidePreview').addEventListener('toggle',refitPreviews);
+      $('#guideSlides').addEventListener('toggle',refitPreviews);
 
       $('#languageButton').addEventListener('click',()=>{ language=language==='ja'?'en':'ja'; try{localStorage.setItem('pvm-language',language);}catch{} applyLanguage(); });
       const helpDialog=$('#helpDialog'); $('#helpButton').addEventListener('click',()=>helpDialog.showModal()); $('#closeHelpButton').addEventListener('click',()=>helpDialog.close()); helpDialog.addEventListener('click',event=>{ const rect=helpDialog.getBoundingClientRect(); if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom) helpDialog.close(); });
@@ -3213,7 +3272,7 @@
       });
       $('#scriptInput').addEventListener('input',()=>{ saveCurrentScript(); });
       $('#prePaddingInput').addEventListener('change',saveCurrentScript); $('#postPaddingInput').addEventListener('change',saveCurrentScript); $('#sceneEnabledInput').addEventListener('change',saveCurrentScript);
-      $('#prevSlideButton').addEventListener('click',()=>selectSlide(state.selectedSlideIndex-1)); $('#nextSlideButton').addEventListener('click',()=>selectSlide(state.selectedSlideIndex+1)); $('#prevSceneButton').addEventListener('click',()=>selectSlide(state.selectedSlideIndex-1)); $('#nextSceneButton').addEventListener('click',()=>selectSlide(state.selectedSlideIndex+1));
+      $('#prevSceneButton').addEventListener('click',()=>selectSlide(state.selectedSlideIndex-1)); $('#nextSceneButton').addEventListener('click',()=>selectSlide(state.selectedSlideIndex+1));
       $('#voiceSelect').addEventListener('change',()=>{ state.selectedVoiceURI=$('#voiceSelect').value; saveCurrentScript({voiceChanged:true}); syncNarrationControlsForScene(state.slides[state.selectedSlideIndex]); refreshCaptureReady(); });
       $('#rateRange').addEventListener('input',()=>{ const rate=setRateControl(Number($('#rateRange').value)||1); const slide=state.slides[state.selectedSlideIndex]; if(slide&&narrationSource(slide)==='tts'&&Number(slide.rate)!==Number(rate)){ slide.rate=rate; slide.narrationDuration=null; if(slide.recordingBlob) markSceneRecordingStale(slide); markVideoResultStale(); updateNarrationDuration(slide); renderSceneRecordings(); const voice=selectedVoice(); $('#sceneVoiceSummary').textContent=voice?`${voice.name} · ${formatRate(rate)}`:`— · ${formatRate(rate)}`; } });
       $('#rateRange').addEventListener('change',()=>{ setRateControl(Number($('#rateRange').value)||1); saveCurrentScript(); syncNarrationControlsForScene(state.slides[state.selectedSlideIndex]); renderSceneRecordings(); refreshCaptureReady(); });
