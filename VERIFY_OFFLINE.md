@@ -11,7 +11,7 @@
 
 ## Local model narration
 
-For the local TTS path, save the pinned `model_quantized.onnx`, `jf_alpha.bin` and `af_heart.bin` from the in-app download links. With the browser offline, generate and listen to a Japanese slide, then generate the remaining English slide from the deck action, save the project, close the tab, and reopen the project. Export MP4 before selecting any model files again.
+For the local TTS path, save the pinned `model_quantized.onnx`, `jf_alpha.bin` and `af_heart.bin` from the in-app download links. With the browser offline, load the model and each voice from its own row, then generate and listen to a Japanese slide before generating the remaining English slide from the deck action, save the project, close the tab, and reopen the project. Export MP4 before selecting any model files again.
 
 The repeatable desktop test uses Playwright with Google Chrome and the checked-in three-slide deck. With Playwright available to Node, set the environment variable `PVM_KOKORO_DIR` to the directory with the three downloaded files and run `node scripts/local-tts.browser.cjs` from the repository root. Set `PVM_TEST_HTML` to exercise another standalone build. The test also runs a Pixel phone profile. It reopens a deck with one missing voice, checks that audio already generated on desktop remains identical, generates the remaining narration and exports an MP4. The script saves its projects, videos and subtitles in a temporary directory and prints the path.
 

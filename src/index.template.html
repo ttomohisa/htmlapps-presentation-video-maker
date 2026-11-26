@@ -561,9 +561,13 @@
     .guide-model { max-width:730px; padding:14px 16px; margin-top:12px; border-radius:10px; background:var(--accent-soft); }
     .guide-model h3 { font-size:1rem; margin:0 0 4px; }
     .guide-model ul { display:grid; gap:5px; list-style:none; padding:0; margin:12px 0; }
-    .guide-model li { display:grid; grid-template-columns:minmax(7rem,1fr) minmax(0,1fr) auto; gap:8px; align-items:center; padding:5px 0; border-bottom:1px solid var(--line); }
+    .guide-model li { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px 12px; align-items:center; padding:8px 0; border-bottom:1px solid var(--line); }
+    .guide-model-name { display:grid; gap:2px; min-width:0; }
     .guide-model small { overflow-wrap:anywhere; }
+    .guide-model-actions { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; }
+    .guide-model-actions .button { min-height:40px; font-size:.8rem; }
     .guide-model a { color:var(--accent); font-weight:700; }
+    .guide-model .guide-file-ready { color:var(--accent); font-size:.8rem; }
     .guide-model .guide-file-status { margin-top:6px; font-size:.88rem; }
     .guide-stage .field-label,.guide-stage .text-button,.guide-export .video-export-summary span,.guide-export .range-head { font-size:.8rem; }
     @media (min-width:931px) {
@@ -607,8 +611,8 @@
       .guide-editor,.guide-slide { grid-template-columns:minmax(0,1fr); gap:10px; }
       .guide-slide { padding:12px; }
       .guide-model { padding:12px; }
-      .guide-model li { grid-template-columns:minmax(0,1fr) auto; }
-      .guide-model li small { grid-row:2; grid-column:1 / -1; }
+      .guide-model li { grid-template-columns:minmax(0,1fr); }
+      .guide-model-actions .button { min-height:44px; }
       .guide-main-actions .button { min-height:44px; }
       .guide-import .drop-zone { min-height:176px; }
       .guide-import .guide-drop-label { display:none; }
@@ -711,11 +715,38 @@
           </div>
           <div id="guideModelSetup" class="guide-model" hidden>
             <h3 data-i18n="guideModelTitle">声の準備</h3>
-            <p data-i18n="guideModelSteps">必要なファイルをダウンロードしてから、保存したファイルをこのアプリで選びます。</p>
-            <ul id="guideModelFiles"></ul>
-            <div class="button-row"><button type="button" class="button primary" id="localTtsChoose" data-i18n="guideModelChoose">モデルと声を選ぶ</button><button class="text-button" type="button" id="localTtsNotices" data-i18n="localNotices">同梱ライセンス</button></div>
+            <p data-i18n="guideModelSteps">必要なファイルをダウンロードし、それぞれの行から読み込みます。</p>
+            <ul id="guideModelFiles">
+              <li data-model-file="model_quantized.onnx" hidden>
+                <div class="guide-model-name"><strong data-i18n="guideModel">共通モデル</strong><small>model_quantized.onnx · 92 MB</small></div>
+                <div class="guide-model-actions">
+                  <a href="https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/1939ad2a8e416c0acfeecc08a694d14ef25f2231/onnx/model_quantized.onnx?download=true" target="_blank" rel="noopener noreferrer" data-i18n="guideDownload" data-i18n-aria-label="guideDownloadModel" aria-label="共通モデルをダウンロード">ダウンロード</a>
+                  <button class="button" type="button" data-load-local-file data-i18n="guideReadModel">モデルを読み込む</button>
+                  <strong class="guide-file-ready" data-local-ready data-i18n="guideFileReady" hidden>読み込み済み</strong>
+                </div>
+                <input type="file" data-local-file="model_quantized.onnx" accept=".onnx" hidden>
+              </li>
+              <li data-model-file="jf_alpha.bin" hidden>
+                <div class="guide-model-name"><strong data-i18n="guideJaVoice">日本語の声</strong><small>jf_alpha.bin · 522 kB</small></div>
+                <div class="guide-model-actions">
+                  <a href="https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/1939ad2a8e416c0acfeecc08a694d14ef25f2231/voices/jf_alpha.bin?download=true" target="_blank" rel="noopener noreferrer" data-i18n="guideDownload" data-i18n-aria-label="guideDownloadJaVoice" aria-label="日本語の声をダウンロード">ダウンロード</a>
+                  <button class="button" type="button" data-load-local-file data-i18n="guideReadJaVoice">日本語の声を読み込む</button>
+                  <strong class="guide-file-ready" data-local-ready data-i18n="guideFileReady" hidden>読み込み済み</strong>
+                </div>
+                <input type="file" data-local-file="jf_alpha.bin" accept=".bin" hidden>
+              </li>
+              <li data-model-file="af_heart.bin" hidden>
+                <div class="guide-model-name"><strong data-i18n="guideEnVoice">英語の声</strong><small>af_heart.bin · 522 kB</small></div>
+                <div class="guide-model-actions">
+                  <a href="https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/1939ad2a8e416c0acfeecc08a694d14ef25f2231/voices/af_heart.bin?download=true" target="_blank" rel="noopener noreferrer" data-i18n="guideDownload" data-i18n-aria-label="guideDownloadEnVoice" aria-label="英語の声をダウンロード">ダウンロード</a>
+                  <button class="button" type="button" data-load-local-file data-i18n="guideReadEnVoice">英語の声を読み込む</button>
+                  <strong class="guide-file-ready" data-local-ready data-i18n="guideFileReady" hidden>読み込み済み</strong>
+                </div>
+                <input type="file" data-local-file="af_heart.bin" accept=".bin" hidden>
+              </li>
+            </ul>
+            <button class="text-button" type="button" id="localTtsNotices" data-i18n="localNotices">同梱ライセンス</button>
             <p id="localTtsFileStatus" class="guide-file-status" role="status"></p>
-            <input type="file" id="localTtsFiles" accept=".onnx,.bin" multiple hidden>
           </div>
           <div class="button-row guide-main-actions">
             <button class="button primary" type="button" id="guidePrimary"></button>
@@ -1102,13 +1133,19 @@
         guideReadLanguage:['読み上げる言語','Narration language'],
         guideDeckMethod:['音声の作り方','Narration method for this deck'],
         guideModelTitle:['声の準備','Set up the voice'],
-        guideModelSteps:['必要なファイルをダウンロードしてから、保存したファイルをこのアプリで選びます。','Download the required files, then select them here.'],
-        guideModelChoose:['モデルと声を選ぶ','Select model and voice files'],
+        guideModelSteps:['必要なファイルをダウンロードし、それぞれの行から読み込みます。','Download each required file, then load it from its row.'],
         guideModel:['共通モデル','Shared model'],
         guideJaVoice:['日本語の声','Japanese voice'],
         guideEnVoice:['英語の声','English voice'],
-        guideFileReady:['選択済み','Selected'],
+        guideFileReady:['読み込み済み','Loaded'],
         guideDownload:['ダウンロード','Download'],
+        guideDownloadModel:['共通モデルをダウンロード','Download shared model'],
+        guideDownloadJaVoice:['日本語の声をダウンロード','Download Japanese voice'],
+        guideDownloadEnVoice:['英語の声をダウンロード','Download English voice'],
+        guideReadModel:['モデルを読み込む','Load model'],
+        guideReadJaVoice:['日本語の声を読み込む','Load Japanese voice'],
+        guideReadEnVoice:['英語の声を読み込む','Load English voice'],
+        guideWrongFile:['{file}はこの行のファイルと一致しません。{expected}を読み込んでください。','{file} does not match this row. Load {expected}.'],
         guidePickSlide:['スライドを選ぶ','Choose a slide'],
         guideFilter:['音声が必要なスライドだけ','Only slides that need audio'],
         guideNoIssues:['音声が必要なスライドはありません。','No slides need audio.'],
@@ -1829,29 +1866,34 @@
         $('#localTtsGenerate').disabled=projectOperationBusy()||!canUseMethod('local')||state.localChecking||!slide.enabled||!slide.script.trim();
         $('#localTtsGenerate').textContent=t(slide.recordingSource==='local'&&slide.recordingBlob?'guideRecreate':'localGenerate');
       }
-      async function selectLocalFiles(files) {
-        if(!files.length || state.localChecking || projectOperationBusy()) return;
-        const failed=[];
+      async function selectLocalFile(name,file) {
+        const expected=LOCAL_FILES[name];
+        if(!file||!expected||state.localChecking||projectOperationBusy()) return;
+        const wrongFile={key:'guideWrongFile',values:{file:file.name,expected:name}};
         state.localChecking=true;
         state.localFileMessage={key:'localVerifying'};
         renderGuidedNarration();
         try {
-          if(!window.crypto?.subtle) {
+          const subtle=window.crypto?.subtle;
+          if(!subtle) {
             state.localFileMessage={key:'localVerifyUnavailable'};
             return;
           }
-          for(const file of files) {
-            const name=file.name.toLowerCase(), expected=LOCAL_FILES[name];
-            if(!expected || file.size!==expected.size) { failed.push(file.name); continue; }
-            try {
-              const digest=await crypto.subtle.digest('SHA-256',await file.arrayBuffer());
-              const hash=Array.from(new Uint8Array(digest),byte=>byte.toString(16).padStart(2,'0')).join('');
-              if(hash===expected.sha256) state.localFiles.set(name,file);
-              else failed.push(file.name);
-            } catch { failed.push(file.name); }
+          if(file.size!==expected.size) {
+            state.localFileMessage=wrongFile;
+            return;
           }
-          state.localFileMessage=failed.length ? {key:'localInvalid',values:{files:failed.join(', ')}} : null;
-          if(!failed.length && state.localMessage?.key==='localNeedFiles') state.localMessage=null;
+          const digest=await subtle.digest('SHA-256',await file.arrayBuffer());
+          const hash=Array.from(new Uint8Array(digest),byte=>byte.toString(16).padStart(2,'0')).join('');
+          if(hash!==expected.sha256) {
+            state.localFileMessage=wrongFile;
+            return;
+          }
+          state.localFiles.set(name,file);
+          state.localFileMessage=null;
+          if(state.localMessage?.key==='localNeedFiles') state.localMessage=null;
+        } catch {
+          state.localFileMessage=wrongFile;
         } finally {
           state.localChecking=false;
           renderLocalControls(state.slides[state.selectedSlideIndex]);
@@ -2274,7 +2316,6 @@
         return method==='file';
       }
       function defaultDeckMethod(){
-        if(isSmartphoneMode()&&canUseMethod('mic')) return 'mic';
         return ['local','mic','file'].find(canUseMethod);
       }
       function guideSlideCount(key,count){
@@ -2308,37 +2349,19 @@
         }
       }
       function renderModelSetup(required){
-        const setup=$('#guideModelSetup');
-        setup.hidden=!required.size;
-        $('#localTtsChoose').disabled=projectOperationBusy()||state.localChecking;
-        $('#localTtsFileStatus').textContent=localMessageText(state.localFileMessage);
-        const list=$('#guideModelFiles');
-        const version=[language,...Array.from(required,name=>name+':'+state.localFiles.has(name))].join('|');
-        if(list.dataset.version===version) return;
-        list.dataset.version=version;
-        list.replaceChildren();
-        const base='https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/1939ad2a8e416c0acfeecc08a694d14ef25f2231/';
-        for(const name of required){
-          const model=name==='model_quantized.onnx', ready=state.localFiles.has(name);
-          const label=t(model?'guideModel':name==='jf_alpha.bin'?'guideJaVoice':'guideEnVoice');
-          const filename=document.createElement('small');
-          filename.textContent=name;
-          const item=document.createElement('li');
-          item.append(label,filename);
-          if(ready){
-            const status=document.createElement('strong');
-            status.textContent=t('guideFileReady');
-            item.append(status);
-          }else{
-            const link=document.createElement('a');
-            link.href=base+(model?'onnx/':'voices/')+name+'?download=true';
-            link.target='_blank';
-            link.rel='noopener noreferrer';
-            link.textContent=t('guideDownload')+' · '+(model?'92 MB':'522 kB');
-            link.setAttribute('aria-label',label+' · '+link.textContent);
-            item.append(link);
-          }
-          list.append(item);
+        $('#guideModelSetup').hidden=!required.size;
+        const status=$('#localTtsFileStatus'), message=localMessageText(state.localFileMessage);
+        if(status.textContent!==message) status.textContent=message;
+        const busy=projectOperationBusy()||state.localChecking;
+        for(const row of $$('#guideModelFiles [data-model-file]')){
+          const name=row.dataset.modelFile;
+          const ready=state.localFiles.has(name);
+          row.hidden=!required.has(name);
+          const button=row.querySelector('[data-load-local-file]');
+          button.hidden=ready;
+          button.disabled=busy;
+          row.querySelector('a').hidden=ready;
+          row.querySelector('[data-local-ready]').hidden=!ready;
         }
       }
       function renderGuidedNarration(){
@@ -3071,12 +3094,13 @@
       function prepareSelectedLocal(){
         const index=state.selectedSlideIndex, slide=state.slides[index];
         if(!slide) return;
-        if(!missingLocalFiles(slide).length){
+        const missing=missingLocalFiles(slide);
+        if(!missing.length){
           generateLocalAudio();
         }else{
           state.guideSetupIndex=index;
           renderGuidedNarration();
-          focusGuideControl('#localTtsChoose');
+          focusGuideControl(`[data-model-file="${missing[0]}"] [data-load-local-file]`);
         }
       }
 
@@ -3161,11 +3185,22 @@
         updateNarrationDuration(slide);
         renderSceneRecordings();
       });
-      $('#localTtsChoose').addEventListener('click',()=>$('#localTtsFiles').click());
-      $('#localTtsFiles').addEventListener('change',event=>{
-        const files=Array.from(event.target.files);
-        event.target.value='';
-        selectLocalFiles(files);
+      $('#guideModelFiles').addEventListener('click',event=>{
+        const button=event.target.closest('[data-load-local-file]');
+        if(button) button.closest('[data-model-file]').querySelector('input').click();
+      });
+      $('#guideModelFiles').addEventListener('change',async event=>{
+        const input=event.target, name=input.dataset.localFile;
+        const file=input.files?.[0];
+        if(!name||!file) return;
+        const button=input.closest('[data-model-file]').querySelector('[data-load-local-file]');
+        const restoreFocus=document.activeElement===button;
+        input.value='';
+        await selectLocalFile(name,file);
+        if(!restoreFocus||state.guidePage!=='script'||![button,document.body].includes(document.activeElement)) return;
+        if(!button.hidden) button.focus();
+        else if(!$('#guideModelSetup').hidden) focusGuideControl('#guideModelFiles [data-model-file]:not([hidden]) [data-load-local-file]:not([hidden])');
+        else focusGuideControl(state.guideSetupIndex===state.selectedSlideIndex?'#localTtsGenerate':'#guidePrimary');
       });
       $('#localTtsNotices').addEventListener('click',()=>{
         const notice=$('#local-tts-notices');

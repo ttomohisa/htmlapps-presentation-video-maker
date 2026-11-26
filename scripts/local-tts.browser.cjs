@@ -49,6 +49,22 @@ function checkMp4(bytes) {
   assert.ok(bytes.includes(Buffer.from('vide')), 'MP4 has a video track');
 }
 
+async function chooseKokoroFile(page, slot, file=path.join(fixtures,slot)) {
+  const row=page.locator(`[data-model-file="${slot}"]`);
+  const opening=page.waitForEvent('filechooser');
+  await row.locator('[data-load-local-file]').click();
+  const chooser=await opening;
+  assert.equal(chooser.isMultiple(),false);
+  assert.equal(await chooser.element().getAttribute('data-local-file'),slot);
+  await chooser.setFiles(file);
+  return row;
+}
+
+async function loadKokoroFile(page, slot) {
+  const row=await chooseKokoroFile(page,slot);
+  await row.locator('[data-local-ready]:not([hidden])').waitFor({state:'attached',timeout});
+}
+
 async function main() {
   assert.ok(fixtures, 'Set PVM_KOKORO_DIR to the directory containing the pinned model and voices.');
   const workspace = await fs.mkdtemp(path.join(os.tmpdir(), 'pvm-offline-test-'));
@@ -81,17 +97,18 @@ async function main() {
       await page.locator('#scriptInput').fill(script);
     }
     await slides.first().click();
-    const input = page.locator('#localTtsFiles');
-    await input.setInputFiles({name: 'jf_alpha.bin', mimeType: 'application/octet-stream', buffer: Buffer.alloc(522240)});
-    await page.getByText(/Could not verify jf_alpha\.bin/).waitFor();
-    await input.setInputFiles(['model_quantized.onnx', 'jf_alpha.bin'].map(name => path.join(fixtures, name)));
+    await loadKokoroFile(page,'model_quantized.onnx');
+    await chooseKokoroFile(page,'jf_alpha.bin',path.join(fixtures,'af_heart.bin'));
+    await page.getByText(/Load jf_alpha\.bin/).waitFor();
+    await page.locator('[data-model-file="model_quantized.onnx"] [data-local-ready]').waitFor();
+    await loadKokoroFile(page,'jf_alpha.bin');
     await page.getByRole('link',{name:/English voice/}).waitFor();
     await page.locator('#guideSample').click();
     await page.waitForFunction(() => document.querySelector('#guideCoverage').textContent.includes('1 / 2'), null, {timeout});
     const samplePath = path.join(workspace, 'sample.pvm');
     const sample = await download(page, '#saveProjectButton', samplePath);
     console.log('Generated Japanese narration offline.');
-    await input.setInputFiles(path.join(fixtures, 'af_heart.bin'));
+    await loadKokoroFile(page,'af_heart.bin');
     await page.locator('#guidePrimary[data-action="batch"]').click();
     await page.locator('#guidePrimary[data-action="output"]').click({timeout});
     await page.locator('#videoResolution').selectOption('720');
@@ -137,7 +154,8 @@ async function main() {
     await page.locator('#guideVideoIssue').click();
     assert.equal(await step('script').getAttribute('aria-current'),'step');
     assert.equal(await page.locator('#scriptInput').inputValue(),'Here are the new plans.');
-    await page.locator('#localTtsFiles').setInputFiles(['model_quantized.onnx', 'af_heart.bin'].map(name => path.join(fixtures, name)));
+    await loadKokoroFile(page,'model_quantized.onnx');
+    await loadKokoroFile(page,'af_heart.bin');
     await page.locator('#guidePrimary[data-action="batch"]').click();
     await page.locator('#localTtsCancel').click();
     await page.locator('#guidePrimary[data-action="batch"]').click({timeout});
@@ -166,13 +184,20 @@ async function main() {
     });
     const phone = await mobile.newPage();
     phone.on('pageerror', error => errors.push(error.message));
+    phone.on('dialog',dialog=>dialog.accept());
     await phone.goto(app);
-    await phone.locator('#projectInput').setInputFiles(samplePath);
+    await phone.locator('#pptxInput').setInputFiles('test-data/presentation-video-maker-notes-sample.pptx');
     await phone.locator('#guideModelSetup').waitFor();
+    assert.equal(await phone.locator('#guideMethod').inputValue(),'local');
+    assert.equal(await phone.locator('[data-model-file="jf_alpha.bin"]').isVisible(),true);
+    assert.equal(await phone.locator('[data-model-file="af_heart.bin"]').isVisible(),false);
+    assert.equal(await phone.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+    await phone.locator('#projectInput').setInputFiles(samplePath);
+    await phone.locator('[data-model-file="af_heart.bin"]').waitFor();
     assert.equal(await phone.locator('#guideMethod').inputValue(), 'local');
     assert.equal(await phone.locator('#guideCapture').isVisible(), false);
-    const phoneInput = phone.locator('#localTtsFiles');
-    await phoneInput.setInputFiles(['model_quantized.onnx', 'af_heart.bin'].map(name => path.join(fixtures, name)));
+    await loadKokoroFile(phone,'model_quantized.onnx');
+    await loadKokoroFile(phone,'af_heart.bin');
     const workerStarted = phone.waitForEvent('worker');
     await phone.locator('#guidePrimary[data-action="batch"]').click();
     const worker = await workerStarted;

@@ -23,7 +23,7 @@ test('the workflow has three screens and one common navigation', () => {
   assert.deepEqual([...html.matchAll(/data-guide-step="([^"]+)"/g)].map(match => match[1]), ['slides', 'script', 'output']);
 });
 
-test('phones offer Kokoro without enabling system audio capture', () => {
+test('phones open new decks with Kokoro and fall back to recording or files', () => {
   const context = production(['canUseMethod', 'defaultDeckMethod']);
   Object.assign(context, {
     navigator: {userAgent: 'iPhone Safari', mediaDevices: {getUserMedia(){}, getDisplayMedia(){}}},
@@ -35,9 +35,40 @@ test('phones offer Kokoro without enabling system audio capture', () => {
   });
   assert.equal(context.canUseMethod('local'), true);
   assert.equal(context.canUseMethod('tts'), false);
-  assert.equal(context.defaultDeckMethod(), 'mic');
+  assert.equal(context.defaultDeckMethod(), 'local');
   delete context.window.crypto.subtle;
   assert.equal(context.canUseMethod('local'), false);
+  assert.equal(context.defaultDeckMethod(), 'mic');
+  delete context.window.MediaRecorder;
+  assert.equal(context.defaultDeckMethod(), 'file');
+});
+
+test('model and language voices have independent single-file inputs', () => {
+  const inputs=Array.from(html.matchAll(/<input\b[^>]*\bdata-local-file="([^"]+)"[^>]*>/g));
+  assert.deepEqual(inputs.map(match=>match[1]), ['model_quantized.onnx','jf_alpha.bin','af_heart.bin']);
+  assert.ok(inputs.every(match=>!/\bmultiple\b/.test(match[0])));
+});
+
+test('a file must match its own Kokoro slot and an invalid choice keeps loaded files', async () => {
+  const context=production(['selectLocalFile']);
+  const valid={name:'downloaded voice (1).bin',size:1,arrayBuffer:async()=>Uint8Array.of(0x12).buffer};
+  const wrong={name:'af_heart.bin',size:1,arrayBuffer:async()=>Uint8Array.of(0x34).buffer};
+  const fileState={localFiles:new Map([['af_heart.bin',wrong]]),slides:[]};
+  Object.assign(context,{
+    state:fileState,
+    LOCAL_FILES:{'jf_alpha.bin':{size:1,sha256:'12'},'af_heart.bin':{size:1,sha256:'34'}},
+    window:{crypto:{subtle:{digest:async(_algorithm,bytes)=>bytes}}},
+    projectOperationBusy:()=>false,
+    renderLocalControls(){},renderGuidedNarration(){},
+  });
+  await context.selectLocalFile('jf_alpha.bin',wrong);
+  assert.equal(fileState.localFiles.has('jf_alpha.bin'),false);
+  assert.equal(fileState.localFiles.get('af_heart.bin'),wrong);
+  assert.equal(fileState.localFileMessage.values.expected,'jf_alpha.bin');
+  await context.selectLocalFile('jf_alpha.bin',valid);
+  assert.equal(fileState.localFiles.get('jf_alpha.bin'),valid);
+  assert.equal(fileState.localFileMessage,null);
+  assert.equal(fileState.localChecking,false);
 });
 
 test('Kokoro saves a valid WAV using the sample duration from the worker', async () => {

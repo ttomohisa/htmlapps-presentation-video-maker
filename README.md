@@ -10,7 +10,7 @@ A privacy-focused, single-HTML app for turning a PowerPoint (PPTX) deck into a n
 
 ## Generate Japanese and English narration from speaker notes
 
-Open a PowerPoint in a supported browser. On phones, choose **Generate narration from notes** under **Narration method for this deck**. Download the shared model and a voice, then open them with **Select model and voice files**.
+Open a PowerPoint in a supported browser. **Generate narration from notes** is selected for new decks on supported phones and desktop browsers. Download the shared model and the required voices, then load each file from its own row.
 
 | File | Used for |
 | --- | --- |
@@ -38,7 +38,7 @@ GitHub Pages delivers the initial HTML. After it loads, PPTX parsing, speaker-no
 - **Keep narration work editable** — Adjust scripts, include/exclude slides, before/after padding, voice, and speech rate, with stale-audio tracking when narration settings change.
 - **Preview PowerPoint with higher fidelity** — Use pinned `@aiden0z/pptx-renderer@1.2.4` for the main slide preview and `html2canvas@1.4.1` for origin-clean video snapshots.
 - **Create a finished MP4 locally** — Choose 720p or 1080p, Cut or Fade, burned-in subtitles, and optional local BGM. Supported browsers use accelerated WebCodecs export; other environments automatically keep the established MediaRecorder + FFmpeg WASM compatibility path.
-- **Smartphone workflow** — Smartphones use the Open file / Narration / Video workflow, default new slides to microphone recording, start video output at 720p, and stream slide snapshots during export to reduce peak memory.
+- **Smartphone workflow** — Smartphones use the Open file / Narration / Video workflow, default new slides to Kokoro where supported, start video output at 720p, and stream slide snapshots during export to reduce peak memory.
 - **Private, single-HTML operation** — Runtime libraries are embedded, the UI is Japanese/English, and the app keeps `connect-src 'none'` with no runtime CDN, analytics, telemetry, or cloud TTS API.
 
 ## Smartphone use

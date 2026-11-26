@@ -80,7 +80,7 @@ The smartphone workflow keeps the same local-only project and media pipeline but
 
 - Smartphone mode is selected from device/capability signals rather than changing the desktop workflow globally.
 - On-device `SpeechSynthesis` remains available for preview, but smartphone system-audio capture is not supported by this app. Compatible phones offer Kokoro synthesis alongside microphone and local-audio narration. The browser voice remains available as a sample where supported.
-- Newly loaded smartphone PPTX scenes default to microphone narration and video output defaults to 720p. Selecting 1080p remains possible but displays a memory-use warning.
+- New smartphone PPTX scenes default to Kokoro where supported, with microphone recording or audio files as fallbacks. Model and voice files have separate pickers and are verified for the selected slot. Video output defaults to 720p. Selecting 1080p remains possible but displays a memory-use warning.
 - Before smartphone video composition, the app terminates the Kokoro worker to release its model and WASM memory. The generated WAVs and selected file handles remain usable.
 - During smartphone video composition, slide snapshots are rasterized progressively and temporary Canvas backing stores are released as soon as they are no longer needed, reducing peak memory versus keeping all slide snapshots at once.
 - After smartphone MP4 export the FFmpeg WASM runner is disposed so its memory can be reclaimed.

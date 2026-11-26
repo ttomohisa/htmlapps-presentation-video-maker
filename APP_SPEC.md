@@ -20,7 +20,7 @@ Version `1.3.0` keeps the tested v1.2.0 smartphone/project/narration behavior an
 ## 3. Primary flow
 
 1. **Open file.** Open a .pptx up to 150 MB. Import notes and use slide text as the draft when notes are absent. A .pvm opens in Narration or Video after restoration, depending on whether the audio is ready.
-2. **Narration.** Prepare the deck’s audio. Compatible desktop browsers default to local model narration with Japanese selected. Phones can select local model narration and default to the microphone where available. An environment with neither path defaults to audio files. Model setup lists the shared model and missing languages for the batch. Creating and listening to a sample produces the actual WAV for that slide.
+2. **Narration.** Prepare the deck’s audio. Compatible desktop and phone browsers default to local model narration with Japanese selected. Otherwise, the app defaults to microphone recording if supported, then to audio files. Model setup lists the shared model and voices needed for the batch with separate downloads and single-file pickers. Creating and listening to a sample produces the actual WAV for that slide.
 3. **Edit individual slides.** Choose a slide to edit its script or settings. Batch synthesis and batch computer-speech capture skip audio that is already usable for the selected method. An included reading slide with an empty script can appear without narration. Audio recorded through the microphone or selected from a file can be used with an empty script.
 4. **Video.** Show the output duration, included slide count and resolution. Link unmet audio requirements to the affected slide. Show progress, cancellation, preview and saving at the same location. Provide transition, BGM, subtitle and timeline controls under Finishing settings, and text exports under a separate disclosure.
 5. **Save work.** Store deck and individual audio methods as optional fields in the v2 manifest, alongside the existing actual method. Older projects restore their saved methods as explicit choices. Preserve source and model compatibility across reopening.
@@ -128,7 +128,7 @@ Defaults:
 - `postPadding`: 0.8 seconds;
 - `recordingStatus`: `pending`;
 - recording fields are empty/zero until capture succeeds;
-- new PPTX scenes default to `mic` on phones with recording support and `local` on supported desktop browsers. Loading an existing `.pvm` preserves its saved narration source.
+- new PPTX scenes default to `local` on supported phones and desktop browsers, then fall back to `mic` or `file`. Loading an existing `.pvm` preserves its saved narration source.
 
 The recorded Blob intentionally contains only a small technical lead/tail around speech. `recordingSpeechStartOffset` and `recordingSpeechEndOffset` identify the spoken region for video composition. User-configured pre/post padding is **not waited out during capture**; it remains timeline metadata.
 
@@ -391,7 +391,7 @@ Required for the current stable line:
 - local narration/BGM files remain local and are limited to 100 MB each;
 - Japanese/English UI works without horizontal page overflow at 360–390 px;
 - smartphone UI shows Open file / Narration / Video without horizontal overflow at 320–390 px;
-- new PPTX scenes default to microphone narration on detected smartphones while `.pvm` restore preserves saved sources;
+- new PPTX scenes default to Kokoro on compatible smartphones while `.pvm` restore preserves saved sources;
 - compatible phones can generate Japanese and English Kokoro audio and include it in MP4, while browser voice preview and desktop system-audio capture are presented separately;
 - smartphone video output defaults to 720p, shows a 1080p memory warning, uses progressive snapshot composition, and releases the FFmpeg runner after export;
 - smartphone video creation requests Wake Lock when available without making Wake Lock a hard requirement;
