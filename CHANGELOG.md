@@ -10,6 +10,7 @@
 - Set a presentation narration language, override it per slide, preview one result, and batch-generate missing or outdated model narration.
 - Keep generated audio and language settings in local projects. Reopen a saved project to export MP4 without reloading model weights.
 - Keep AAC input continuous across slide and padding boundaries to avoid audible gaps in WebCodecs MP4 exports.
+- Drain the AAC encoder queue without flushing mid-stream to prevent repeated volume drops in longer Windows exports.
 
 ## [1.3.3] - 2026-10-11
 

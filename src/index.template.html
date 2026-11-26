@@ -2257,7 +2257,12 @@
           try{ encoder.encode(audioData); } finally { audioData.close(); }
           bufferedFrames=0;
           planar=new Float32Array(blockSize*channels);
-          await waitEncoderBackpressure(encoder,10);
+          // Flushing the Windows AAC encoder mid-stream can attenuate speech
+          // around every flush. Let the queue drain and flush only at the end.
+          while(encoder.encodeQueueSize>10){
+            if(encoderError) throw encoderError;
+            await exportWait(4,signal);
+          }
         };
         const encodeSpan=async(durationSeconds,narrationBuffer=null,narrationOffset=0)=>{
           const totalFrames=Math.max(0,Math.round(durationSeconds*sampleRate)); let produced=0;
