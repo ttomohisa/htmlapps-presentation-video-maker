@@ -8,9 +8,9 @@
 
 A privacy-focused, single-HTML app for turning a PowerPoint (PPTX) deck into a narrated MP4 in the browser. Use on-device speech, your own microphone recording, or local audio files, save/resume the work as a local `.pvm` project, and export scripts/subtitles without uploading the presentation, narration, BGM, project, or generated video to the app.
 
-## Local model narration (v2.0.0)
+## Generate Japanese and English narration from speaker notes
 
-In desktop Chrome or Edge, open a PowerPoint file and choose **Local TTS model** for a slide. Use the download links in the app, then select the saved files together. The model is shared across languages. Load one or both voices.
+Open a PowerPoint in desktop Chrome or Edge. In **Narration**, download the shared model and the voice for your language, then use **Select model and voice files** to open them locally.
 
 | File | Used for |
 | --- | --- |
@@ -18,7 +18,7 @@ In desktop Chrome or Edge, open a PowerPoint file and choose **Local TTS model**
 | `jf_alpha.bin` (522 kB) | Japanese narration |
 | `af_heart.bin` (522 kB) | US English narration |
 
-Set the presentation language, or override it on a slide. You can switch all unrecorded browser-speech slides to local TTS from the model panel. Generate one slide to hear its narration, then batch-generate the rest. Audio goes directly into the video without screen sharing. Save a `.pvm` to keep the generated audio. Reopening it for playback or MP4 export only needs the project. Select the model and voice again to synthesize new audio. Offline use requires a saved copy of the app and the files for your chosen voices. [Model license and credits](https://huggingface.co/hexgrad/Kokoro-82M) · [Pinned downloads](https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/tree/1939ad2a8e416c0acfeecc08a694d14ef25f2231)
+Choose the deck’s narration language or set a different language for one slide. Create the batch in one go, or create and listen to one slide first. The sample becomes part of the video and the batch skips it. A saved .pvm includes generated audio, so you can reopen it and export an MP4 before selecting the model files again. [Model license and credits](https://huggingface.co/hexgrad/Kokoro-82M) · [Pinned downloads](https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/tree/1939ad2a8e416c0acfeecc08a694d14ef25f2231)
 
 ## 🚀 Live demo
 
@@ -38,7 +38,7 @@ GitHub Pages delivers the initial HTML. After it loads, PPTX parsing, speaker-no
 - **Keep narration work editable** — Adjust scripts, include/exclude slides, before/after padding, voice, and speech rate, with stale-audio tracking when narration settings change.
 - **Preview PowerPoint with higher fidelity** — Use pinned `@aiden0z/pptx-renderer@1.2.4` for the main slide preview and `html2canvas@1.4.1` for origin-clean video snapshots.
 - **Create a finished MP4 locally** — Choose 720p or 1080p, Cut or Fade, burned-in subtitles, and optional local BGM. Supported browsers use accelerated WebCodecs export; other environments automatically keep the established MediaRecorder + FFmpeg WASM compatibility path.
-- **Smartphone workflow** — Smartphones use bottom tabs for Slides / Script & audio / Video, default new PPTX scenes to My voice, start video output at 720p, and stream slide snapshots during export to reduce peak memory.
+- **Smartphone workflow** — Smartphones use the Open file / Narration / Video workflow, default new slides to microphone recording, start video output at 720p, and stream slide snapshots during export to reduce peak memory.
 - **Private, single-HTML operation** — Runtime libraries are embedded, the UI is Japanese/English, and the app keeps `connect-src 'none'` with no runtime CDN, analytics, telemetry, or cloud TTS API.
 
 ## Smartphone use
@@ -79,22 +79,11 @@ Node.js, Python, and a local web server are not required for the normal Windows 
 
 ## Usage
 
-Close Help with the Close button, Esc, or a click outside the dialog.
-
-1. Start a new video by dropping one `.pptx` file or choosing it with the PowerPoint picker. To continue previous work, use the separate **Resume saved work** card and choose a `.pvm` project. The two file pickers are intentionally separate. The current PPTX limit is 150 MB.
-2. Select a slide and review the high-fidelity preview and narration script.
-3. Edit the script, before/after padding, and whether the slide is included in the video.
-4. Choose **On-device speech**, **Local TTS model**, **My voice**, or **Audio file** for each slide.
-   To use the model, select the downloaded files and choose a narration language. Generate one slide to check its pronunciation, then generate the other included model slides.
-5. For on-device speech, choose a local OS voice and adjust the 0.8x–1.5x rate slider. Capture only the selected slide with **Record this slide**, or use **Record all scenes** for the TTS scenes in the deck. Both workflows require **Entire Screen + system audio** on the tested Windows path.
-6. For microphone narration, record the selected slide directly. For local audio, choose an audio file from your device.
-   The **Narration assets** scene list also provides a row-level action, so each scene can be recorded, stopped, or have its local audio replaced directly from the list.
-7. Use the narration progress summary and **Next item to fix** to move through missing, stale, or failed scenes. Missing, failed, or stale narration blocks video creation.
-8. Use **Save project** whenever you want a local `.pvm` snapshot that can be opened later. The app does not autosave.
-9. Choose 720p/1080p, Cut/Fade, subtitles, and optional BGM with volume/loop settings. TXT, SRT, and VTT can also be saved locally from the output area.
-10. Create the video, preview the generated MP4, set the output filename, and save it.
-
-A three-slide test deck and additional regression fixtures are included under `test-data/`.
+1. **Open file** — Open or drop a .pptx file (up to 150 MB). To resume, use **Open saved work (.pvm)**.
+2. **Narration** — Choose a language and prepare the voice files, then create audio for all remaining slides. When a slide has no notes, **Check script** opens the draft made from the slide text.
+3. **Edit a slide** — Pick a slide from the list. **Settings for this slide** includes its narration method, language, speed, timing and inclusion. You can record your voice or select a local audio file.
+4. **Record computer speech on Windows** — Choose a local system voice, then select **Entire Screen** and **Share system audio** when prompted. Other sounds from your computer may also be recorded.
+5. **Video** — Create the MP4, preview it and select **Save MP4**. Find subtitles, background music and transitions under **Finishing settings**. Select **Save work** to keep a separate .pvm for future edits.
 
 ## Project files and text exports
 

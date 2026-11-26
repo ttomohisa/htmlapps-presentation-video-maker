@@ -6,7 +6,7 @@ const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
 const {pathToFileURL} = require('node:url');
-const {chromium} = require('playwright');
+const {chromium, devices} = require('playwright');
 
 const app = pathToFileURL(path.resolve(process.env.PVM_TEST_HTML || 'dist/index.html')).href;
 const fixtures = process.env.PVM_KOKORO_DIR;
@@ -23,9 +23,11 @@ async function download(page, button, destination) {
 function checkProject(bytes) {
   const end = 12 + bytes.readUInt32LE(8);
   const project = JSON.parse(bytes.toString('utf8', 12, end));
-  assert.equal(project.appVersion, '2.0.0');
+  assert.equal(project.schemaVersion, 2);
+  assert.equal(project.settings.deckMethod, 'local');
   assert.equal(project.slides[2].enabled, false);
   assert.equal(project.slides[2].audioSource, 'tts');
+  assert.equal(project.slides[2].followsDeckMethod, false);
   for (const [i, script] of narration.entries()) {
     const slide = project.slides[i];
     assert.equal(slide.script, script);
@@ -61,10 +63,10 @@ async function main() {
     await page.locator('#pptxInput').setInputFiles('test-data/presentation-video-maker-notes-sample.pptx');
     const slides = page.locator('#slideList .slide-item');
     await slides.nth(2).click();
+    await page.locator('#guideSlideSettings > summary').click();
+    await page.locator('[data-narration-source="tts"]').click();
     await page.locator('#sceneEnabledInput').uncheck();
-    await slides.first().click();
-    await page.locator('[data-narration-source="local"]').click();
-    await page.locator('#localTtsApply').click();
+    assert.equal(await page.locator('#guideMethod').inputValue(),'local');
     for (const [i, script] of narration.entries()) {
       await slides.nth(i).click();
       assert.equal(await page.locator('[data-narration-source="local"]').getAttribute('aria-pressed'), 'true');
@@ -77,16 +79,27 @@ async function main() {
     await input.setInputFiles({name: 'jf_alpha.bin', mimeType: 'application/octet-stream', buffer: Buffer.alloc(522240)});
     await page.getByText(/Could not verify jf_alpha\.bin/).waitFor();
     await input.setInputFiles(['model_quantized.onnx', 'jf_alpha.bin'].map(name => path.join(fixtures, name)));
-    await page.locator('#localTtsGenerate').click();
-    await page.waitForFunction(() => document.querySelector('#progressReadyCount').textContent === '1', null, {timeout});
+    await page.getByRole('link',{name:/English voice/}).waitFor();
+    await page.locator('#guideSample').click();
+    await page.waitForFunction(() => document.querySelector('#guideCoverage').textContent.includes('1 / 2'), null, {timeout});
+    const samplePath = path.join(workspace, 'sample.pvm');
+    const sample = await download(page, '#saveProjectButton', samplePath);
     console.log('Generated Japanese narration offline.');
     await input.setInputFiles(path.join(fixtures, 'af_heart.bin'));
-    await page.locator('#localTtsBatch').click();
-    await page.waitForFunction(() => document.querySelector('#progressReadyCount').textContent === '2', null, {timeout});
+    await page.locator('#guidePrimary[data-action="batch"]').click();
+    await page.locator('#guidePrimary[data-action="output"]').click({timeout});
     await page.locator('#videoResolution').selectOption('720');
+    await page.locator('summary[data-i18n="guideFinishing"]').click();
     await page.locator('#videoSubtitles').check();
     const pvm = path.join(workspace, 'bilingual.pvm');
-    checkProject(await download(page, '#saveProjectButton', pvm));
+    const project = await download(page, '#saveProjectButton', pvm);
+    checkProject(project);
+    function wav(bytes,index) {
+      const end=12+bytes.readUInt32LE(8), manifest=JSON.parse(bytes.toString('utf8',12,end));
+      const asset=manifest.slides[index].recordingAsset;
+      return bytes.subarray(end+asset.offset,end+asset.offset+asset.length);
+    }
+    assert.deepEqual(wav(project,0),wav(sample,0));
     console.log('Verified both generated audio assets in the saved project.');
     await page.close();
     page = await context.newPage();
@@ -98,35 +111,64 @@ async function main() {
     assert.equal(result.toString('ascii', 4, 8), 'ftyp');
     assert.ok(result.includes(Buffer.from('soun')), 'MP4 has an audio track');
     assert.ok(result.includes(Buffer.from('vide')), 'MP4 has a video track');
+    await page.locator('summary[data-i18n="textExportTitle"]').click();
     const subtitles = await download(page, '#exportSrtButton', path.join(workspace, 'bilingual.srt'));
     const subtitleText = subtitles.toString('utf8').replace(/^\uFEFF/, '').split(/\r?\n/)
       .filter(line => line && !/^\d+$/.test(line) && !line.includes(' --> '))
       .join('').replace(/\s+/g, '');
     assert.equal(subtitleText, narration.join('').replace(/\s+/g, ''));
+    const step = key => page.locator('[data-guide-step="'+key+'"]');
+    await step('script').click();
     await page.locator('#slideList .slide-item').nth(1).click();
+    await page.locator('#guideSlideSettings > summary').click();
     await page.locator('#sceneEnabledInput').uncheck();
+    await step('output').click();
     assert.equal(await page.locator('#videoResultStale').isVisible(), true);
-    assert.equal(await page.locator('#progressStaleCount').textContent(), '0');
+    await step('script').click();
     await page.locator('#sceneEnabledInput').check();
     await page.locator('#scriptInput').fill('Here are the new plans.');
-    assert.equal(await page.locator('#progressReadyCount').textContent(), '1');
-    assert.equal(await page.locator('#createVideoButton').isDisabled(), true);
-    await page.locator('#localTtsFiles').setInputFiles(['model_quantized.onnx', 'af_heart.bin'].map(name => path.join(fixtures, name)));
-    await page.locator('#localTtsBatch').click();
-    await page.waitForFunction(() => document.querySelector('#progressReadyCount').textContent === '2', null, {timeout});
+    assert.match(await page.locator('#guideCoverage').textContent(), /1 \/ 2/);
     await page.setViewportSize({width: 390, height: 844});
-    await page.locator('[data-mobile-key="output"]').click();
-    await page.locator('[data-scene-action="generate-local"][data-scene-action-index="0"]').click();
-    assert.equal(await page.locator('[data-mobile-key="script"]').getAttribute('aria-current'), 'page');
-    await page.getByText(/Slide 1 needs: jf_alpha\.bin/).waitFor();
+    await step('output').click();
+    await page.locator('#guideVideoIssue').click();
+    assert.equal(await step('script').getAttribute('aria-current'),'step');
+    assert.equal(await page.locator('#scriptInput').inputValue(),'Here are the new plans.');
+    await page.locator('#localTtsFiles').setInputFiles(['model_quantized.onnx', 'af_heart.bin'].map(name => path.join(fixtures, name)));
+    await page.locator('#guidePrimary[data-action="batch"]').click();
+    await page.locator('#localTtsCancel').click();
+    await page.locator('#guidePrimary[data-action="batch"]').click({timeout});
+    await page.locator('#guidePrimary[data-action="output"]').waitFor({timeout});
     await page.setViewportSize({width: 1280, height: 720});
     if (process.env.PVM_LEGACY_PROJECT) {
+      const legacy = await fs.readFile(process.env.PVM_LEGACY_PROJECT);
+      const manifest = JSON.parse(legacy.toString('utf8',12,12+legacy.readUInt32LE(8)));
+      assert.equal(manifest.schemaVersion,1);
+      const selected = manifest.selectedSlideIndex || 0;
       await page.locator('#projectInput').setInputFiles(process.env.PVM_LEGACY_PROJECT);
-      await page.waitForFunction(() => document.querySelector('#scriptInput').value.startsWith('Presentation Video Maker'));
-      assert.equal(await page.locator('#progressReadyCount').textContent(), '1');
-      assert.equal(await page.locator('[data-narration-source="file"]').getAttribute('aria-pressed'), 'true');
-      console.log('Reopened a v1.3.3 project and recovered its audio.');
+      await page.waitForFunction(expected => document.querySelector('#scriptInput').value === expected, manifest.slides[selected].script);
+      const savedAgain = await download(page,'#saveProjectButton',path.join(workspace,'legacy-restored.pvm'));
+      const restored = JSON.parse(savedAgain.toString('utf8',12,12+savedAgain.readUInt32LE(8)));
+      assert.equal(restored.slides[selected].audioSource,manifest.slides[selected].audioSource);
+      assert.equal(restored.slides[selected].followsDeckMethod,false);
+      for(const [index,slide] of manifest.slides.entries()){
+        if(slide.recordingAsset) assert.deepEqual(wav(savedAgain,index),wav(legacy,index));
+      }
+      console.log('Reopened a v1 project and recovered its audio.');
     }
+    const mobile = await browser.newContext({...devices['Pixel 7'], locale:'en-US', offline:true});
+    const phone = await mobile.newPage();
+    phone.on('pageerror', error => errors.push(error.message));
+    await phone.goto(app);
+    await phone.locator('#projectInput').setInputFiles(samplePath);
+    await phone.locator('#guidePrimary[data-action="fallback"]').click();
+    assert.match(await phone.locator('#selectedSlideLabel').textContent(), /2/);
+    await phone.locator('[data-narration-source="file"]').click();
+    await phone.locator('#narrationFileInput').setInputFiles('test-data/narration-regression-tone.wav');
+    await phone.locator('#guidePrimary[data-action="output"]').click();
+    assert.equal(await phone.locator('#createVideoButton').isEnabled(), true);
+    const phoneProject = await download(phone, '#saveProjectButton', path.join(workspace, 'finished-on-phone.pvm'));
+    assert.deepEqual(wav(phoneProject,0),wav(sample,0));
+    await mobile.close();
     assert.deepEqual(errors, []);
     console.log('Verified project resume, MP4 tracks, SRT, and stale narration. Output: ' + workspace);
   } finally {

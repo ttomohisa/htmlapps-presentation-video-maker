@@ -34,7 +34,7 @@ The canonical repository check runs the application regressions against the sour
    - Japanese or US English Kokoro synthesis using the selected local model and voice files. The browser worker performs text normalization, phonemization and ONNX inference, then returns a WAV and its duration;
    - microphone recording through `getUserMedia()`;
    - a local audio file.
-5. The app tracks ready / unrecorded / stale / failed narration and can jump to the next scene needing attention.
+5. The shared Open file, Narration and Video navigation switches between three views of the same deck state. Narration derives its next action and audio checklist from the same readiness rules as export.
 6. The user may explicitly save/open a local `.pvm` project containing the source PPTX, scene settings, narration assets, optional BGM, and output settings.
 7. TXT scripts and SRT/VTT subtitle cues can be generated locally from the current scene/timeline data.
 8. Slide visuals are rasterized to an origin-clean Canvas with `html2canvas` and `foreignObjectRendering: false`.
@@ -55,7 +55,7 @@ PVMPRJ1\n                       # 8-byte magic
 <raw payload blobs>              # PPTX, scene audio, optional BGM
 ```
 
-The manifest stores per-scene editable state, model/voice identifiers, the project narration language, output settings, and byte ranges into the raw payload. Generated WAVs are scene audio assets, so playback and export can resume without the model files. Model files, voice files, and the generated MP4 stay separate. Saving is explicit.
+The manifest stores per-scene editable state, model/voice identifiers, the deck narration method and language, output settings, and byte ranges into the raw payload. An optional flag records whether each slide follows the deck method. A project without this flag treats its saved per-slide methods as explicit. Generated WAVs are scene audio assets, so playback and export can resume without the model files. Model files, voice files, and the generated MP4 stay separate. Saving is explicit.
 
 Opening a project reconstructs the source PPTX locally, runs the normal PPTX parser/renderer, then restores saved scene/audio/BGM/output state. Model synthesis, browser speech capture, microphone recording, and video export block project save/open.
 

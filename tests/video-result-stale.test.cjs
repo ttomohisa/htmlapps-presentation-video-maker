@@ -86,6 +86,21 @@ test('excluding local narration or editing its padding makes the old MP4 stale w
   }
 });
 
+test('passive edits keep the stored browser voice when this device shows a fallback voice', () => {
+  const h = harness(), slide = localScene(h);
+  Object.assign(slide, {
+    audioSource: 'tts', recordingSource: 'tts', voiceURI: 'saved-desktop-voice',
+    prePadding: 0, postPadding: 0,
+  });
+  h.$('#voiceSelect').value = 'different-device-voice';
+  h.ctx.saveCurrentScript();
+  assert.equal(slide.voiceURI, 'saved-desktop-voice');
+  assert.equal(slide.recordingStatus, 'success');
+  h.ctx.saveCurrentScript({voiceChanged:true});
+  assert.equal(slide.voiceURI, 'different-device-voice');
+  assert.equal(slide.recordingStatus, 'stale');
+});
+
 test('undoing a script reset marks narration generated since the reset stale', () => {
   const h = harness(), slide = localScene(h);
   h.ctx.resetCurrentScript();
