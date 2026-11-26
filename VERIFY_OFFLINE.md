@@ -9,6 +9,12 @@
 7. Repeat with `dist/index.self-extract.html` and confirm its loader disappears and the restored app behaves the same way.
 8. Run `scripts/verify-self-extract.ps1` to confirm the self-extract payload restores byte-for-byte to `dist/index.html`.
 
+## Local model narration
+
+For the local TTS path, save the pinned `model_quantized.onnx`, `jf_alpha.bin` and `af_heart.bin` from the in-app download links. With the browser offline, generate a Japanese slide and an English slide, save the project, close the tab, and reopen the project. Export MP4 before selecting any model files again.
+
+The repeatable desktop test uses Playwright with Google Chrome and the checked-in three-slide deck. With Playwright available to Node, set the environment variable `PVM_KOKORO_DIR` to the directory with the three downloaded files and run `node scripts/local-tts.browser.cjs` from the repository root. Set `PVM_TEST_HTML` to exercise another standalone build. The test saves its project, video and subtitles in a temporary directory and prints the path.
+
 ## Permission-dependent narration
 
 Microphone and system-audio capture still require browser/OS permission even when the application is offline.

@@ -10,7 +10,7 @@ dependencies.json            Exact npm dependencies and embedded asset paths
 dependencies.lock.json       Committed npm tarball SHA-256 lock
 src/index.template.html      Editable application source
 build-standalone.ps1         Standalone HTML builder
-vendor/                      Pinned FFmpeg WASM runtime produced by FFmpeg WASM Builder
+vendor/                      Pinned FFmpeg and local speech synthesis resources
 scripts/                     Build, verification, and dependency-maintenance tools
 dist/index.html              Readable single-HTML release artifact
 dist/index.self-extract.html Gzip self-extracting single-HTML variant
@@ -29,8 +29,9 @@ The canonical repository check runs the application regressions against the sour
 1. The user selects a local `.pptx` file.
 2. `@aiden0z/pptx-renderer` parses and renders the presentation in the browser.
 3. Speaker notes become the initial narration script where available; otherwise slide text is used as a fallback.
-4. Each scene can use one of three narration sources:
+4. Each scene can use one of four narration sources:
    - local `SpeechSynthesis` voice captured through explicit system-audio display sharing, either for the selected scene or as an all-scene TTS batch;
+   - Japanese or US English Kokoro synthesis using the selected local model and voice files. The browser worker performs text normalization, phonemization and ONNX inference, then returns a WAV and its duration;
    - microphone recording through `getUserMedia()`;
    - a local audio file.
 5. The app tracks ready / unrecorded / stale / failed narration and can jump to the next scene needing attention.

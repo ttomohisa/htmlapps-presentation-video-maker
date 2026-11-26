@@ -45,6 +45,8 @@ No runtime CDN, analytics, telemetry, external font, cloud TTS API, AI API, or c
 
 ## Browser permissions
 
+Local model synthesis processes explicitly selected, pinned model and voice files in a browser worker. Text processing and inference use resources embedded in the standalone HTML. Opening a model download link navigates to Hugging Face. The presentation and scripts stay on the device.
+
 The application does not request microphone or display/system-audio capture on page load. The user must initiate the relevant action, and browser/operating-system permission dialogs remain authoritative.
 
 System-audio capture can include notification sounds or unrelated application audio. The UI asks the user to stop unrelated audio while recording on-device speech. On smartphones, the UI does not offer TTS/system-audio recording as a supported path and explicitly explains that TTS is preview-only there.

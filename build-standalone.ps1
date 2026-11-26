@@ -352,7 +352,9 @@ $manifest = [ordered]@{
 Write-Step "Generating standalone HTML"
 $template = [System.IO.File]::ReadAllText($TemplatePath, [System.Text.Encoding]::UTF8)
 $assetBundleJson = ConvertTo-SafeJson $assetBundle 50
+$ttsScripts = & (Join-Path $Root "scripts\embed-local-tts.ps1") -Root $Root
 $replacements = [ordered]@{
+  "__LOCAL_TTS_SCRIPTS__" = $ttsScripts
   "__APP_CONFIG_JSON__" = ConvertTo-SafeJson $appConfig 20
   "__BUILD_MANIFEST_JSON__" = ConvertTo-SafeJson $manifest 40
   "__EMBEDDED_ASSET_BUNDLE_JSON__" = $assetBundleJson
@@ -362,6 +364,7 @@ $replacements = [ordered]@{
   "__FFMPEG_WASM_GZIP_BASE64__" = $ffmpegWasmGzipBase64
 }
 $replacementExpectedCounts = @{
+  "__LOCAL_TTS_SCRIPTS__" = 1
   "__APP_CONFIG_JSON__" = 1
   "__BUILD_MANIFEST_JSON__" = 1
   "__EMBEDDED_ASSET_BUNDLE_JSON__" = 1
