@@ -43,6 +43,12 @@ function checkProject(bytes) {
   assert.ok(bytes.length < 5000000, 'project should contain narration and slides only');
 }
 
+function checkMp4(bytes) {
+  assert.equal(bytes.toString('ascii', 4, 8), 'ftyp');
+  assert.ok(bytes.includes(Buffer.from('soun')), 'MP4 has an audio track');
+  assert.ok(bytes.includes(Buffer.from('vide')), 'MP4 has a video track');
+}
+
 async function main() {
   assert.ok(fixtures, 'Set PVM_KOKORO_DIR to the directory containing the pinned model and voices.');
   const workspace = await fs.mkdtemp(path.join(os.tmpdir(), 'pvm-offline-test-'));
@@ -108,9 +114,7 @@ async function main() {
     await page.locator('#createVideoButton').click();
     await page.locator('#videoResultPreview[src]').waitFor({timeout});
     const result = await download(page, '#saveVideoButton', path.join(workspace, 'bilingual.mp4'));
-    assert.equal(result.toString('ascii', 4, 8), 'ftyp');
-    assert.ok(result.includes(Buffer.from('soun')), 'MP4 has an audio track');
-    assert.ok(result.includes(Buffer.from('vide')), 'MP4 has a video track');
+    checkMp4(result);
     await page.locator('summary[data-i18n="textExportTitle"]').click();
     const subtitles = await download(page, '#exportSrtButton', path.join(workspace, 'bilingual.srt'));
     const subtitleText = subtitles.toString('utf8').replace(/^\uFEFF/, '').split(/\r?\n/)
@@ -155,22 +159,52 @@ async function main() {
       }
       console.log('Reopened a v1 project and recovered its audio.');
     }
-    const mobile = await browser.newContext({...devices['Pixel 7'], locale:'en-US', offline:true});
+    const mobileOptions = {...devices['Pixel 7'], locale:'en-US', offline:true};
+    const mobile = await browser.newContext(mobileOptions);
+    mobile.on('request', request => {
+      if (/^https?:/.test(request.url())) errors.push(request.url());
+    });
     const phone = await mobile.newPage();
     phone.on('pageerror', error => errors.push(error.message));
     await phone.goto(app);
     await phone.locator('#projectInput').setInputFiles(samplePath);
-    await phone.locator('#guidePrimary[data-action="fallback"]').click();
-    assert.match(await phone.locator('#selectedSlideLabel').textContent(), /2/);
-    await phone.locator('[data-narration-source="file"]').click();
-    await phone.locator('#narrationFileInput').setInputFiles('test-data/narration-regression-tone.wav');
-    await phone.locator('#guidePrimary[data-action="output"]').click();
-    assert.equal(await phone.locator('#createVideoButton').isEnabled(), true);
-    const phoneProject = await download(phone, '#saveProjectButton', path.join(workspace, 'finished-on-phone.pvm'));
+    await phone.locator('#guideModelSetup').waitFor();
+    assert.equal(await phone.locator('#guideMethod').inputValue(), 'local');
+    assert.equal(await phone.locator('#guideCapture').isVisible(), false);
+    const phoneInput = phone.locator('#localTtsFiles');
+    await phoneInput.setInputFiles(['model_quantized.onnx', 'af_heart.bin'].map(name => path.join(fixtures, name)));
+    const workerStarted = phone.waitForEvent('worker');
+    await phone.locator('#guidePrimary[data-action="batch"]').click();
+    const worker = await workerStarted;
+    assert.equal(await worker.evaluate(() => self.name), 'Kokoro speech synthesis');
+    await phone.locator('#guidePrimary[data-action="output"]').click({timeout});
+    const phoneProject = await download(phone, '#saveProjectButton', path.join(workspace, 'mobile-bilingual.pvm'));
+    checkProject(phoneProject);
     assert.deepEqual(wav(phoneProject,0),wav(sample,0));
+    const workerClosed = worker.waitForEvent('close');
+    await phone.locator('#createVideoButton').click();
+    await workerClosed;
+    const phoneMp4 = await download(phone, '#saveVideoButton', path.join(workspace, 'mobile-bilingual.mp4'));
+    checkMp4(phoneMp4);
     await mobile.close();
+
+    const limited = await browser.newContext(mobileOptions);
+    const fallback = await limited.newPage();
+    fallback.on('pageerror', error => errors.push(error.message));
+    await fallback.addInitScript(() => { window.BigInt64Array = undefined; });
+    await fallback.goto(app);
+    await fallback.locator('#projectInput').setInputFiles(samplePath);
+    await fallback.locator('#guidePrimary[data-action="fallback"]').click();
+    assert.match(await fallback.locator('#selectedSlideLabel').textContent(), /2/);
+    await fallback.locator('[data-narration-source="file"]').click();
+    await fallback.locator('#narrationFileInput').setInputFiles('test-data/narration-regression-tone.wav');
+    await fallback.locator('#guidePrimary[data-action="output"]').click();
+    assert.equal(await fallback.locator('#createVideoButton').isEnabled(), true);
+    const fallbackProject = await download(fallback, '#saveProjectButton', path.join(workspace, 'mobile-fallback.pvm'));
+    assert.deepEqual(wav(fallbackProject,0),wav(sample,0));
+    await limited.close();
     assert.deepEqual(errors, []);
-    console.log('Verified project resume, MP4 tracks, SRT, and stale narration. Output: ' + workspace);
+    console.log('Verified mobile Kokoro synthesis, MP4 export, and file fallback. Output: ' + workspace);
   } finally {
     await browser.close();
   }

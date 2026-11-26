@@ -10,7 +10,7 @@ A privacy-focused, single-HTML app for turning a PowerPoint (PPTX) deck into a n
 
 ## Generate Japanese and English narration from speaker notes
 
-Open a PowerPoint in desktop Chrome or Edge. In **Narration**, download the shared model and the voice for your language, then use **Select model and voice files** to open them locally.
+Open a PowerPoint in a supported browser. On phones, choose **Generate narration from notes** under **Narration method for this deck**. Download the shared model and a voice, then open them with **Select model and voice files**.
 
 | File | Used for |
 | --- | --- |
@@ -43,15 +43,15 @@ GitHub Pages delivers the initial HTML. After it loads, PPTX parsing, speaker-no
 
 ## Smartphone use
 
-v1.2.0 introduced the smartphone workflow for:
+In a supported smartphone browser, you can complete the whole workflow:
 
 1. opening PPTX or `.pvm`;
 2. editing scripts;
-3. recording **My voice** or assigning a local **Audio file** per scene;
+3. generating Kokoro audio from notes, recording your voice, or assigning an audio file per slide;
 4. configuring subtitles / BGM / transitions;
 5. creating and saving MP4, with 720p recommended.
 
-> **TTS/on-device speech cannot be recorded on smartphones.** Speech preview can still work, but the app cannot capture that synthesized voice as a narration asset on mobile. Use **My voice** or **Audio file** for smartphone video narration. TTS capture remains a desktop Chrome / Edge workflow using Entire Screen + system audio.
+**Generate narration from notes** creates audio for the video with Kokoro on the device. **Hear a voice sample** uses the browser voice where available. Recording that browser voice uses Entire Screen and system audio on desktop Chrome or Edge.
 
 720p is the smartphone default. 1080p remains selectable but has much higher memory pressure. During smartphone export, slide snapshots are created and released progressively instead of retaining the entire deck in rasterized form, and Wake Lock is requested where available.
 

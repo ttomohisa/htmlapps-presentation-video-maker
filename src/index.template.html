@@ -807,7 +807,7 @@
             <div class="voice-info"><span class="mini-badge" data-i18n="onDevice">端末内</span><span id="voiceSummary">—</span></div>
             <div class="notice smartphone-only mobile-capability-notice" id="mobileTtsNotice">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
-              <div><strong data-i18n="mobileTtsTitle">スマホでは端末内読み上げを録音できません</strong><span data-i18n="mobileTtsDescription">読み上げの試聴はできますが、動画用の録音素材として取り込めません。「自分の声」または「音声ファイル」を使用してください。</span></div>
+              <div><strong data-i18n="mobileTtsTitle">スマホでは端末内読み上げを録音できません</strong><span data-i18n="mobileTtsDescription">動画に入れる声は「ノートを読み上げる」から作れます。</span></div>
             </div>
             <div class="voice-scope-card" data-desktop-tts-capture>
               <div class="voice-scope-copy"><strong data-i18n="bulkVoiceTitle">全スライドの音声をそろえる</strong><span data-i18n="bulkVoiceDescription">現在選んでいる音声と速度を、すべてのスライドへ反映します。</span></div>
@@ -1005,7 +1005,7 @@
       <h3 data-i18n="helpUseTitle">基本操作</h3><ul><li data-i18n="helpUseOne">PPTXを読み込み、スライドと発表者ノートを確認します。</li><li data-i18n="helpUseTwo">端末内の音声を選び、試聴します。</li><li data-i18n="helpUseThree">「全シーンを録音」を開始し、共有画面で「画面全体」と「システム音声を共有」を選びます。</li><li data-i18n="helpUseFour">録音完了後、「動画を作成」でMP4を書き出して保存します。</li></ul>
       <h3 data-i18n="helpPrivacyTitle">プライバシー</h3><p data-i18n="helpPrivacyText">PPTX、発表者ノート、台本、録音は外部サーバーへ送信しません。オンラインTTSは使用せず、端末内として報告された音声だけを候補にします。</p>
       <h3 data-i18n="helpCaptureTitle">システム音声について</h3><p data-i18n="helpCaptureText">システム音声を取得できるかはブラウザ・OS・共有対象に依存します。失敗したシーンがあってもPPTXの読込結果や他の録音済みシーンは失われません。Chrome / EdgeのPC版を主な確認対象としています。</p><h3 data-i18n="helpSmartphoneTitle">スマートフォンで使う場合</h3><p data-i18n="helpSmartphoneText">スマホでは端末内読み上げの試聴はできますが、TTS音声を録音素材として取り込めません。自分の声または音声ファイルを使用し、動画は720pを推奨します。</p>
-      <h3 data-i18n="helpLocalTitle">ローカルTTSモデルで音声を作る</h3><p data-i18n="helpLocalText">PC版Chrome・Edge向けの機能です。「ローカルTTSモデル」の入手案内からモデルと使う言語の声を保存し、アプリで選びます。資料の既定言語とスライドの言語を設定し、音声を生成して試聴できます。.pvmには生成音声を保存します。再度開いたとき、モデルと声の選び直しが必要なのは再生成するときだけです。</p>
+      <h3 data-i18n="helpLocalTitle">発表者ノートを読み上げる</h3><p data-i18n="helpLocalText">ナレーション画面で「ノートを読み上げる」を選びます。共通モデルと使う言語の声をダウンロードすると、対応ブラウザのスマホでも動画用の音声を作れます。</p>
       <h3 data-i18n="helpFileTitle">対応ファイル</h3><p data-i18n="helpFileText">.pptx、最大150 MB。古い .ppt は対象外です。PowerPointのアニメーションや切り替え効果は静的なスライドとして扱います。</p>
       <h3 data-i18n="helpPersistenceTitle">作業内容</h3><p data-i18n="helpPersistenceText">PPTXや台本、録音は自動保存しません。ページを再読み込みすると消えます。</p>
       <h3 data-i18n="helpSubtitlePreviewTitle">字幕を保存する前に確認</h3><p data-i18n="helpSubtitlePreviewText">出力画面の「字幕プレビュー」を開き、SRT / VTTを選ぶと、保存する字幕の全文と件数を確認できます。内容は読み取り専用で、編集は台本欄で行います。未計測の音声は推定時間を使い、焼き込み字幕とタイミングが異なる場合があります。プレビューを開いてもファイルは保存されません。</p>
@@ -1153,11 +1153,15 @@
         guideOldVideo:['変更前の動画です。新しい設定を反映するにはMP4を作り直してください。','This video is from before your changes. Create a new MP4 to use the current settings.'],
         guideStopMic:['録音を止める','Stop recording'],
         helpUseOne:['「PowerPointを開く」で発表者ノートを取り込みます。保存済みの.pvmから再開することもできます。','Open PowerPoint to import its speaker notes. You can also reopen a saved .pvm.'],
-        helpUseTwo:['「ナレーション」で音声を用意します。PCではノートをまとめて読み上げ、スマホでは録音や音声ファイルを使えます。','Prepare audio in Narration. Generate it from notes on a supported PC, or record or choose audio on a phone.'],
+        helpUseTwo:['「ナレーション」で、ノートを読み上げる・自分の声を録音する・音声ファイルを使う、のいずれかを選びます。','In Narration, generate audio from your notes, record your voice, or choose an audio file.'],
         helpUseThree:['台本や読み方を直すときは、一覧からスライドを選びます。','Select a slide to edit its script or voice.'],
         helpUseFour:['「動画」でMP4を作って保存します。あとで編集する場合は「作業を保存」で.pvmも保存します。','Create and save the MP4 in Video. Use Save work to keep a .pvm for future edits.'],
         helpLocalTitle:['発表者ノートを読み上げる','Generate audio from speaker notes'],
-        helpLocalText:['PC版Chrome・Edgeで、ナレーション画面の「声の準備」から共通モデルと使う言語の声をダウンロードし、モデルと声を選びます。1枚ずつ、またはまとめて音声を作れます。保存済みの.pvmに音声があれば、モデルを選び直さずに再生・出力できます。','In Chrome or Edge on desktop, download the shared model and the voice for your language from Set up the voice, then select the files. Create audio for one slide or in a batch. Audio saved in a .pvm can be played and exported without loading the model again.'],
+        helpLocalText:['「ナレーション」で「ノートを読み上げる」を選び、共通モデルと使う言語の声をダウンロードしてアプリで開きます。対応ブラウザのスマホでも、1枚ずつ、またはまとめて動画用の音声を作れます。保存済みの.pvmは、モデルを選び直さずに再生・出力できます。','In Narration, choose Generate narration from notes. Download the shared model and a voice for your language, then open those files in the app. On supported desktop and phone browsers, you can create audio for one slide or a batch. Saved .pvm audio can be played and exported without loading the model again.'],
+        helpSmartphoneText:['「ノートを読み上げる」で日本語・英語の音声を作れます。録音や音声ファイルも使えます。動画は720pが初期設定です。','Generate Japanese or English audio from your notes, record your voice, or choose an audio file. Video defaults to 720p.'],
+        mobileTtsDescription:['端末の声は試聴できます。動画用に音声を作るには「ノートを読み上げる」を選びます。','You can hear a sample of your device’s voice. Choose Generate narration from notes to create audio for your video.'],
+        localVerifyUnavailable:['このブラウザではモデルと声のファイルを確認できません。別のブラウザで開いてください。','This browser could not verify the model and voice files. Open the app in another browser.'],
+        localErrorRuntime:['スライド{slide}の音声を作れませんでした。台本を短くして再試行するか、別の方法で音声を用意してください。','Could not create audio for slide {slide}. Try a shorter script or choose another narration method.'],
         guideMicDenied:['マイクを使えませんでした。権限を確認して録音し直すか、音声ファイルを選んでください。','Could not use the microphone. Check permissions and try again, or choose an audio file.'],
         guideCaptureRunning:['読み上げを録音しています。','Recording computer speech.'],
         sourceLocal:['ノートを読み上げる','Generate narration from notes'],
@@ -1901,17 +1905,15 @@
             const matches=()=>state.slides[index]===slide && narrationSource(slide)==='local' &&
               slide.script===text && localLanguage(slide)===language && slide.rate===rate && slide.enabled;
             try {
-              const result=await window.LocalTTS.synthesize({
+              const {blob,duration}=await window.LocalTTS.synthesize({
                 text,language,rate,model:state.localFiles.get('model_quantized.onnx'),voice:state.localFiles.get(voice),signal
               });
               if(signal.aborted) throw new DOMException('Cancelled','AbortError');
-              if(!result?.blob?.size) throw new Error('No audio');
-              const duration=await audioBlobDuration(result.blob);
-              if(signal.aborted) throw new DOMException('Cancelled','AbortError');
+              if(!blob?.size||!Number.isFinite(duration)||duration<=0) throw new Error('Invalid generated audio');
               if(!matches()) { state.localMessage={key:'localChanged',values}; break; }
               slide.localRetry=false;
               slide.localAsset={model:LOCAL_FILES['model_quantized.onnx'].sha256,voice,language,rate};
-              commitSceneAudio(slide,result.blob,{source:'local',fileName:'slide-'+(index+1)+'.wav',duration});
+              commitSceneAudio(slide,blob,{source:'local',fileName:'slide-'+(index+1)+'.wav',duration});
               completed++;
             } catch(error) {
               if(signal.aborted || error?.name==='AbortError') throw error;
@@ -2264,14 +2266,15 @@
       }
       function canUseMethod(method){
         if(method==='local'){
-          const chromium=/(?:Chrome|Edg)\//.test(navigator.userAgent);
-          return !isSmartphoneMode()&&chromium&&Boolean(window.LocalTTS&&window.Worker&&window.WebAssembly&&window.DecompressionStream&&window.crypto?.subtle);
+          const supportedBrowser=isSmartphoneMode()||/(?:Chrome|Edg)\//.test(navigator.userAgent);
+          return supportedBrowser&&Boolean(window.LocalTTS&&window.Worker&&window.WebAssembly&&window.DecompressionStream&&window.BigInt64Array&&window.crypto?.subtle);
         }
         if(method==='tts') return !isSmartphoneMode()&&Boolean(navigator.mediaDevices?.getDisplayMedia&&window.MediaRecorder&&window.speechSynthesis);
         if(method==='mic') return Boolean(navigator.mediaDevices?.getUserMedia&&window.MediaRecorder);
         return method==='file';
       }
       function defaultDeckMethod(){
+        if(isSmartphoneMode()&&canUseMethod('mic')) return 'mic';
         return ['local','mic','file'].find(canUseMethod);
       }
       function guideSlideCount(key,count){
@@ -2948,6 +2951,7 @@
         if(projectOperationBusy()||state.micStarting||state.fileLoading) return;
         const validation=videoValidation(); if(!validation.ready){updateVideoExportState();return;} if(state.videoExportPhase!=='idle'&&state.videoExportPhase!=='success'&&state.videoExportPhase!=='error') return;
         const AudioContextClass=window.AudioContext||window.webkitAudioContext; if(!AudioContextClass){updateVideoExportState();return;}
+        if(isSmartphoneMode()) window.LocalTTS?.dispose();
         const audioContext=new AudioContextClass(); const audioResumePromise=audioContext.state==='suspended'?audioContext.resume():Promise.resolve();
         markVideoResultStale(); const controller=new AbortController(); state.videoAbortController=controller; const signal=controller.signal; const {width,height}=outputDimensions(); const indexes=validation.indexes; let fallbackCount=0, intermediate=null, report=performanceReportStart();
         setVideoPhase('preparing'); setVideoProgress(1,'videoStagePreparing'); await acquireVideoWakeLock();

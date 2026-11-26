@@ -20,7 +20,7 @@ Version `1.3.0` keeps the tested v1.2.0 smartphone/project/narration behavior an
 ## 3. Primary flow
 
 1. **Open file.** Open a .pptx up to 150 MB. Import notes and use slide text as the draft when notes are absent. A .pvm opens in Narration or Video after restoration, depending on whether the audio is ready.
-2. **Narration.** Prepare the deck’s audio. Compatible desktop browsers default to local model narration with Japanese selected. Phones default to the microphone where available. A file-only environment defaults to audio files. Model setup lists the shared model and missing languages for the batch. Creating and listening to a sample produces the actual WAV for that slide.
+2. **Narration.** Prepare the deck’s audio. Compatible desktop browsers default to local model narration with Japanese selected. Phones can select local model narration and default to the microphone where available. An environment with neither path defaults to audio files. Model setup lists the shared model and missing languages for the batch. Creating and listening to a sample produces the actual WAV for that slide.
 3. **Edit individual slides.** Choose a slide to edit its script or settings. Batch synthesis and batch computer-speech capture skip audio that is already usable for the selected method. An included reading slide with an empty script can appear without narration. Audio recorded through the microphone or selected from a file can be used with an empty script.
 4. **Video.** Show the output duration, included slide count and resolution. Link unmet audio requirements to the affected slide. Show progress, cancellation, preview and saving at the same location. Provide transition, BGM, subtitle and timeline controls under Finishing settings, and text exports under a separate disclosure.
 5. **Save work.** Store deck and individual audio methods as optional fields in the v2 manifest, alongside the existing actual method. Older projects restore their saved methods as explicit choices. Preserve source and model compatibility across reopening.
@@ -128,7 +128,7 @@ Defaults:
 - `postPadding`: 0.8 seconds;
 - `recordingStatus`: `pending`;
 - recording fields are empty/zero until capture succeeds;
-- new PPTX scenes default to `mic` on detected smartphones and `tts` on desktop. Loading an existing `.pvm` preserves its saved narration source.
+- new PPTX scenes default to `mic` on phones with recording support and `local` on supported desktop browsers. Loading an existing `.pvm` preserves its saved narration source.
 
 The recorded Blob intentionally contains only a small technical lead/tail around speech. `recordingSpeechStartOffset` and `recordingSpeechEndOffset` identify the spoken region for video composition. User-configured pre/post padding is **not waited out during capture**; it remains timeline metadata.
 
@@ -144,7 +144,7 @@ Applying voice/rate to all scenes and restoring source scripts preserve Undo beh
 
 Each scene has `audioSource` with one of `local`, `tts`, `mic`, or `file`. A successful audio asset records its provenance in `recordingSource`. Switching sources preserves the previous Blob and makes an unmatched recording stale.
 
-- `local`: synthesizes WAV audio from the selected Kokoro model and Japanese or US English voice, entirely inside a browser worker. A scene inherits the project language or overrides it, and can set its own speed. The worker uses the English lexicon and spelling rules when Japanese scripts contain English words. Typical abbreviations retain letter-by-letter readings. Model synthesis is validated on desktop Chromium.
+- `local`: synthesizes WAV audio from the selected Kokoro model and Japanese or US English voice, entirely inside a browser worker. A scene inherits the project language or overrides it, and can set its own speed. The worker uses the English lexicon and spelling rules when Japanese scripts contain English words. Typical abbreviations retain letter-by-letter readings. Compatible phones and desktop Chrome or Edge can generate local model audio. A phone releases the Kokoro worker before generating video so its runtime memory can be reclaimed.
 - `tts`: uses SpeechSynthesis and Windows system-audio capture on supported desktop browsers. The selected scene or all eligible scenes can be captured. Smartphones can preview browser speech where available and use microphone or file narration for the supported recording workflow.
 - `mic`: uses `getUserMedia({audio:true})` and MediaRecorder to record the selected slide directly from the microphone. Existing audio is not destroyed until a new recording succeeds.
 - `file`: accepts a local audio file up to 100 MB, reads duration locally, and stores the File directly as the scene audio Blob.
@@ -165,11 +165,11 @@ The app:
 
 The user already confirmed on a real Windows environment that Web Speech API narration is recordable through **Entire Screen + system audio**.
 
-Smartphone rule for v1.2.0:
+System audio on smartphones:
 
 - SpeechSynthesis may still be used for preview when the browser exposes local voices.
 - TTS capture buttons and all-scene system-audio controls are unavailable on detected smartphones.
-- The UI must state that smartphone TTS audio cannot be recorded and direct the user to microphone or local audio-file narration.
+- The UI describes the browser voice as a sample and identifies Kokoro as the route for generating narration audio on compatible phones.
 - Do not emulate a mobile TTS recording path with cloud APIs or network services.
 
 ## 11. System-audio preflight
@@ -332,7 +332,7 @@ The introduction uses a single sentence describing the PowerPoint-to-narrated-MP
 - Show Open file, Narration and Video once a deck is loaded. Each screen is independently accessible and maintains the current slide and edits.
 - The Narration screen puts the next action above the slide editor. Use the slide list to jump to a slide or filter for slides that need audio.
 - Use one stacked layout with collapsible slide list and preview on narrow screens. Screen width controls layout. Device capability determines available narration methods.
-- Offer recording or file selection for unfinished desktop narration on phones. Play and export valid audio that was already stored in a project.
+- Offer Kokoro on compatible phones and provide recording or file selection where the saved method is unavailable. Play and export valid audio that was already stored in a project.
 - Use 720p by default on phones and 1080p on desktop. Preserve the resolution and finishing settings of a reopened project.
 - Check explicit state labels, visible focus and no horizontal overflow at 320 px and common desktop widths.
 
@@ -392,7 +392,7 @@ Required for the current stable line:
 - Japanese/English UI works without horizontal page overflow at 360–390 px;
 - smartphone UI shows Open file / Narration / Video without horizontal overflow at 320–390 px;
 - new PPTX scenes default to microphone narration on detected smartphones while `.pvm` restore preserves saved sources;
-- smartphone UI explicitly states that TTS/on-device speech can be previewed but cannot be captured as narration; desktop system-audio capture controls are hidden on smartphones;
+- compatible phones can generate Japanese and English Kokoro audio and include it in MP4, while browser voice preview and desktop system-audio capture are presented separately;
 - smartphone video output defaults to 720p, shows a 1080p memory warning, uses progressive snapshot composition, and releases the FFmpeg runner after export;
 - smartphone video creation requests Wake Lock when available without making Wake Lock a hard requirement;
 - the PPTX drop area closes after a successful load while the loaded-file summary and Replace action remain available;

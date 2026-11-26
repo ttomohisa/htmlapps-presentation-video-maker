@@ -9,7 +9,7 @@ const html = fs.readFileSync(process.env.PVM_TEST_HTML || path.join(__dirname, '
 function production(names) {
   const context = vm.createContext({});
   vm.runInContext(names.map(name => {
-    const start = html.search(new RegExp('^      function ' + name + '\\(', 'm'));
+    const start = html.search(new RegExp('^      (?:async )?function ' + name + '\\(', 'm'));
     assert.ok(start >= 0, name);
     const end = html.indexOf('\n      }', start);
     assert.ok(end > start, name);
@@ -21,6 +21,44 @@ function production(names) {
 test('the workflow has three screens and one common navigation', () => {
   assert.deepEqual([...html.matchAll(/data-guide-page="([^"]+)"/g)].map(match => match[1]), ['slides', 'script', 'output']);
   assert.deepEqual([...html.matchAll(/data-guide-step="([^"]+)"/g)].map(match => match[1]), ['slides', 'script', 'output']);
+});
+
+test('phones offer Kokoro without enabling system audio capture', () => {
+  const context = production(['canUseMethod', 'defaultDeckMethod']);
+  Object.assign(context, {
+    navigator: {userAgent: 'iPhone Safari', mediaDevices: {getUserMedia(){}, getDisplayMedia(){}}},
+    isSmartphoneMode: () => true,
+    window: {
+      LocalTTS: {}, Worker(){}, WebAssembly: {}, DecompressionStream(){}, BigInt64Array,
+      crypto: {subtle: {}}, MediaRecorder(){}, speechSynthesis: {},
+    },
+  });
+  assert.equal(context.canUseMethod('local'), true);
+  assert.equal(context.canUseMethod('tts'), false);
+  assert.equal(context.defaultDeckMethod(), 'mic');
+  delete context.window.crypto.subtle;
+  assert.equal(context.canUseMethod('local'), false);
+});
+
+test('Kokoro saves a valid WAV using the sample duration from the worker', async () => {
+  const context = production(['generateLocalAudio']);
+  const slide = {enabled: true, audioSource: 'local', script: 'Hello', rate: 1.0};
+  const blob = new Blob(['audio']);
+  const saved = [];
+  Object.assign(context, {
+    AbortController,
+    state: {slides: [slide], selectedSlideIndex: 0, localFiles: new Map()},
+    window: {LocalTTS: {synthesize: async () => ({blob, duration: 1.25})}},
+    LOCAL_FILES: {'model_quantized.onnx': {sha256: 'test'}},
+    projectOperationBusy: () => false, canUseMethod: () => true,
+    saveCurrentScript(){}, narrationSource: value => value.audioSource,
+    missingLocalFiles: () => [], localLanguage: () => 'en', localVoiceName: () => 'af_heart.bin',
+    audioBlobDuration: async () => { throw new Error('Media metadata unavailable'); },
+    commitSceneAudio: (slide, audio, options) => saved.push({audio, duration: options.duration}),
+    renderSceneRecordings(){}, refreshCaptureReady(){},
+  });
+  await context.generateLocalAudio();
+  assert.deepEqual(saved, [{audio: blob, duration: 1.25}]);
 });
 
 test('the deck does not count mismatched, failed or stale audio as usable', () => {
