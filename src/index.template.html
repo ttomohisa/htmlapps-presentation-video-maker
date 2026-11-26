@@ -405,7 +405,11 @@
     .local-tts-progress { flex:1 1 180px; min-width:0; display:grid; gap:5px; }
     #localTtsCount { font-weight:750; font-variant-numeric:tabular-nums; }
     #localTtsStatus { font-size:.88rem; }
-    #localTtsProgress { width:100%; height:10px; accent-color:var(--accent); }
+    #localTtsProgress { flex:1 0 100%; width:100%; height:8px; accent-color:var(--accent); }
+    #localTtsProgress[value] { appearance:none; border:0; border-radius:8px; overflow:hidden; background:var(--line); }
+    #localTtsProgress[value]::-webkit-progress-bar { background:var(--line); }
+    #localTtsProgress[value]::-webkit-progress-value { background:var(--accent); }
+    #localTtsProgress[value]::-moz-progress-bar { background:var(--accent); }
     .local-tts-run[hidden],#localTtsCancel[hidden],#testPage.local-output [data-desktop-tts-capture],#testPage.local-output #captureStatusChip { display:none; }
     .mic-live { display:inline-flex; align-items:center; gap:6px; color:#8d2922; font-size:10px; font-weight:800; }
     .mic-live::before { content:""; width:8px; height:8px; border-radius:50%; background:#c53b32; box-shadow:0 0 0 4px rgba(197,59,50,.12); }
@@ -719,7 +723,7 @@
           </div>
           <div id="guideModelSetup" class="guide-model" hidden>
             <h3 data-i18n="guideModelTitle">声の準備</h3>
-            <p data-i18n="guideModelSteps">必要なファイルをダウンロードし、それぞれの行から読み込みます。</p>
+            <p data-i18n="guideModelSteps">ダウンロード時のみHugging Faceに接続します。音声は端末内で生成します。</p>
             <ul id="guideModelFiles">
               <li data-model-file="model_quantized.onnx" hidden>
                 <div class="guide-model-name"><strong data-i18n="guideModel">共通モデル</strong><small>model_quantized.onnx · 92 MB</small></div>
@@ -762,9 +766,9 @@
             <div class="local-tts-progress">
               <span id="localTtsCount" hidden></span>
               <span id="localTtsStatus" role="status" tabindex="-1"></span>
-              <progress id="localTtsProgress" aria-describedby="localTtsCount" data-i18n-aria-label="guideSpeechProgress" aria-label="スライド内の音声生成の進捗" hidden></progress>
             </div>
             <button id="localTtsCancel" class="button" type="button" data-i18n="localCancel" hidden>生成を中止</button>
+            <progress id="localTtsProgress" aria-describedby="localTtsCount" data-i18n-aria-label="guideSpeechProgress" aria-label="音声生成全体の進捗" hidden></progress>
           </div>
         </div>
         <div id="slideWorkspace" class="guide-editor" hidden>
@@ -1144,7 +1148,7 @@
         guideReadLanguage:['読み上げる言語','Narration language'],
         guideDeckMethod:['音声の作り方','Narration method for this deck'],
         guideModelTitle:['声の準備','Set up the voice'],
-        guideModelSteps:['必要なファイルをダウンロードし、それぞれの行から読み込みます。','Download each required file, then load it from its row.'],
+        guideModelSteps:['ダウンロード時のみHugging Faceに接続します。音声は端末内で生成します。','Only downloads connect to Hugging Face. Audio is generated on your device.'],
         guideModel:['共通モデル','Shared model'],
         guideJaVoice:['日本語の声','Japanese voice'],
         guideEnVoice:['英語の声','English voice'],
@@ -1157,12 +1161,12 @@
         guideReadJaVoice:['日本語の声を読み込む','Load Japanese voice'],
         guideReadEnVoice:['英語の声を読み込む','Load English voice'],
         guideWrongFile:['{file}はこの行のファイルと一致しません。{expected}を読み込んでください。','{file} does not match this row. Load {expected}.'],
-        guideSpeechProgress:['スライド内の音声生成の進捗','Audio generation progress for this slide'],
-        guideSpeechSlides:['{completed} / {total} 枚完了 · スライド {slide}','{completed} of {total} complete · Slide {slide}'],
+        guideSpeechProgress:['音声生成全体の進捗','Overall audio generation progress'],
+        guideSpeechSlides:['{total}枚中{completed}枚完了','{completed} of {total} complete'],
         guideSpeechPreparing:['音声生成を開始しています…','Starting audio generation…'],
         guideSpeechModel:['モデルと声を準備中…','Preparing the model and voice…'],
         guideSpeechScript:['台本を読み上げ用に準備中…','Preparing the script for narration…'],
-        guideSpeechChunks:['音声を生成中 · {chunksCompleted} / {totalChunks} 区間','Generating audio · {chunksCompleted} of {totalChunks} segments'],
+        guideSpeechGenerating:['スライド{slide}の音声を生成中…','Generating audio for slide {slide}…'],
         guidePickSlide:['スライドを選ぶ','Choose a slide'],
         guideFilter:['音声が必要なスライドだけ','Only slides that need audio'],
         guideNoIssues:['音声が必要なスライドはありません。','No slides need audio.'],
@@ -1875,12 +1879,13 @@
         count.hidden=meter.hidden=!current;
         const summary=current?format('guideSpeechSlides',current):'';
         if(count.textContent!==summary) count.textContent=summary;
-        const stageKeys={preparing:'guideSpeechPreparing',model:'guideSpeechModel',script:'guideSpeechScript',synthesis:'guideSpeechChunks'};
+        const stageKeys={preparing:'guideSpeechPreparing',model:'guideSpeechModel',script:'guideSpeechScript',synthesis:'guideSpeechGenerating'};
         const message=current?format(stageKeys[current.phase],current):localMessageText(state.localMessage);
         if(status.textContent!==message) status.textContent=message;
-        if(current?.phase==='synthesis') {
-          meter.max=current.totalChunks;
-          meter.value=current.chunksCompleted;
+        const slideFraction=current?.phase==='synthesis' ? current.chunksCompleted/current.totalChunks : 0;
+        if(current && (current.completed || slideFraction)) {
+          meter.max=current.total;
+          meter.value=current.completed+slideFraction;
         }else{
           meter.removeAttribute('value');
         }
@@ -2418,6 +2423,7 @@
         $('#guideDrafts').hidden=!drafts;
         $('#guideDrafts span').textContent=guideSlideCount('guideDrafts',drafts);
         $('#guideCoverage').textContent=format('guideCoverage',{ready,total:required.length});
+        $('#guideCoverage').hidden=Boolean(state.localRun);
         const method=$('#guideMethod'), methodKey=language+'|'+state.deckMethod;
         if(method.dataset.key!==methodKey){
           method.dataset.key=methodKey;

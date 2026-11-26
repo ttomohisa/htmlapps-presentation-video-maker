@@ -65,6 +65,22 @@ async function loadKokoroFile(page, slot) {
   await row.locator('[data-local-ready]:not([hidden])').waitFor({state:'attached',timeout});
 }
 
+async function watchSpeechProgress(page) {
+  await page.evaluate(() => {
+    const root = document.querySelector('#localTtsRun');
+    const status = root.querySelector('#localTtsStatus');
+    const meter = root.querySelector('#localTtsProgress');
+    const count = root.querySelector('#localTtsCount');
+    window.pvmTestSpeechProgress = [];
+    new MutationObserver(() => {
+      if (meter.hidden) return;
+      window.pvmTestSpeechProgress.push({
+        status: status.textContent, count: count.textContent, fraction: meter.position,
+      });
+    }).observe(root, {subtree: true, childList: true, attributes: true});
+  });
+}
+
 async function main() {
   assert.ok(fixtures, 'Set PVM_KOKORO_DIR to the directory containing the pinned model and voices.');
   const workspace = await fs.mkdtemp(path.join(os.tmpdir(), 'pvm-offline-test-'));
@@ -194,30 +210,35 @@ async function main() {
     assert.equal(await phone.locator('[data-model-file="jf_alpha.bin"]').isVisible(),true);
     assert.equal(await phone.locator('[data-model-file="af_heart.bin"]').isVisible(),false);
     assert.equal(await phone.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+    await phone.getByText('Only downloads connect to Hugging Face. Audio is generated on your device.').waitFor();
+    await loadKokoroFile(phone,'model_quantized.onnx');
+    await loadKokoroFile(phone,'jf_alpha.bin');
+    await watchSpeechProgress(phone);
+    await phone.locator('#guidePrimary[data-action="batch"]').click();
+    await phone.locator('#guidePrimary[data-action="output"]').waitFor({timeout});
+    const batchUpdates = await phone.evaluate(() => window.pvmTestSpeechProgress);
+    const fractions = batchUpdates.map(update => update.fraction);
+    assert.deepEqual(fractions, [...fractions].sort((a,b) => a-b), 'batch progress never goes backwards');
+    assert.ok(batchUpdates.some(update => update.count === '2 of 3 complete' && update.fraction === 2/3
+      && update.status === 'Generating audio for slide 3…'));
+    await phone.reload();
     await phone.locator('#projectInput').setInputFiles(samplePath);
     await phone.locator('[data-model-file="af_heart.bin"]').waitFor();
     assert.equal(await phone.locator('#guideMethod').inputValue(), 'local');
     assert.equal(await phone.locator('#guideCapture').isVisible(), false);
     await loadKokoroFile(phone,'model_quantized.onnx');
     await loadKokoroFile(phone,'af_heart.bin');
-    await phone.evaluate(()=>{
-      const root=document.querySelector('#localTtsRun'), status=root.querySelector('#localTtsStatus');
-      const meter=root.querySelector('#localTtsProgress'), count=root.querySelector('#localTtsCount');
-      window.pvmTestSpeechProgress=[];
-      new MutationObserver(()=>{
-        if(meter.hidden) return;
-        window.pvmTestSpeechProgress.push({status:status.textContent,count:count.textContent,total:meter.max,value:meter.value,measured:meter.hasAttribute('value')});
-      }).observe(root,{subtree:true,childList:true,attributes:true});
-    });
+    await watchSpeechProgress(phone);
     const workerStarted = phone.waitForEvent('worker');
     await phone.locator('#guidePrimary[data-action="batch"]').click();
     const worker = await workerStarted;
     assert.equal(await worker.evaluate(() => self.name), 'Kokoro speech synthesis');
     await phone.locator('#guidePrimary[data-action="output"]').click({timeout});
     const updates=await phone.evaluate(()=>window.pvmTestSpeechProgress);
-    assert.ok(updates.some(update=>!update.measured&&update.status.startsWith('Preparing the model')));
-    assert.ok(updates.some(update=>update.count==='0 of 1 complete · Slide 2'&&update.measured&&update.value>0&&update.value<update.total));
-    assert.ok(updates.some(update=>update.measured&&update.total>1&&update.value===update.total));
+    assert.ok(updates.some(update=>update.fraction===-1&&update.status.startsWith('Preparing the model')));
+    assert.ok(updates.some(update=>update.count==='0 of 1 complete'&&update.status==='Generating audio for slide 2…'
+      &&update.fraction>0&&update.fraction<1));
+    assert.ok(updates.some(update=>update.fraction===1));
     assert.equal(await phone.locator('#localTtsProgress').isVisible(),false);
     const phoneProject = await download(phone, '#saveProjectButton', path.join(workspace, 'mobile-bilingual.pvm'));
     checkProject(phoneProject);

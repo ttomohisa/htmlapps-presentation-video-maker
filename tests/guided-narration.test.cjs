@@ -92,6 +92,32 @@ test('Kokoro saves a valid WAV using the sample duration from the worker', async
   assert.deepEqual(saved, [{audio: blob, duration: 1.25}]);
 });
 
+test('batch progress keeps completed slides on the bar while the next slide runs', () => {
+  const context = production(['renderLocalProgress']);
+  const elements = new Map();
+  function element(id) {
+    if (!elements.has(id)) elements.set(id, {removeAttribute(name) { delete this[name]; }});
+    return elements.get(id);
+  }
+  Object.assign(context, {state: {localRun: {}}, $: element, format: key => key});
+  const meter = element('#localTtsProgress');
+  function render(total, completed, phase, chunksCompleted, totalChunks) {
+    context.state.localProgress = {total, completed, slide: completed + 1, phase, chunksCompleted, totalChunks};
+    context.renderLocalProgress();
+    return meter.value === undefined ? null : meter.value / meter.max;
+  }
+  assert.equal(render(3, 0, 'model'), null);
+  assert.equal(render(3, 0, 'synthesis', 0, 1), null);
+  assert.equal(render(3, 0, 'synthesis', 1, 1), 1 / 3);
+  assert.equal(render(3, 1, 'preparing'), 1 / 3);
+  assert.equal(render(3, 1, 'synthesis', 1, 2), 1 / 2);
+  assert.equal(render(3, 2, 'model'), 2 / 3);
+  assert.equal(render(3, 2, 'script'), 2 / 3);
+  assert.equal(render(3, 2, 'synthesis', 0, 1), 2 / 3);
+  assert.equal(render(3, 2, 'synthesis', 1, 1), 1);
+  assert.equal(render(1, 0, 'synthesis', 0, 1), null);
+});
+
 test('the deck does not count mismatched, failed or stale audio as usable', () => {
   const { guidedAudioState } = production(['guidedAudioState']);
   const slide = { enabled: true, script: 'Notes', recordingSource: 'local', recordingStatus: 'success', recordingBlob: {size: 20} };
