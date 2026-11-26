@@ -115,6 +115,15 @@ assert.match(await page.locator('#selectedSlideLabel').innerText(),/1$/);
 await bounds(page.locator('#workflowNav'),width,height,label,false);
 assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),label+': loaded page width');
 await page.locator('[data-guide-step="output"]').click();
+const unsaved=page.locator('#projectUnsaved');
+assert.equal(await unsaved.textContent(),'',label+': navigation alone does not change the project');
+assert.equal(await page.locator('[data-i18n="videoEstimatedDuration"]').innerText(),language==='ja'?'動画の長さ':'Video length');
+assert.match(await page.locator('#videoEstimatedDuration').innerText(),language==='ja'?/^約\d/:/^About \d/);
+const filename=page.locator('#videoOutputName'), originalName=await filename.inputValue();
+await filename.fill('revised');
+assert.equal(await unsaved.innerText(),language==='ja'?'未保存':'Unsaved');
+await filename.fill(originalName);
+assert.equal(await unsaved.textContent(),'',label+': reverting the filename restores the clean state');
 assert.equal(await badge.isVisible(),false,label+': badge hidden during export');
 assert.equal(await page.locator('summary[data-i18n="guideFinishing"]').innerText(),language==='ja'?'字幕・BGM・切り替え':'Subtitles, music and transitions');
 assert.equal(await page.locator('[data-guide-page]:visible').count(),1);
@@ -124,13 +133,19 @@ assert.equal(await page.locator('[data-model-file="model_quantized.onnx"] [data-
 await page.locator('[data-guide-step="slides"]').click();
 assert.equal(await badge.isVisible(),false,label+': badge stays hidden on returning to the loaded deck');
 if(language==='ja'&&width===1360){
+  await page.locator('[data-guide-step="script"]').click();
+  await page.locator('#scriptInput').fill('保存状態の確認');
+  assert.equal(await unsaved.innerText(),'未保存');
   const saved=page.waitForEvent('download');
   await page.locator('#saveProjectButton').click();
   const project=await saved;
+  assert.equal(await unsaved.textContent(),'');
   await page.reload();
   await badge.waitFor({state:'visible'});
   await page.locator('#projectInput').setInputFiles({name:project.suggestedFilename(),mimeType:'application/octet-stream',buffer:fs.readFileSync(await project.path())});
   await page.locator('#guideNarrationHeading').waitFor();
+  assert.equal(await page.locator('#scriptInput').inputValue(),'保存状態の確認');
+  assert.equal(await unsaved.textContent(),'');
   await page.locator('[data-guide-step="slides"]').click();
   assert.equal(await badge.isVisible(),false,label+': badge stays hidden for a restored project');
 }

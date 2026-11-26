@@ -58,6 +58,8 @@ Changing the input file is a hard state boundary:
 
 Presentation content is not persisted automatically in LocalStorage or IndexedDB. Language preference is the only current LocalStorage preference. Explicit `.pvm` project save/open remains the persistence path: the user chooses when to create or reopen a local project file containing the PPTX, scene settings, narration assets, BGM, and output settings.
 
+“Unsaved” appears beside “Save work” when project content differs from the imported or last saved state. Switching steps, selecting slides, changing the UI language and exporting an MP4 do not count as edits. On the Video screen, “Video length” estimates playback duration, rounded to whole seconds and displayed in the UI language.
+
 ## 6. PPTX parser and renderer
 
 The browser-native ZIP/XML parser remains responsible for scene metadata, speaker-note extraction, and compatibility hints. It uses `DataView`, `DecompressionStream('deflate-raw')`, and `DOMParser`.

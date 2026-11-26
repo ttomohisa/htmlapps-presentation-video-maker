@@ -140,15 +140,20 @@ async function main() {
     await slides.first().click();
     const samplePath = path.join(workspace, 'sample.pvm');
     const sample = await download(page, '#saveProjectButton', samplePath);
+    const unsaved=page.locator('#projectUnsaved');
+    assert.equal(await unsaved.textContent(),'');
     console.log('Generated Japanese narration offline.');
     await loadKokoroFile(page,'af_heart.bin');
+    assert.equal(await unsaved.textContent(),'');
     await page.locator('#guidePrimary[data-action="batch"]').click();
     await page.locator('#guidePrimary[data-action="output"]').click({timeout});
+    assert.equal(await unsaved.innerText(),'Unsaved');
     await page.locator('#videoResolution').selectOption('720');
     await page.getByText('Subtitles, music and transitions',{exact:true}).click();
     await page.locator('#videoSubtitles').check();
     const pvm = path.join(workspace, 'bilingual.pvm');
     const project = await download(page, '#saveProjectButton', pvm);
+    assert.equal(await unsaved.textContent(),'');
     checkProject(project);
     function wav(bytes,index) {
       const end=12+bytes.readUInt32LE(8), manifest=JSON.parse(bytes.toString('utf8',12,end));

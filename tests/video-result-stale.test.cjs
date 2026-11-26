@@ -36,7 +36,7 @@ function harness() {
       createElement() { return {click() { downloads.push({href: this.href, filename: this.download}); }, remove() {}}; }
     },
     formatClock: String, bytesLabel: String, t: key => key,
-    updateMobileResolutionWarning() {}, updateVideoExportState() {}, showToast() {}, setTimeout() {}
+    updateMobileResolutionWarning() {}, updateVideoExportState() {}, scheduleProjectStatus() {}, showToast() {}, setTimeout() {}
   });
   vm.runInContext(['updateVideoResultStaleNotice', 'markVideoResultStale', 'clearVideoResult', 'replaceVideoResult', 'safeOutputBase', 'saveVideo'].map(extract).join('\n'), ctx);
   const eventLines = source.split('\n').filter(line =>

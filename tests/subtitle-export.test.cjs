@@ -42,15 +42,23 @@ function harness() {
     format:(key,values={})=>Object.entries(values).reduce((text,[k,v])=>text.replaceAll(`{${k}}`,String(v)),translations[ctx.language][key]||key)
   });
   for (const name of ['updateMobileResolutionWarning','updateMobileNavIndicators','updateWorkflowNavIndicators','updateProjectButtons','updateCurrentSceneAudioStatus','updateSceneProgress','updateRecordingPlan','renderSlides','selectSlide','updateSceneEditor','updateCompatibility','renderSelectedSlide','setRendererState','updateDeckSummary','refreshVoices','applyDeviceUi','refreshCaptureReady','cancelSpeech','cancelMicRecording','stopDisplayStream','cleanupRecording','clearVideoResult','cancelVideo','disposeRendererState','setWorkflowNavCollapsed','markVideoResultStale']) ctx[name]=()=>{};
-  Object.assign(ctx, {renderGuidedVideo(){}, showGuidePage(){}, setImportError(){}, defaultDeckMethod:()=> 'file'});
+  Object.assign(ctx, {renderGuidedVideo(){}, showGuidePage(){}, setImportError(){}, rememberProjectContents(){}, defaultDeckMethod:()=> 'file'});
   const names=['formatSubtitleTime','subtitleTimelineEntries','exportSubtitles','textExportBase','safeOutputBase','videoSceneIndexes','sceneVideoDuration','estimateSpeechSeconds','splitSubtitleSegments','videoTransitionSeconds','videoEstimatedSeconds','formatClock','videoValidation','guidedAudioState','sceneNeedsAttention','validDeckMethod','setVideoExportChip','renderVideoTimeline','updateVideoExportState','narrationSource','sourceLabel','narrationSourceLabel','recordingSourceLabel','renderSceneRecordings','saveCurrentScript','resetCurrentScript','applyNarrationToAll','updateNarrationDuration','markSceneRecordingStale','invalidateSource','commitSceneAudio','restoreProjectSlide','openProjectFile','applyLanguage'];
-  vm.runInContext(names.map(name=>extract(name)).join('\n')+'\n'+['serializeSubtitles','updateSubtitlePreview'].map(name=>extract(name,false)).join('\n'),ctx);
+  vm.runInContext([...names,'formatVideoLength'].map(name=>extract(name)).join('\n')+'\n'+['serializeSubtitles','updateSubtitlePreview'].map(name=>extract(name,false)).join('\n'),ctx);
   const eventLines=source.split('\n').filter(line=>line.startsWith("      $('#")&&line.includes(".addEventListener(")&&['#subtitlePreview','#videoTransition','#previewVoiceButton','#rateRange'].some(id=>line.includes(`$('${id}')`)));
   vm.runInContext(eventLines.join('\n'),ctx);
   return {ctx,$,downloads,toasts,translations};
 }
 function open(h) {assert.equal(typeof h.ctx.updateSubtitlePreview,'function','Preview must be implemented'); h.$('#subtitlePreview').open=true; h.ctx.updateSubtitlePreview();}
 function preview(h){return h.$('#subtitlePreviewText').value;}
+
+test('video length rounds the estimate and uses localized hour, minute and second units',()=>{
+  const {ctx}=harness();
+  for(const [seconds,ja,en] of [[0,'約0秒','About 0 sec'],[37.8,'約38秒','About 38 sec'],[59.6,'約1分','About 1 min'],[65,'約1分5秒','About 1 min 5 sec'],[3599.6,'約1時間','About 1 hr'],[3723,'約1時間2分3秒','About 1 hr 2 min 3 sec']]){
+    ctx.language='ja'; assert.equal(ctx.formatVideoLength(seconds),ja);
+    ctx.language='en'; assert.equal(ctx.formatVideoLength(seconds),en);
+  }
+});
 function editControls(h,s) {h.ctx.state.selectedSlideIndex=0; h.$('#scriptInput').value=s.script;h.$('#prePaddingInput').value=String(s.prePadding);h.$('#postPaddingInput').value=String(s.postPadding);h.$('#sceneEnabledInput').checked=s.enabled;}
 
 for (const vtt of [false,true]) test(`${vtt?'VTT':'SRT'} timestamps carry rounded milliseconds and handle invalid inputs`,()=>{
