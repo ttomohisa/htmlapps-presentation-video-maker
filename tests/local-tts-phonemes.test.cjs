@@ -35,6 +35,25 @@ test('US English reads years, decimals, ordinals, acronyms and abbreviations', a
     'fˈɔɹ pYnt fˈIv pəɹsˈɛnt ˌɔn disˈɛmbəɹ twˈɛnti fˈɜɹst.');
 });
 
+test('Japanese reads familiar English terms as words and keeps Japanese letter names for initials', async () => {
+  const script = '今日は、Presentation Video MakerとPowerPoint、APIとPDFを紹介します。';
+  const reading = await phones(script, 'ja');
+  const expected = await Promise.all(['プレゼンテーション', 'ビデオ', 'メーカー', 'パワーポイント'].map(word => phones(word, 'ja')));
+  assert.ok(reading.includes(expected.slice(0, 3).join(' ')));
+  assert.ok(reading.includes(expected[3].replaceAll(' ', '')));
+  assert.match(reading, /eːpʲiːai.*pʲiːdʲiːeɸɯ/);
+  assert.equal(await phones('ＰＲＥＳＥＮＴＡＴＩＯＮ', 'ja'), await phones('プレゼンテーション', 'ja'));
+  assert.equal(await phones('API PDF', 'ja'), 'eːpʲiːai pʲiːdʲiːeɸɯ');
+  assert.equal(await phones('qzx', 'ja'), await phones('QZX', 'ja'));
+});
+
+test('Japanese uses the English pronunciation lexicon for other English words', async () => {
+  const english = await phones('Collaboration', 'en');
+  const mixed = await phones('今日はCollaborationについて説明します。', 'ja');
+  assert.ok(mixed.includes(english));
+  assert.match(mixed, /seːmeː|seʦɨmeː|seʦɨmei/);
+});
+
 test('empty narration and unsupported languages are explicit', async () => {
   assert.equal(await phones(' \n ', 'ja'), '');
   await assert.rejects(phones('test', 'zz'), /language/);

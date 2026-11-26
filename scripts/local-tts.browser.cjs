@@ -11,7 +11,7 @@ const {chromium} = require('playwright');
 const app = pathToFileURL(path.resolve(process.env.PVM_TEST_HTML || 'dist/index.html')).href;
 const fixtures = process.env.PVM_KOKORO_DIR;
 const timeout = 180000;
-const narration = ['本日は、3つの計画を紹介します。', 'We have three plans for 2026.'];
+const narration = ['本日は、Presentation Video MakerとPowerPointを紹介します。', 'We have three plans for 2026.'];
 
 async function download(page, button, destination) {
   const ready = page.waitForEvent('download');

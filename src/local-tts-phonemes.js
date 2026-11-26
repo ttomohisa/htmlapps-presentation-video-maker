@@ -28,6 +28,11 @@
     return self.makeOfflineMisaki(data, {fallback: spellEnglish});
   }
 
+  function englishReader() {
+    english ??= createEnglish();
+    return english;
+  }
+
   async function createJapanese() {
     const [wordData, matrixData] = await Promise.all([
       unpack(tables.japanese).then(response => response.text()),
@@ -168,6 +173,27 @@
   }
 
   const letters = "エー ビー シー ディー イー エフ ジー エイチ アイ ジェー ケー エル エム エヌ オー ピー キュー アール エス ティー ユー ブイ ダブリュー エックス ワイ ゼット".split(" ");
+  const japaneseLoanwords = new Map([
+    ["presentation", "プレゼンテーション"], ["presentations", "プレゼンテーションズ"],
+    ["powerpoint", "パワーポイント"], ["video", "ビデオ"], ["maker", "メーカー"],
+    ["microsoft", "マイクロソフト"], ["windows", "ウィンドウズ"], ["excel", "エクセル"],
+    ["google", "グーグル"], ["github", "ギットハブ"], ["chatgpt", "チャットジーピーティー"]
+  ]);
+
+  function japaneseInitials(word) {
+    const katakana = [...word.toUpperCase()].map(c => letters[c.charCodeAt(0) - 65]).join("");
+    return kanaPhones(katakana);
+  }
+
+  async function latinWordInJapanese(word) {
+    const loanword = japaneseLoanwords.get(word.toLowerCase());
+    if (loanword) return kanaPhones(loanword);
+    if (/^[A-Z]{1,4}$/.test(word) || word === "HTTPS") return japaneseInitials(word);
+    const {phonemes, tokens} = (await englishReader()).phonemize(word.toLowerCase());
+    // Misaki assigns rating 2 when it used the letter-name fallback.
+    if (phonemes && tokens.every(token => token.rating !== 2)) return phonemes;
+    return japaneseInitials(word);
+  }
 
   // At each boundary keep the best path per previous context ID. Two paths
   // ending in the same context have identical costs for every continuation.
@@ -222,7 +248,7 @@
   }
 
   const punctuation = {"。":".","、":",","「":"“","」":"”","『":"“","』":"”","【":"(","】":")","《":"(","》":")","・":" ","~":"—","〜":"—","-":"—","[":"(","]":")"};
-  function japanesePhones(text, dictionary) {
+  async function japanesePhones(text, dictionary) {
     const tokens = [];
     const normalized = normalizeKanjiCounts(text.normalize("NFKC")).replace(/(?<=\d)[~〜](?=\d)/g, "から").replaceAll("%", "パーセント").replaceAll("&", "アンド").replaceAll("+", "プラス");
     // Split at changes of writing system so dates, punctuation and initialisms
@@ -230,7 +256,7 @@
     for (const match of normalized.matchAll(/(\d+(?:,\d{3})*(?:\.\d+)?)([年月日人枚本匹個回階冊分秒時歳円台件つ]?)|[A-Za-z]+|[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}ー々]+|[^\s]/gu)) {
       const word = match[0];
       if (match[1]) tokens.push(kanaPhones(numberReading(match[1], match[2])));
-      else if (/^[A-Za-z]/.test(word)) tokens.push(kanaPhones([...word.toUpperCase()].map(c => letters[c.charCodeAt(0) - 65]).join("")));
+      else if (/^[A-Za-z]/.test(word)) tokens.push(await latinWordInJapanese(word));
       else if (Object.hasOwn(punctuation, word)) tokens.push(punctuation[word]);
       else if (/^[;:,.!?"()“”…—]$/.test(word)) tokens.push(word);
       else if (/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}ー]/u.test(word)) tokens.push(japaneseWords(word, dictionary));
@@ -245,8 +271,7 @@
       return japanesePhones(text, await japanese);
     }
     if (language === "en") {
-      english ??= createEnglish();
-      return (await english).phonemize(text.normalize("NFKC")).phonemes.replace(/\s+/g, " ").trim();
+      return (await englishReader()).phonemize(text.normalize("NFKC")).phonemes.replace(/\s+/g, " ").trim();
     }
     throw new Error("Unknown pronunciation language " + language);
   };
