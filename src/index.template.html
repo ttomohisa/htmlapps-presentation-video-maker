@@ -2247,21 +2247,36 @@
         const started=performanceStageStart(), {sampleRate,channels,audioConfig}=capability, packets=[]; let encoderError=null,decoderConfig=null;
         const encoder=new AudioEncoder({output:(chunk,metadata)=>{ const packet=captureEncodedPacket(chunk,metadata); if(packet.decoderConfig) decoderConfig=packet.decoderConfig; packets.push(packet); },error:error=>{encoderError=error;}}); encoder.configure(audioConfig);
         let bgmBuffer=null; if(state.bgmFile) bgmBuffer=await prepareBgm(audioContext); const bgmLoop=Boolean($('#bgmLoop')?.checked), bgmVolume=Math.max(0,Math.min(.3,Number($('#bgmVolume')?.value||15)/100));
-        let globalFrame=0; const blockSize=2048;
+        // AAC-LC encodes 1024 samples per frame. Keep incomplete input across
+        // timeline spans so the platform encoder cannot pad mid-narration.
+        const blockSize=1024;
+        let globalFrame=0, bufferedFrames=0, planar=new Float32Array(blockSize*channels);
+        const submitBlock=async()=>{
+          const timestamp=Math.round((globalFrame-bufferedFrames)/sampleRate*1e6);
+          const audioData=new AudioData({format:'f32-planar',sampleRate,numberOfFrames:blockSize,numberOfChannels:channels,timestamp,data:planar});
+          try{ encoder.encode(audioData); } finally { audioData.close(); }
+          bufferedFrames=0;
+          planar=new Float32Array(blockSize*channels);
+          await waitEncoderBackpressure(encoder,10);
+        };
         const encodeSpan=async(durationSeconds,narrationBuffer=null,narrationOffset=0)=>{
           const totalFrames=Math.max(0,Math.round(durationSeconds*sampleRate)); let produced=0;
-          while(produced<totalFrames){ assertExportActive(signal); if(encoderError) throw encoderError; const frames=Math.min(blockSize,totalFrames-produced), planar=new Float32Array(frames*channels);
+          while(produced<totalFrames){
+            assertExportActive(signal);
+            if(encoderError) throw encoderError;
+            const frames=Math.min(blockSize-bufferedFrames,totalFrames-produced);
             for(let i=0;i<frames;i++){
               const globalTime=(globalFrame+i)/sampleRate, narrationTime=(produced+i)/sampleRate;
               for(let channel=0;channel<channels;channel++){
                 let value=narrationBuffer?sampleAudioBuffer(narrationBuffer,channel,narrationOffset+narrationTime):0;
                 if(bgmBuffer&&bgmVolume>0){ let bgmTime=globalTime; if(bgmLoop&&bgmBuffer.duration>0) bgmTime%=bgmBuffer.duration; if(bgmTime<bgmBuffer.duration) value+=sampleAudioBuffer(bgmBuffer,channel,bgmTime)*bgmVolume; }
-                planar[channel*frames+i]=Math.max(-1,Math.min(1,value));
+                planar[channel*blockSize+bufferedFrames+i]=Math.max(-1,Math.min(1,value));
               }
             }
-            const audioData=new AudioData({format:'f32-planar',sampleRate,numberOfFrames:frames,numberOfChannels:channels,timestamp:Math.round(globalFrame/sampleRate*1e6),data:planar});
-            try{ encoder.encode(audioData); } finally { audioData.close(); }
-            globalFrame+=frames; produced+=frames; await waitEncoderBackpressure(encoder,10);
+            globalFrame+=frames;
+            produced+=frames;
+            bufferedFrames+=frames;
+            if(bufferedFrames===blockSize) await submitBlock();
           }
         };
         try{
@@ -2274,6 +2289,9 @@
             if(pos<indexes.length-1){ const transition=videoTransitionSeconds(); if(transition) await encodeSpan(transition); }
             setVideoProgress(62+Math.round(((pos+1)/Math.max(1,indexes.length))*14),'videoStageComposing');
           }
+          assertExportActive(signal);
+          if(encoderError) throw encoderError;
+          if(bufferedFrames) await submitBlock();
           await encoder.flush(); if(encoderError) throw encoderError;
         } finally { try{encoder.close();}catch{} }
         if(!packets.length||!decoderConfig?.description) throw new Error('FAST_AUDIO_CONFIG_MISSING');
