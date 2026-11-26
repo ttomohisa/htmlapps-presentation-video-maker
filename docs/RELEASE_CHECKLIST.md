@@ -51,7 +51,8 @@ Use this checklist for every Presentation Video Maker release. Version-specific 
 - On Windows Chrome/Edge, test local SpeechSynthesis using **Entire Screen + system audio** sharing.
 - Test microphone narration.
 - Test local audio-file narration.
-- Test the three narration sources mixed across scenes.
+- Mix local model synthesis, browser speech capture, microphone recording, and an imported audio file across scenes.
+- With the browser offline, select the pinned model and both voices. Test Japanese text with English words, US English text, single-scene generation, batch generation, cancellation, and missing or invalid files.
 - On Windows Chrome/Edge, test **Record this slide** for TTS and confirm only the selected TTS scene is replaced after successful capture.
 - Confirm cancelling/failing selected-scene TTS preserves the previous scene audio.
 - Test preview start/stop, including rapidly pressing Preview twice.
@@ -65,13 +66,14 @@ Use this checklist for every Presentation Video Maker release. Version-specific 
 - Load a PPTX, edit at least one script, import/record scene audio, set BGM and output options, then save a `.pvm` project.
 - Reload the app, open the `.pvm`, and confirm source PPTX, slide count, scripts, narration source/status/audio, BGM, selected slide, and output settings are restored.
 - Confirm generated MP4 is not embedded in `.pvm`.
-- Confirm project save/open is blocked while TTS capture, microphone recording, or video generation is active.
+- Confirm project save/open is blocked during model synthesis, browser speech capture, microphone recording, and video export.
+- Open a v1.x project and a v2 project with generated model narration. Confirm playback and MP4 export before selecting model files.
 - Confirm opening a project over current work asks for confirmation.
 - Confirm the initial `.pvm` project picker is visually separate from the PPTX drop zone and its file input accepts `.pvm` only.
-- Confirm each scene row exposes the appropriate narration action: TTS record, microphone record/stop, or local-audio selection.
+- Confirm each scene row exposes the appropriate action for its narration source. For model generation on a narrow viewport, check that the row action reveals the progress and cancel controls.
 - Confirm scene playback shows a pointer cursor plus hover feedback and remains keyboard-focusable.
 - Test narration progress counts for ready / unrecorded / stale / failed and **Next item to fix** navigation.
-- Confirm failed/stale narration is corrected from each scene row and no failed-scene batch retry action is shown.
+- Confirm failed or stale narration can be replaced from each scene row. Check that the model batch retries applicable scenes and preserves audio from completed scenes.
 - Save TXT, SRT, and VTT; verify UTF-8 text, cue ordering, timestamps, and filenames.
 
 ## Video output

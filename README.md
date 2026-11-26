@@ -31,7 +31,7 @@ GitHub Pages delivers the initial HTML. After it loads, PPTX parsing, speaker-no
 ## Features
 
 - **Turn speaker notes into narration** — Each PowerPoint slide becomes one scene, with speaker notes used as the initial script and slide text used as a fallback draft when notes are missing.
-- **Choose narration per slide** — Mix on-device Web Speech API voices, microphone recordings, and existing local audio files in the same presentation. On-device speech can be captured for only the selected slide or in one all-scene batch.
+- **Choose narration per slide** — Mix local model synthesis, on-device browser speech, microphone recordings, and existing audio files. The local model reads Japanese and US English and can infer the pronunciation of unfamiliar English words in Japanese scripts.
 - **Resume work later** — Save the source PowerPoint, scripts, narration recordings, BGM, and output settings into a local `.pvm` project and open it later. Project data is not uploaded and generated MP4 is not duplicated inside the project.
 - **Find unfinished narration quickly** — See ready/unrecorded/stale/failed counts and jump directly to the next scene that needs attention.
 - **Export scripts and subtitles** — Save the current scripts as TXT or export the current video timeline as SRT / VTT for use outside the app.
@@ -85,6 +85,7 @@ Close Help with the Close button, Esc, or a click outside the dialog.
 2. Select a slide and review the high-fidelity preview and narration script.
 3. Edit the script, before/after padding, and whether the slide is included in the video.
 4. Choose **On-device speech**, **Local TTS model**, **My voice**, or **Audio file** for each slide.
+   To use the model, select the downloaded files and choose a narration language. Generate one slide to check its pronunciation, then generate the other included model slides.
 5. For on-device speech, choose a local OS voice and adjust the 0.8x–1.5x rate slider. Capture only the selected slide with **Record this slide**, or use **Record all scenes** for the TTS scenes in the deck. Both workflows require **Entire Screen + system audio** on the tested Windows path.
 6. For microphone narration, record the selected slide directly. For local audio, choose an audio file from your device.
    The **Narration assets** scene list also provides a row-level action, so each scene can be recorded, stopped, or have its local audio replaced directly from the list.
@@ -97,7 +98,7 @@ A three-slide test deck and additional regression fixtures are included under `t
 
 ## Project files and text exports
 
-`.pvm` is a Presentation Video Maker project file used only for explicit save/resume. It contains the source PPTX, per-scene scripts/settings, narration recordings, optional BGM, and video-output settings. The already generated MP4 is not embedded because it can be regenerated from the project.
+`.pvm` holds the source PPTX, scene scripts and settings, generated or recorded narration, optional BGM, and output settings. v2.0.0 opens v1.x projects. Model files and the exported MP4 stay separate from the project.
 
 The project container is written and read locally by the app; no project data is sent to a server. It is not an autosave format, so save a new `.pvm` file when you want a resumable checkpoint.
 
@@ -223,9 +224,11 @@ On supported browsers, H.264 and AAC are encoded locally with WebCodecs and writ
 | --- | ---: | --- | --- |
 | @aiden0z/pptx-renderer | 1.2.4 | Apache-2.0 | PPTX parsing and high-fidelity DOM/SVG preview |
 | html2canvas | 1.4.1 | MIT | Origin-clean slide rasterization for video snapshots |
+| ONNX Runtime Web | 1.31.1 | MIT | Local Kokoro inference |
+| ephone / eSpeak NG | 1.0.2 | GPL-3.0-or-later | Pronunciation rules for unfamiliar English words |
 | FFmpeg WASM Builder generated core | Builder 1.6.0 / `video-compressor` | GPL-2.0-or-later | H.264/AAC MP4 conversion on the compatibility fallback |
 
-See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the pinned FFmpeg/x264 revisions and corresponding-source information.
+The speech dictionaries, runtime components, and corresponding sources are documented in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## Contributing
 

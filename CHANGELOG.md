@@ -13,6 +13,9 @@
 - Drain the AAC encoder queue without flushing mid-stream to prevent repeated volume drops in longer Windows exports.
 - Read common English terms such as Presentation and PowerPoint in Japanese narration, and use the offline English lexicon for other known words.
 - Infer pronunciations for unfamiliar English words in Japanese narration using eSpeak NG entirely offline.
+- Preserve contractions, accented English spellings, and negative numbers in mixed Japanese narration.
+- Keep video and narration status accurate after slide exclusion, padding edits, and Undo. Show model-generation progress when started from the narrow-screen output list.
+- Replace the introduction heading with one sentence, hide the local-processing badge on phones, and keep Help to one scrollbar.
 
 ## [1.3.3] - 2026-10-11
 

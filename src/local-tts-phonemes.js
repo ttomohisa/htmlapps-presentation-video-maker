@@ -207,10 +207,15 @@
   }
 
   async function latinWordInJapanese(word) {
+    word = word.normalize("NFKD").replace(/\p{Mark}/gu, "").replaceAll("’", "'");
     const loanword = japaneseLoanwords.get(word.toLowerCase());
     if (loanword) return kanaPhones(loanword);
     if (/^[A-Z]$|^[B-DF-HJ-NP-TV-XZ]{2,5}$/.test(word) || japaneseInitialisms.has(word)) {
       return japaneseInitials(word);
+    }
+    const mixedCase = word.match(/^(.*[a-z])([A-Z]{2,})$/);
+    if (mixedCase && japaneseInitialisms.has(mixedCase[2])) {
+      return await latinWordInJapanese(mixedCase[1]) + " " + japaneseInitials(mixedCase[2]);
     }
     const lowercase = word.toLowerCase();
     const {phonemes, tokens} = (await englishReader()).phonemize(lowercase);
@@ -274,13 +279,16 @@
   const punctuation = {"。":".","、":",","「":"“","」":"”","『":"“","』":"”","【":"(","】":")","《":"(","》":")","・":" ","~":"—","〜":"—","-":"—","[":"(","]":")"};
   async function japanesePhones(text, dictionary) {
     const tokens = [];
-    const normalized = normalizeKanjiCounts(text.normalize("NFKC")).replace(/(?<=\d)[~〜](?=\d)/g, "から").replaceAll("%", "パーセント").replaceAll("&", "アンド").replaceAll("+", "プラス");
+    const normalized = normalizeKanjiCounts(text.normalize("NFKC"))
+      .replace(/(?<=\d)[~〜](?=\d)/g, "から")
+      .replace(/(?<![\p{Script=Latin}\d])[-−](?=\d)/gu, "マイナス")
+      .replaceAll("%", "パーセント").replaceAll("&", "アンド").replaceAll("+", "プラス");
     // Split at changes of writing system so dates, punctuation and initialisms
     // keep their own readings without interrupting Japanese particles.
-    for (const match of normalized.matchAll(/(\d+(?:,\d{3})*(?:\.\d+)?)([年月日人枚本匹個回階冊分秒時歳円台件つ]?)|[A-Za-z]+|[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}ー々]+|[^\s]/gu)) {
+    for (const match of normalized.matchAll(/(\d+(?:,\d{3})*(?:\.\d+)?)([年月日人枚本匹個回階冊分秒時歳円台件つ]?)|\p{Script=Latin}+(?:['’]\p{Script=Latin}+)*|[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}ー々]+|[^\s]/gu)) {
       const word = match[0];
       if (match[1]) tokens.push(kanaPhones(numberReading(match[1], match[2])));
-      else if (/^[A-Za-z]/.test(word)) tokens.push(await latinWordInJapanese(word));
+      else if (/^\p{Script=Latin}/u.test(word)) tokens.push(await latinWordInJapanese(word));
       else if (Object.hasOwn(punctuation, word)) tokens.push(punctuation[word]);
       else if (/^[;:,.!?"()“”…—]$/.test(word)) tokens.push(word);
       else if (/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}ー]/u.test(word)) tokens.push(japaneseWords(word, dictionary));

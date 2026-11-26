@@ -104,12 +104,22 @@ async function main() {
       .join('').replace(/\s+/g, '');
     assert.equal(subtitleText, narration.join('').replace(/\s+/g, ''));
     await page.locator('#slideList .slide-item').nth(1).click();
+    await page.locator('#sceneEnabledInput').uncheck();
+    assert.equal(await page.locator('#videoResultStale').isVisible(), true);
+    assert.equal(await page.locator('#progressStaleCount').textContent(), '0');
+    await page.locator('#sceneEnabledInput').check();
     await page.locator('#scriptInput').fill('Here are the new plans.');
     assert.equal(await page.locator('#progressReadyCount').textContent(), '1');
     assert.equal(await page.locator('#createVideoButton').isDisabled(), true);
     await page.locator('#localTtsFiles').setInputFiles(['model_quantized.onnx', 'af_heart.bin'].map(name => path.join(fixtures, name)));
     await page.locator('#localTtsBatch').click();
     await page.waitForFunction(() => document.querySelector('#progressReadyCount').textContent === '2', null, {timeout});
+    await page.setViewportSize({width: 390, height: 844});
+    await page.locator('[data-mobile-key="output"]').click();
+    await page.locator('[data-scene-action="generate-local"][data-scene-action-index="0"]').click();
+    assert.equal(await page.locator('[data-mobile-key="script"]').getAttribute('aria-current'), 'page');
+    await page.getByText(/Slide 1 needs: jf_alpha\.bin/).waitFor();
+    await page.setViewportSize({width: 1280, height: 720});
     if (process.env.PVM_LEGACY_PROJECT) {
       await page.locator('#projectInput').setInputFiles(process.env.PVM_LEGACY_PROJECT);
       await page.waitForFunction(() => document.querySelector('#scriptInput').value.startsWith('Presentation Video Maker'));

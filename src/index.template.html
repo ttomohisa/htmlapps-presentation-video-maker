@@ -1483,15 +1483,95 @@
       }
       function saveCurrentScript(){
         const index=state.selectedSlideIndex; if(index<0||!state.slides[index]) return; const slide=state.slides[index]; const nextScript=$('#scriptInput').value; const nextVoiceURI=$('#voiceSelect')?.value||slide.voiceURI||state.selectedVoiceURI; const nextRate=state.rate; const nextEnabled=$('#sceneEnabledInput')?.checked!==false;
-        const voiceSettingsChanged=narrationSource(slide)==='tts'&&(slide.voiceURI!==nextVoiceURI||Number(slide.rate)!==Number(nextRate)); const narrationChanged=slide.script!==nextScript||voiceSettingsChanged||(slide.enabled!==nextEnabled&&narrationSource(slide)!=='local');
-        if(narrationChanged){ markVideoResultStale(); if(narrationSource(slide)==='tts'||slide.script!==nextScript) slide.narrationDuration=null; if(slide.recordingBlob) markSceneRecordingStale(slide); }
-        slide.script=nextScript; slide.prePadding=Math.max(0,Math.min(10,Number($('#prePaddingInput')?.value)||0)); slide.postPadding=Math.max(0,Math.min(10,Number($('#postPaddingInput')?.value)||0)); slide.enabled=nextEnabled; slide.voiceURI=nextVoiceURI; slide.rate=nextRate; $('#scriptCharCount').textContent=format('chars',{count:slide.script.length}); const voice=selectedVoice(), source=narrationSource(slide); $('#voiceCurrentLabel').textContent=voice?`${voice.name} (${voice.lang})`:'—'; $('#sceneVoiceSummary').textContent=source==='tts'?(voice?`${voice.name} · ${formatRate(state.rate)}`:`— · ${formatRate(state.rate)}`):source==='mic'?t('sourceMic'):(slide.recordingFileName||t('sourceFile')); updateNarrationDuration(slide); renderSceneRecordings(); updateRecordingPlan();
+        const source=narrationSource(slide);
+        const nextPrePadding=Math.max(0,Math.min(10,Number($('#prePaddingInput')?.value)||0));
+        const nextPostPadding=Math.max(0,Math.min(10,Number($('#postPaddingInput')?.value)||0));
+        const inclusionChanged=slide.enabled!==nextEnabled;
+        const paddingChanged=slide.prePadding!==nextPrePadding||slide.postPadding!==nextPostPadding;
+        const voiceSettingsChanged=source==='tts'&&(slide.voiceURI!==nextVoiceURI||Number(slide.rate)!==Number(nextRate));
+        const narrationChanged=slide.script!==nextScript||voiceSettingsChanged||(inclusionChanged&&source!=='local');
+        if(narrationChanged||inclusionChanged||paddingChanged) markVideoResultStale();
+        if(narrationChanged){
+          if(source==='tts'||slide.script!==nextScript) slide.narrationDuration=null;
+          if(slide.recordingBlob) markSceneRecordingStale(slide);
+        }
+        slide.script=nextScript; slide.prePadding=nextPrePadding; slide.postPadding=nextPostPadding; slide.enabled=nextEnabled; slide.voiceURI=nextVoiceURI; slide.rate=nextRate; $('#scriptCharCount').textContent=format('chars',{count:slide.script.length}); const voice=selectedVoice(); $('#voiceCurrentLabel').textContent=voice?`${voice.name} (${voice.lang})`:'—'; $('#sceneVoiceSummary').textContent=source==='tts'?(voice?`${voice.name} · ${formatRate(state.rate)}`:`— · ${formatRate(state.rate)}`):source==='mic'?t('sourceMic'):(slide.recordingFileName||t('sourceFile')); updateNarrationDuration(slide); renderSceneRecordings(); updateRecordingPlan();
       }
       function resetCurrentScript(){
-        const slide=state.slides[state.selectedSlideIndex]; if(!slide) return; const before=slide.script, beforeDuration=slide.narrationDuration, beforeStatus=slide.recordingStatus; const restored=sourceScript(slide); const changed=slide.script!==restored; slide.script=restored; slide.narrationDuration=null; if(changed&&slide.recordingBlob) markSceneRecordingStale(slide); $('#scriptInput').value=restored; $('#scriptCharCount').textContent=format('chars',{count:restored.length}); updateNarrationDuration(slide); renderSceneRecordings(); AppToast.show({message:t('resetScriptDone'),actionLabel:t('undo'),onAction:()=>{ slide.script=before; slide.narrationDuration=beforeDuration; slide.recordingStatus=beforeStatus; if(state.slides[state.selectedSlideIndex]===slide){ $('#scriptInput').value=before; $('#scriptCharCount').textContent=format('chars',{count:before.length}); updateNarrationDuration(slide); } renderSceneRecordings(); }});
+        const slide=state.slides[state.selectedSlideIndex];
+        if(!slide) return;
+        const restored=sourceScript(slide);
+        if(slide.script===restored) return;
+        const before={script:slide.script,duration:slide.narrationDuration,status:slide.recordingStatus,reason:slide.recordingStaleReason,
+          blob:slide.recordingBlob,source:narrationSource(slide),voice:slide.voiceURI,rate:slide.rate,language:localLanguage(slide)};
+        slide.script=restored;
+        slide.narrationDuration=null;
+        markSceneRecordingStale(slide);
+        markVideoResultStale();
+        $('#scriptInput').value=restored;
+        $('#scriptCharCount').textContent=format('chars',{count:restored.length});
+        updateNarrationDuration(slide);
+        renderSceneRecordings();
+        AppToast.show({message:t('resetScriptDone'),actionLabel:t('undo'),onAction:()=>{
+          if(!state.slides.includes(slide)||slide.script!==restored) return;
+          const source=narrationSource(slide);
+          const sameRecording=slide.recordingBlob===before.blob&&source===before.source&&
+            (source!=='tts'||slide.voiceURI===before.voice)&&(source!=='local'||localLanguage(slide)===before.language)&&
+            (!['tts','local'].includes(source)||slide.rate===before.rate);
+          slide.script=before.script;
+          slide.narrationDuration=sameRecording?before.duration:null;
+          if(sameRecording){
+            slide.recordingStatus=before.status;
+            slide.recordingStaleReason=before.reason;
+          } else {
+            markSceneRecordingStale(slide);
+          }
+          markVideoResultStale();
+          if(state.slides[state.selectedSlideIndex]===slide){
+            $('#scriptInput').value=slide.script;
+            $('#scriptCharCount').textContent=format('chars',{count:slide.script.length});
+            updateNarrationDuration(slide);
+          }
+          renderSceneRecordings();
+        }});
       }
       function applyNarrationToAll(){
-        const voice=selectedVoice(); if(!voice||!state.slides.length) return; saveCurrentScript(); const snapshot=state.slides.map(slide=>({voiceURI:slide.voiceURI,rate:slide.rate,narrationDuration:slide.narrationDuration,recordingStatus:slide.recordingStatus})); const rate=state.rate; state.slides.forEach(slide=>{ if(narrationSource(slide)!=='tts') return; const changed=slide.voiceURI!==voice.voiceURI||Number(slide.rate)!==Number(rate); slide.voiceURI=voice.voiceURI; slide.rate=rate; if(changed){ slide.narrationDuration=null; if(slide.recordingBlob) markSceneRecordingStale(slide); } }); syncNarrationControlsForScene(state.slides[state.selectedSlideIndex]); renderSceneRecordings(); AppToast.show({message:t('appliedNarrationAll'),actionLabel:t('undo'),onAction:()=>{ state.slides.forEach((slide,i)=>{ slide.voiceURI=snapshot[i].voiceURI; slide.rate=snapshot[i].rate; slide.narrationDuration=snapshot[i].narrationDuration; slide.recordingStatus=snapshot[i].recordingStatus; }); syncNarrationControlsForScene(state.slides[state.selectedSlideIndex]); renderSceneRecordings(); }});
+        const voice=selectedVoice();
+        if(!voice||!state.slides.length) return;
+        saveCurrentScript();
+        const rate=state.rate, snapshot=[];
+        for(const slide of state.slides){
+          if(narrationSource(slide)!=='tts'||(slide.voiceURI===voice.voiceURI&&Number(slide.rate)===Number(rate))) continue;
+          snapshot.push({slide,voiceURI:slide.voiceURI,rate:slide.rate,script:slide.script,blob:slide.recordingBlob,
+            duration:slide.narrationDuration,status:slide.recordingStatus,reason:slide.recordingStaleReason});
+          slide.voiceURI=voice.voiceURI;
+          slide.rate=rate;
+          slide.narrationDuration=null;
+          markSceneRecordingStale(slide);
+        }
+        if(!snapshot.length) return;
+        markVideoResultStale();
+        syncNarrationControlsForScene(state.slides[state.selectedSlideIndex]);
+        renderSceneRecordings();
+        AppToast.show({message:t('appliedNarrationAll'),actionLabel:t('undo'),onAction:()=>{
+          for(const before of snapshot){
+            const {slide}=before;
+            if(!state.slides.includes(slide)||narrationSource(slide)!=='tts'||slide.voiceURI!==voice.voiceURI||slide.rate!==rate) continue;
+            slide.voiceURI=before.voiceURI;
+            slide.rate=before.rate;
+            if(slide.recordingBlob===before.blob&&slide.script===before.script){
+              slide.narrationDuration=before.duration;
+              slide.recordingStatus=before.status;
+              slide.recordingStaleReason=before.reason;
+            } else {
+              slide.narrationDuration=null;
+              markSceneRecordingStale(slide);
+            }
+            markVideoResultStale();
+          }
+          syncNarrationControlsForScene(state.slides[state.selectedSlideIndex]);
+          renderSceneRecordings();
+        }});
       }
 
 
@@ -1787,7 +1867,13 @@
         if(action==='stop-mic'){ stopMicRecording(); return; }
         if(projectOperationBusy()||captureIsBusy()) return;
         selectSlide(index);
-        if(action==='generate-local'){ await generateLocalAudio(); return; }
+        if(action==='generate-local'){
+          if(innerWidth<=600) showMobilePage('script',{scroll:false});
+          const generation=generateLocalAudio();
+          $('#localTtsRun')?.scrollIntoView?.({block:'center'});
+          await generation;
+          return;
+        }
         if(action==='choose-file'){ $('#narrationFileInput').click(); return; }
         if(action==='record-mic'){ setNarrationSource('mic'); await startMicRecording(); return; }
         if(action==='record-tts'){

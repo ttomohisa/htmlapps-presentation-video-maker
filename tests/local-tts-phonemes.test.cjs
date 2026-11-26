@@ -30,6 +30,9 @@ test('Japanese reads contextual kanji, particles, punctuation and counters', asy
   assert.equal(await phones('二千二十六年三月四日', 'ja'), await phones('２０２６年３月４日', 'ja'));
   assert.match(await phones('四日市', 'ja'), /joʔkaiʨi/);
   assert.equal(await phones('１２．５％', 'ja'), 'ʥɨːɲiteŋɡo paːsento');
+  for (const sign of ['-', '−', '－']) {
+    assert.equal(await phones(`気温は${sign}5度です。`, 'ja'), await phones('気温はマイナス5度です。', 'ja'));
+  }
 });
 
 test('US English reads years, decimals, ordinals, acronyms and abbreviations', async () => {
@@ -65,6 +68,14 @@ test('Japanese infers the pronunciation of unfamiliar English spellings', async 
   assert.equal(await phones('Blorvinate', 'ja'), 'blˈɔɹvᵻnˌAt');
   assert.match(await phones('新しいLumivexaを紹介します。', 'ja'), /lˈumɪvˌɛksə o ɕoːkai/);
   assert.equal(await phones('SORA', 'ja'), await phones('sora', 'ja'));
+});
+
+test('Japanese preserves contractions and accented Latin spellings in mixed narration', async () => {
+  const dont = await phones("don't", 'en');
+  assert.ok((await phones("「don't stop」と伝えます。", 'ja')).includes(dont));
+  assert.equal(await phones('don’t stop', 'ja'), await phones("don't stop", 'ja'));
+  assert.equal(await phones('café', 'ja'), await phones('cafe', 'ja'));
+  assert.match(await phones('OpenAI', 'ja'), /eːai$/);
 });
 
 test('empty narration and unsupported languages are explicit', async () => {
