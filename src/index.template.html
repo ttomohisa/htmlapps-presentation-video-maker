@@ -50,8 +50,8 @@
     html:has(dialog:modal), body:has(dialog:modal) { overflow:hidden; overscroll-behavior:none; }
     button,input,select,textarea { font: inherit; }
     button { color: inherit; }
-    button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible {
-      outline: 3px solid color-mix(in srgb,var(--focus) 55%,transparent);
+    button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible {
+      outline: 2px solid var(--focus);
       outline-offset: 2px;
     }
     .sr-only { position:absolute!important; width:1px!important; height:1px!important; padding:0!important; margin:-1px!important; overflow:hidden!important; clip:rect(0,0,0,0)!important; white-space:nowrap!important; border:0!important; }
@@ -110,20 +110,19 @@
     .drop-zone { display:grid; place-items:center; gap:10px; min-height:180px; padding:26px; border:1.5px dashed var(--line-strong); border-radius:14px; background:#fbfbf9; text-align:center; transition:border-color .16s,background .16s; }
     .drop-zone[hidden] { display:none !important; }
     .drop-zone.is-dragover { border-color:var(--accent); background:var(--accent-soft); }
-    .drop-zone svg { width:42px; height:42px; color:var(--accent); }
+    .drop-zone > svg { width:42px; height:42px; color:var(--accent); }
     .drop-zone h4 { margin:0; font-size:16px; }
     .drop-zone p { margin:0; color:var(--muted); font-size:12px; }
-    .button { min-height:40px; padding:8px 14px; border:1px solid var(--line); border-radius:10px; background:var(--surface); font-weight:750; cursor:pointer; transition:border-color .16s,background .16s,transform .16s; }
+    .button { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:44px; max-width:100%; padding:8px 13px; border:1px solid var(--line-strong); border-radius:8px; background:var(--surface); font-size:.875rem; font-weight:600; line-height:1.35; cursor:pointer; transition:border-color .16s,background .16s,transform .16s; }
     .button:hover:not(:disabled) { border-color:var(--line-strong); background:var(--surface-hover); }
     .button:active:not(:disabled) { transform:translateY(1px); }
-    .button.primary { border-color:var(--accent); background:var(--accent); color:#fff; }
+    .button.primary { padding-inline:17px; border-color:var(--accent); background:var(--accent); color:#fff; font-weight:650; }
     .button.primary:hover:not(:disabled) { border-color:var(--accent-hover); background:var(--accent-hover); }
-    #chooseFileButton { display:inline-flex; align-items:center; justify-content:center; gap:8px; }
-    #chooseFileButton svg { margin-right:0; color:#fff; stroke:#fff; opacity:1; }
-    #chooseFileButton:hover:not(:disabled) svg { color:#fff; stroke:#fff; opacity:1; }
+    .button.ghost { border-color:transparent; background:transparent; color:var(--accent-strong); }
+    .button.ghost:hover:not(:disabled) { border-color:transparent; background:var(--accent-soft); }
     .button.danger { color:var(--danger); }
     .button:disabled { opacity:.42; cursor:not-allowed; }
-    .button svg { width:17px; height:17px; vertical-align:-3px; margin-right:6px; }
+    .button svg { width:17px; height:17px; flex:none; }
     .button-row { display:flex; flex-wrap:wrap; gap:8px; }
     .file-input { display:none; }
     .file-summary { display:none; gap:14px; align-items:center; padding:14px; border:1px solid var(--line); border-radius:12px; background:var(--surface-muted); }
@@ -247,7 +246,7 @@
     .scene-play-button:hover { background:var(--accent-soft); border-color:color-mix(in srgb,var(--accent) 35%,var(--line)); }
     .scene-play-button:active { transform:translateY(1px); }
     .scene-play-button svg { width:16px; height:16px; }
-    .scene-record-button { min-height:34px; display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:6px 10px; border:1px solid color-mix(in srgb,var(--accent) 25%,var(--line)); border-radius:9px; background:var(--surface); color:var(--accent); font:inherit; font-size:10px; font-weight:800; cursor:pointer; transition:background .16s,border-color .16s,transform .16s; white-space:nowrap; }
+    .scene-record-button { min-height:40px; display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:6px 10px; border:1px solid var(--line-strong); border-radius:8px; background:var(--surface); color:var(--accent-strong); font:inherit; font-size:.8rem; font-weight:600; cursor:pointer; transition:background .16s,border-color .16s,transform .16s; }
     .scene-record-button:hover:not(:disabled) { background:var(--accent-soft); border-color:color-mix(in srgb,var(--accent) 45%,var(--line)); }
     .scene-record-button:active:not(:disabled) { transform:translateY(1px); }
     .scene-record-button:disabled { opacity:.45; cursor:not-allowed; }
@@ -379,18 +378,21 @@
     .compact-check { min-height:36px; display:flex; align-items:center; gap:7px; padding:6px 8px; border:1px solid var(--line); border-radius:9px; color:var(--muted); font-size:10px; }
     .section-divider { width:100%; height:1px; margin:14px 0 0; border:0; background:var(--line); }
     .scene-nav { display:grid; grid-template-columns:repeat(2,max-content); align-items:center; gap:7px; }
-    .scene-nav-button { min-height:38px; display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:7px 11px; border:1px solid var(--line); border-radius:10px; background:var(--surface); color:var(--text); font-size:10px; font-weight:800; cursor:pointer; white-space:nowrap; }
+    .scene-nav-button { min-height:36px; display:inline-flex; align-items:center; justify-content:center; gap:4px; padding:6px 10px; border:0; border-radius:0; background:transparent; color:var(--text); font-size:.8rem; font-weight:600; cursor:pointer; white-space:nowrap; }
+    .scene-nav-button:first-child { border-radius:7px 0 0 7px; }
+    .scene-nav-button:last-child { border-inline-start:1px solid var(--line); border-radius:0 7px 7px 0; }
+    .scene-nav-button:focus-visible { z-index:1; }
     .scene-nav-button:hover:not(:disabled) { background:var(--surface-hover); border-color:var(--line-strong); }
     .scene-nav-button:disabled { opacity:.4; cursor:not-allowed; }
     .scene-nav-button svg { width:15px; height:15px; }
     .script-meta { display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap; }
     .duration-pill { display:inline-flex; align-items:center; min-height:24px; padding:3px 7px; border-radius:999px; background:var(--surface-muted); color:var(--muted); font-size:10px; font-weight:750; white-space:nowrap; }
     .script-actions { display:flex; justify-content:flex-end; gap:7px; margin-top:1px; }
-    .text-button { min-height:32px; padding:5px 8px; border:1px solid var(--line); border-radius:8px; background:var(--surface); color:var(--muted); font-size:10px; font-weight:750; cursor:pointer; }
+    .text-button { min-height:36px; padding:5px 8px; border:0; border-radius:6px; background:transparent; color:var(--accent-strong); font-size:.8rem; font-weight:550; text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
     .text-button:hover:not(:disabled) { background:var(--surface-hover); color:var(--text); }
     .text-button:disabled { opacity:.4; cursor:not-allowed; }
     .narration-source-tabs { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; margin:12px 0 14px; padding:4px; border:1px solid var(--line); border-radius:12px; background:var(--surface-muted); }
-    .narration-source-button { min-height:38px; padding:7px 8px; border:0; border-radius:9px; background:transparent; color:var(--muted); font:inherit; font-size:10px; font-weight:800; cursor:pointer; }
+    .narration-source-button { min-height:40px; padding:7px 8px; border:0; border-radius:7px; background:transparent; color:var(--muted); font:inherit; font-size:.8rem; font-weight:600; cursor:pointer; }
     .narration-source-button[aria-pressed="true"] { background:#fff; color:var(--accent-strong); box-shadow:0 1px 3px rgba(0,0,0,.08); }
     .narration-source-panel[hidden] { display:none !important; }
     .source-action-card { display:grid; gap:10px; padding:12px; border:1px solid var(--line); border-radius:12px; background:#fbfbf9; }
@@ -420,7 +422,7 @@
     .voice-scope-copy { min-width:0; }
     .voice-scope-copy strong { display:block; font-size:11px; }
     .voice-scope-copy span { display:block; margin-top:2px; color:var(--muted); font-size:10px; }
-    .voice-scope-card .button { width:100%; min-height:38px; font-size:11px; }
+    .voice-scope-card .button { width:100%; }
     .scene-voice-summary { max-width:100%; color:var(--muted); font-size:10px; overflow-wrap:anywhere; line-height:1.45; }
     .scene-voice-status { display:flex; align-items:center; justify-content:flex-end; gap:7px; min-width:0; max-width:48%; }
     .scene-voice-status .recording-state { flex:0 0 auto; }
@@ -496,19 +498,18 @@
       .scene-nav-button { min-height:44px; }
       .project-start-card,.project-actions,.scene-progress-card,.export-tools-card { grid-template-columns:1fr; }
       .project-start-icon { display:none; }
-      .project-start-card .button { width:100%; min-height:42px; }
       .project-button-group,.export-tools-actions { justify-content:stretch; }
-      .project-button-group .button,.export-tools-actions .button { flex:1; min-height:42px; }
+      .project-button-group .button,.export-tools-actions .button { flex:1; }
       .scene-progress-metrics { grid-template-columns:1fr 1fr; }
       .scene-recording-row { grid-template-columns:minmax(0,1fr) auto; gap:7px; }
       .scene-recording-row .recording-state { grid-column:2; grid-row:1; }
       .scene-recording-row .scene-recording-actions { grid-column:1 / -1; grid-row:2; justify-content:flex-end; }
-      .scene-record-button { min-height:38px; }
-      .scene-play-button { width:38px; height:38px; }
+      .scene-record-button,.text-button { min-height:44px; }
+      .scene-play-button { width:44px; height:44px; }
       .scene-editor-meta { position:sticky; z-index:8; top:calc(var(--header-height) + 6px); margin:-2px -2px 10px; padding:8px 2px 10px; background:linear-gradient(to bottom,var(--surface) 82%,color-mix(in srgb,var(--surface) 88%,transparent)); border-bottom:1px solid var(--line); }
       .scene-editor-meta .source-badge { max-width:96px; overflow:hidden; text-overflow:ellipsis; }
       .narration-source-tabs { grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px; }
-      .narration-source-button { min-height:44px; padding:6px 5px; font-size:10px; line-height:1.25; white-space:normal; overflow-wrap:anywhere; }
+      .narration-source-button { min-height:44px; padding:6px; line-height:1.35; overflow-wrap:anywhere; }
       .narration-section-head { align-items:flex-start; flex-direction:column; }
       .scene-voice-status { width:100%; max-width:none; justify-content:space-between; }
       .scene-voice-summary { min-width:0; flex:1; }
@@ -553,7 +554,7 @@
     .guide-import .drop-zone.is-dragover { background:var(--accent-soft); }
     .guide-import .drop-zone > svg { width:52px; height:52px; padding:10px; border-radius:12px; background:var(--accent-soft); }
     .guide-import .guide-drop-label { margin:0; color:var(--text); font-size:1rem; font-weight:750; }
-    .guide-import .project-start-card { display:flex; justify-content:center; border:0; background:none; padding:14px 0; }
+    .guide-import .project-start-card { display:flex; justify-content:center; border:0; background:none; padding:6px 0; }
     .guide-file-actions { display:flex; gap:8px; flex-wrap:wrap; margin:14px 0; }
     .guide-error { color:var(--danger); }
     .guide-stage { padding:clamp(15px,2.8vw,30px); border:1px solid var(--line); border-radius:14px; background:var(--surface); }
@@ -566,7 +567,7 @@
     #guideMethod { width:100%; }
     .guide-main-actions { margin-top:12px; }
     .guide-main-actions:not(:has(button:not([hidden]))) { display:none; }
-    .guide-model { padding:16px 20px; margin-top:14px; border-radius:10px; background:#f3f6f3; }
+    .guide-model { container-type:inline-size; padding:16px 20px; margin-top:14px; border-radius:10px; background:#f3f6f3; }
     .guide-model-heading { display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:4px 12px; }
     .guide-model h3 { font-size:1.05rem; margin:0; }
     #guideModelCount { color:var(--accent-strong); font-size:.8rem; font-variant-numeric:tabular-nums; }
@@ -576,8 +577,9 @@
     .guide-model-name { display:grid; gap:2px; min-width:0; }
     .guide-model small { color:var(--muted); overflow-wrap:anywhere; }
     .guide-model-actions { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; }
-    .guide-model-actions .button { min-height:44px; border-color:#9eb8ad; color:var(--accent-strong); font-size:.87rem; }
-    .guide-model a { display:inline-flex; align-items:center; min-height:44px; color:var(--accent-strong); font-size:.84rem; text-underline-offset:3px; }
+    .guide-model-actions .button { color:var(--accent-strong); }
+    .guide-model a { display:inline-flex; align-items:center; gap:4px; min-height:44px; color:var(--accent-strong); font-size:.8rem; text-underline-offset:3px; }
+    .guide-model a svg { width:13px; height:13px; flex:none; }
     #localTtsNotices { min-height:36px; padding:4px 0; border:0; background:transparent; text-decoration:underline; text-underline-offset:3px; font-weight:500; }
     .guide-model .guide-file-ready { color:var(--accent); font-size:.8rem; }
     .guide-model .guide-file-status { margin-top:6px; font-size:.88rem; }
@@ -609,7 +611,9 @@
     .slide-note-state[data-audio-state="ready"] { color:var(--accent); }
     .slide-note-state[data-audio-state="error"] { color:var(--danger); }
     .guide-slide .scene-editor-meta { grid-column:1/-1; grid-template-columns:minmax(0,1fr) auto; margin:0; padding:0 0 10px; border:0; border-bottom:1px solid var(--line); border-radius:0; background:transparent; }
-    .guide-slide .scene-nav { display:flex; width:auto; gap:5px; }
+    .guide-slide .scene-nav { display:flex; width:auto; gap:0; border:1px solid var(--line); border-radius:8px; }
+    #guideVideoIssue::before,#guidePrimary[data-action="output"]::after,#guideReturn::after { content:""; flex:none; width:7px; height:7px; margin-inline:2px; border:solid currentColor; border-width:1.5px 1.5px 0 0; transform:rotate(45deg); }
+    #guideVideoIssue::before { transform:rotate(-135deg); }
     .guide-preview .renderer-badge[data-state="primary"] { display:none; }
     .guide-slide .narration-section-head { margin-top:12px; }
     .guide-slide textarea { min-height:190px; }
@@ -643,25 +647,30 @@
       .guide-nav { gap:0; margin-bottom:12px; }
       .guide-nav button { flex:1; gap:5px; padding:0 2px; font-size:13px; }
       .guide-slides .scene-list { max-height:40vh; }
-      .guide-slide .scene-nav-button { min-width:40px; justify-content:center; }
+      .guide-slide .scene-nav-button { min-width:44px; }
       .guide-slide .scene-nav-button span { display:none; }
       .guide-editor,.guide-slide { grid-template-columns:minmax(0,1fr); gap:10px; }
       .guide-slide { padding:12px; }
       .guide-model { padding:12px 14px; }
-      .guide-model li { grid-template-columns:minmax(0,1fr) auto; row-gap:0; }
-      .guide-model-actions { display:contents; }
-      .guide-model-actions a { grid-column:1; grid-row:auto; justify-self:start; min-height:34px; }
-      .guide-model-actions .button,.guide-model-actions [data-local-ready] { grid-column:2; grid-row:1 / span 2; }
-      .guide-model-actions .button { min-height:44px; }
-      .guide-main-actions .button { min-height:44px; }
+      #localTtsNotices { min-height:44px; }
       .guide-import .drop-zone { min-height:176px; }
       .guide-import .guide-drop-label { display:none; }
     }
     @media (max-width:420px) {
-      .guide-model li { grid-template-columns:minmax(0,1fr); gap:4px; }
-      .guide-model-actions { display:flex; gap:4px 12px; }
       .guide-main-actions { display:grid; grid-template-columns:minmax(0,1fr); }
       :lang(en) .guide-method { grid-template-columns:minmax(0,1fr); }
+    }
+    @container (max-width:35rem) {
+      .guide-model li { row-gap:0; }
+      .guide-model-actions { display:contents; }
+      .guide-model-actions a { grid-column:1; grid-row:2; justify-self:start; }
+      .guide-model-actions .button,.guide-model-actions [data-local-ready] { grid-column:2; grid-row:1 / span 2; justify-self:end; }
+    }
+    @container (max-width:23rem) {
+      .guide-model li { gap:4px 8px; }
+      .guide-model-actions a { grid-column:2; grid-row:1; justify-self:end; }
+      .guide-model-actions .button { grid-column:1/-1; grid-row:2; justify-self:start; }
+      .guide-model-actions [data-local-ready] { grid-row:1; }
     }
     @media (max-width:360px) {
       .guide-method { grid-template-columns:minmax(0,1fr); }
@@ -698,7 +707,7 @@
 
     <div class="guide-document" id="projectActions" hidden>
       <span id="guideDocumentName"></span>
-      <button class="button" type="button" id="saveProjectButton" data-i18n="guideSave">作業を保存</button>
+      <button class="button ghost" type="button" id="saveProjectButton"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 16v4h16v-4"/></svg><span data-i18n="guideSave">作業を保存</span></button>
     </div>
     <nav class="guide-nav" id="workflowNav" data-i18n-aria-label="mobileNavLabel" aria-label="画面切り替え" hidden>
       <button type="button" data-guide-step="slides"><span aria-hidden="true">1</span><span data-i18n="guideImport">読み込み</span></button>
@@ -713,12 +722,12 @@
           <div class="drop-zone" id="dropZone">
             <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 31V10h22l8 8v13"/><path d="M31 10v8h8"/><path d="M24 22v15m-6-6 6 6 6-6"/><path d="M12 41h24"/></svg>
             <div><p class="guide-drop-label" data-i18n="guideDrop">ここにPowerPointをドロップ</p><p id="dropHint" data-i18n="guideLimit">.pptx、150 MBまで</p></div>
-            <button class="button primary" id="chooseFileButton" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h7l2 2h9v10H3z"/></svg><span data-i18n="guideOpen">PowerPointを開く</span></button>
+            <button class="button primary" id="chooseFileButton" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18V5h6l2 3h9v3"/><path d="M3 18l3-7h16l-3 8H4z"/></svg><span data-i18n="guideOpen">PowerPointを開く</span></button>
             <input class="file-input" id="pptxInput" type="file" accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation">
           </div>
 
           <div class="project-start-card" id="projectStartCard">
-            <button class="button" id="openProjectFromDropButton" type="button" data-i18n="guideOpenProject">保存した作業を開く（.pvm）</button>
+            <button class="button ghost" id="openProjectFromDropButton" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10a9 9 0 1 1 1.5 7M3 5v5h5"/><path d="M12 7v5l3 2"/></svg><span data-i18n="guideOpenProject">保存した作業を開く（.pvm）</span></button>
           </div>
           <input class="file-input" id="projectInput" type="file" accept=".pvm">
 
@@ -731,7 +740,7 @@
           <div class="guide-file-actions" id="guideFileActions" hidden>
             <button class="button primary" id="guideReturn" type="button" data-i18n="guideReturn">ナレーションに戻る</button>
             <button class="button" id="replaceFileButton" type="button" data-i18n="guideReplace">別のPowerPointを開く</button>
-            <button class="button" id="openProjectButton" type="button" data-i18n="guideOpenProject">保存した作業を開く（.pvm）</button>
+            <button class="button ghost" id="openProjectButton" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10a9 9 0 1 1 1.5 7M3 5v5h5"/><path d="M12 7v5l3 2"/></svg><span data-i18n="guideOpenProject">保存した作業を開く（.pvm）</span></button>
           </div>
           <p id="guideImportError" class="guide-error" role="alert" hidden></p>
           <details class="tech" id="guideFileTech" hidden>
@@ -769,8 +778,8 @@
               <li data-model-file="model_quantized.onnx" hidden>
                 <div class="guide-model-name"><strong data-i18n="guideModel">共通モデル</strong><small>model_quantized.onnx · 92 MB</small></div>
                 <div class="guide-model-actions">
-                  <a href="https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/1939ad2a8e416c0acfeecc08a694d14ef25f2231/onnx/model_quantized.onnx?download=true" target="_blank" rel="noopener noreferrer" data-i18n="guideDownload" data-i18n-aria-label="guideDownloadModel" aria-label="共通モデルをダウンロード">ダウンロード</a>
-                  <button class="button" type="button" data-load-local-file data-i18n="guideLoadFile" data-i18n-aria-label="guideReadModel" aria-label="保存したファイルを選ぶ（共通モデル）">保存したファイルを選ぶ</button>
+                  <a href="https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/1939ad2a8e416c0acfeecc08a694d14ef25f2231/onnx/model_quantized.onnx?download=true" target="_blank" rel="noopener noreferrer" data-i18n-aria-label="guideDownloadModel" aria-label="共通モデルをダウンロード"><span data-i18n="guideDownload">ダウンロード</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5h11v11M19 5 6 18"/></svg></a>
+                  <button class="button" type="button" data-load-local-file data-i18n-aria-label="guideReadModel" aria-label="保存したファイルを選ぶ（共通モデル）"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18V5h6l2 3h9v3"/><path d="M3 18l3-7h16l-3 8H4z"/></svg><span data-i18n="guideLoadFile">保存したファイルを選ぶ</span></button>
                   <strong class="guide-file-ready" data-local-ready data-i18n="guideFileReady" hidden>読み込み済み</strong>
                 </div>
                 <input type="file" data-local-file="model_quantized.onnx" accept=".onnx" hidden>
@@ -778,8 +787,8 @@
               <li data-model-file="jf_alpha.bin" hidden>
                 <div class="guide-model-name"><strong data-i18n="guideJaVoice">日本語の声</strong><small>jf_alpha.bin · 522 kB</small></div>
                 <div class="guide-model-actions">
-                  <a href="https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/1939ad2a8e416c0acfeecc08a694d14ef25f2231/voices/jf_alpha.bin?download=true" target="_blank" rel="noopener noreferrer" data-i18n="guideDownload" data-i18n-aria-label="guideDownloadJaVoice" aria-label="日本語の声をダウンロード">ダウンロード</a>
-                  <button class="button" type="button" data-load-local-file data-i18n="guideLoadFile" data-i18n-aria-label="guideReadJaVoice" aria-label="保存したファイルを選ぶ（日本語の声）">保存したファイルを選ぶ</button>
+                  <a href="https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/1939ad2a8e416c0acfeecc08a694d14ef25f2231/voices/jf_alpha.bin?download=true" target="_blank" rel="noopener noreferrer" data-i18n-aria-label="guideDownloadJaVoice" aria-label="日本語の声をダウンロード"><span data-i18n="guideDownload">ダウンロード</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5h11v11M19 5 6 18"/></svg></a>
+                  <button class="button" type="button" data-load-local-file data-i18n-aria-label="guideReadJaVoice" aria-label="保存したファイルを選ぶ（日本語の声）"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18V5h6l2 3h9v3"/><path d="M3 18l3-7h16l-3 8H4z"/></svg><span data-i18n="guideLoadFile">保存したファイルを選ぶ</span></button>
                   <strong class="guide-file-ready" data-local-ready data-i18n="guideFileReady" hidden>読み込み済み</strong>
                 </div>
                 <input type="file" data-local-file="jf_alpha.bin" accept=".bin" hidden>
@@ -787,8 +796,8 @@
               <li data-model-file="af_heart.bin" hidden>
                 <div class="guide-model-name"><strong data-i18n="guideEnVoice">英語の声</strong><small>af_heart.bin · 522 kB</small></div>
                 <div class="guide-model-actions">
-                  <a href="https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/1939ad2a8e416c0acfeecc08a694d14ef25f2231/voices/af_heart.bin?download=true" target="_blank" rel="noopener noreferrer" data-i18n="guideDownload" data-i18n-aria-label="guideDownloadEnVoice" aria-label="英語の声をダウンロード">ダウンロード</a>
-                  <button class="button" type="button" data-load-local-file data-i18n="guideLoadFile" data-i18n-aria-label="guideReadEnVoice" aria-label="保存したファイルを選ぶ（英語の声）">保存したファイルを選ぶ</button>
+                  <a href="https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/1939ad2a8e416c0acfeecc08a694d14ef25f2231/voices/af_heart.bin?download=true" target="_blank" rel="noopener noreferrer" data-i18n-aria-label="guideDownloadEnVoice" aria-label="英語の声をダウンロード"><span data-i18n="guideDownload">ダウンロード</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5h11v11M19 5 6 18"/></svg></a>
+                  <button class="button" type="button" data-load-local-file data-i18n-aria-label="guideReadEnVoice" aria-label="保存したファイルを選ぶ（英語の声）"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18V5h6l2 3h9v3"/><path d="M3 18l3-7h16l-3 8H4z"/></svg><span data-i18n="guideLoadFile">保存したファイルを選ぶ</span></button>
                   <strong class="guide-file-ready" data-local-ready data-i18n="guideFileReady" hidden>読み込み済み</strong>
                 </div>
                 <input type="file" data-local-file="af_heart.bin" accept=".bin" hidden>
@@ -1039,7 +1048,7 @@
                 <div class="video-result-meta"><span id="videoResultDuration">—</span><span id="videoResultResolution">—</span><span id="videoResultSize">—</span></div>
                 <div class="video-result-stale" id="videoResultStale" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg><span data-i18n="guideOldVideo">変更前の動画です。新しい設定を反映するにはMP4を作り直してください。</span></div>
                 <video id="videoResultPreview" controls playsinline></video>
-                <div class="button-row" style="margin-top:10px"><button class="button primary" id="saveVideoButton" type="button" data-i18n="saveVideo">MP4を保存</button></div>
+                <div class="button-row" style="margin-top:10px"><button class="button primary" id="saveVideoButton" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 16v4h16v-4"/></svg><span data-i18n="saveVideo">MP4を保存</span></button></div>
               </div>
               <details class="guide-disclosure"><summary data-i18n="guideFinishing">字幕・BGM・切り替え</summary>
               <div class="video-polish-settings">

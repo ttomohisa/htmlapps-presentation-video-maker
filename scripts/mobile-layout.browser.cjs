@@ -46,6 +46,8 @@ assert.equal(await intro.getByRole('heading').count(),0,label+': introduction ha
 assert.equal(await intro.locator('p').textContent(),language==='ja'?'PowerPointからナレーション付きMP4を作れます。':'Turn PowerPoint slides into a narrated MP4.');
 await bounds(intro.locator('p'),width,height,label,false);
 assert.equal((await badge.locator('[data-i18n="localBadge"]').textContent()).trim(),language==='ja'?'完全ローカル処理':'Fully local processing');
+const resume=page.getByRole('button',{name:language==='ja'?'保存した作業を開く（.pvm）':'Open saved work (.pvm)',exact:true});
+assert.ok((await resume.boundingBox()).height>=44,label+': saved work button has a touch target');
 assert.equal(await badge.isVisible(),width>cfg.bp,label+': local processing badge visibility');
 if(await badge.isVisible()){
   await bounds(badge,width,height,label);
@@ -86,6 +88,18 @@ await page.waitForFunction(()=>{
 });
 assert.match(await page.locator('#guideModelSetup').innerText(),language==='ja'?/Hugging Face\(外部サイト\)/:/Hugging Face \(external site\)/);
 assert.equal(await page.locator('[data-model-file="model_quantized.onnx"] button').innerText(),language==='ja'?'保存したファイルを選ぶ':'Choose saved file');
+const modelRow=page.locator('[data-model-file="model_quantized.onnx"]');
+const picker=modelRow.getByRole('button',{name:language==='ja'?'保存したファイルを選ぶ（共通モデル）':'Choose saved file (shared model)',exact:true});
+const [pick,download]=await Promise.all([picker.boundingBox(),modelRow.getByRole('link').boundingBox()]);
+assert.ok(pick.height>=44&&download.height>=44,label+': both file actions have touch targets');
+assert.ok(pick.x>=download.x+download.width||pick.y>=download.y+download.height||download.x>=pick.x+pick.width,label+': file actions do not overlap');
+if(width===320){
+  const choosing=page.waitForEvent('filechooser');
+  await picker.locator('svg').click();
+  const chooser=await choosing;
+  assert.equal(await chooser.element().getAttribute('data-local-file'),'model_quantized.onnx');
+  await chooser.setFiles([]);
+}
 await page.waitForFunction(()=>{
   const frame=document.querySelector('#slidePreviewMount .pptx-render-frame,#slidePreviewMount .fallback-slide');
   return frame?.getBoundingClientRect().width>70;
