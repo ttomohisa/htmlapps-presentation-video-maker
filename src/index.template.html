@@ -87,9 +87,9 @@
     .language-button:hover,.header-icon-button:hover { color:var(--text); background:transparent; }
     .header-icon-button svg { width:20px; height:20px; }
     .main { width:min(1220px,100%); margin:0 auto; padding:18px clamp(14px,2.8vw,30px) 64px; }
-    .page-intro { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:0 2px 14px; }
+    .page-intro { width:min(760px,100%); margin:6px auto 0; }
     .page-intro p { margin:0; color:var(--muted); font-size:14px; line-height:1.5; text-wrap:pretty; }
-    .local-badge { display:inline-flex; align-items:center; gap:7px; flex:0 0 auto; color:var(--accent); font-size:12px; font-weight:500; white-space:nowrap; }
+    .local-badge { display:inline-flex; align-items:center; gap:7px; flex:0 0 auto; padding:7px 10px; border:1px solid color-mix(in srgb,var(--accent) 24%,var(--line)); border-radius:999px; color:var(--accent); background:var(--accent-soft); font-size:12px; font-weight:750; white-space:nowrap; }
     .local-badge svg { width:15px; height:15px; }
     .workflow { display:grid; gap:14px; }
     .panel { border:1px solid var(--line); border-radius:16px; background:var(--surface); box-shadow:var(--shadow-sm); overflow:hidden; }
@@ -183,9 +183,9 @@
     .recording-plan strong { font-size:14px; }
     .capture-current { display:flex; gap:8px; justify-content:space-between; align-items:center; padding:8px 10px; border-radius:9px; background:var(--accent-soft); color:var(--accent-strong); font-size:11px; font-weight:700; }
     .scene-recordings-card { margin-top:14px; border:1px solid var(--line); border-radius:12px; overflow:hidden; }
-    .scene-recordings-head { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding:12px 14px; border-bottom:1px solid var(--line); background:#fbfbf9; }
+    .scene-recordings-head { padding:12px 14px; border-bottom:1px solid var(--line); background:#fbfbf9; }
     .scene-recordings-head strong,.scene-recordings-head span { display:block; }
-    .scene-recordings-head span:not(.mini-badge) { margin-top:3px; color:var(--muted); font-size:10px; }
+    .scene-recordings-head span { margin-top:3px; color:var(--muted); font-size:10px; }
     .scene-recordings-list { display:grid; max-height:min(52vh,520px); overflow:auto; overscroll-behavior:contain; scrollbar-width:thin; }
     .video-export-card { margin-top:14px; border:1px solid var(--line); border-radius:12px; background:#fbfbf9; overflow:hidden; }
     .video-export-head { display:flex; align-items:flex-start; justify-content:space-between; gap:14px; padding:14px; border-bottom:1px solid var(--line); background:var(--surface); }
@@ -309,7 +309,6 @@
       .header-actions { gap:6px; flex:0 0 auto; }
       .language-button { font-size:11px; }
       .brand-meta { display:none; }
-      .page-intro { padding-bottom:12px; }
       .local-badge { display:none; }
       .panel-head { padding:14px; }
       .panel-body { padding:14px; }
@@ -539,7 +538,6 @@
     #helpDialog .help-build { margin-top:20px; padding-top:12px; border-top:1px solid var(--line); color:var(--muted); font-size:11px; overflow-wrap:anywhere; }
     [hidden] { display:none !important; }
     [data-guide-page] { min-width:0; }
-    .page-intro { width:min(760px,100%); margin:6px auto 0; padding:0; }
     .guide-document { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:0 0 4px; }
     #guideDocumentName { font-size:14px; font-weight:750; overflow-wrap:anywhere; }
     .guide-document .button { flex:none; }
@@ -681,6 +679,10 @@
         </div>
       </div>
       <div class="header-actions">
+        <span class="local-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 2.8 8.2 7 10 4.2-1.8 7-5.4 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+          <span data-i18n="localBadge">完全ローカル処理</span>
+        </span>
         <button class="language-button" id="languageButton" type="button" aria-label="英語に切り替え" title="英語に切り替え">EN</button>
         <button class="header-icon-button" id="helpButton" type="button" data-i18n-aria-label="help" data-i18n-title="help" aria-label="使い方と注意事項" title="使い方と注意事項">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.3 2.3 0 0 1 4.4 1c0 1.7-2.2 2-2.2 3.6M12 17h.01"/></svg>
@@ -692,10 +694,6 @@
   <main class="main">
     <div class="page-intro">
       <p data-i18n="introText">PowerPointからナレーション付きMP4を作れます。</p>
-      <span class="local-badge">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 2.8 8 7 10 4.2-2 7-5.4 7-10V6z"/><path d="m9 12 2 2 4-5"/></svg>
-        <span data-i18n="localBadge">完全ローカル処理</span>
-      </span>
     </div>
 
     <div class="guide-document" id="projectActions" hidden>
@@ -999,7 +997,7 @@
         <details class="guide-disclosure guide-recordings">
           <summary data-i18n="guideAudioList">スライドの音声一覧</summary>
           <div class="scene-recordings-card" id="sceneRecordingsCard">
-            <div class="scene-recordings-head"><div><strong data-i18n="sceneRecordingsTitle">シーン別の音声素材</strong><span data-i18n="sceneRecordingsDescription">前後の余白は録音せず、動画生成時に追加します。</span></div><span class="mini-badge" data-i18n="localBadge">完全ローカル処理</span></div>
+            <div class="scene-recordings-head"><strong data-i18n="sceneRecordingsTitle">シーン別の音声素材</strong><span data-i18n="sceneRecordingsDescription">前後の余白は録音せず、動画生成時に追加します。</span></div>
             <div class="scene-recordings-list" id="sceneRecordingsList"></div>
           </div>
 

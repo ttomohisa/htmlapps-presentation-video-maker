@@ -41,13 +41,17 @@ page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()
 try{await page.goto(pathToFileURL(path.resolve(file)).href);await page.locator('#helpButton').waitFor();
 await page.waitForFunction(()=>/^\d+\.\d+\.\d+$/.test(document.querySelector('#buildVersion').textContent));
 if(await page.locator('html').getAttribute('lang')!==language)await page.locator('#languageButton').click();
-const intro=page.locator('.page-intro'),badge=intro.locator('.local-badge');
+const intro=page.locator('.page-intro'),badge=page.getByRole('banner').locator('.local-badge');
 assert.equal(await intro.getByRole('heading').count(),0,label+': introduction has no heading');
 assert.equal(await intro.locator('p').textContent(),language==='ja'?'PowerPointからナレーション付きMP4を作れます。':'Turn PowerPoint slides into a narrated MP4.');
 await bounds(intro.locator('p'),width,height,label,false);
 assert.equal((await badge.locator('[data-i18n="localBadge"]').textContent()).trim(),language==='ja'?'完全ローカル処理':'Fully local processing');
 assert.equal(await badge.isVisible(),width>cfg.bp,label+': local processing badge visibility');
-if(await badge.isVisible())await bounds(badge,width,height,label,false);
+if(await badge.isVisible()){
+  await bounds(badge,width,height,label);
+  const [brand,mark,languageButton]=await Promise.all([page.locator('.brand').boundingBox(),badge.boundingBox(),page.locator('#languageButton').boundingBox()]);
+  assert.ok(brand.x+brand.width<=mark.x&&mark.x+mark.width<=languageButton.x,label+': header items fit beside the badge');
+}
 assert.equal(await page.locator('main > footer.footer').isVisible(),width>cfg.bp,label+': informational footer');
 
 if(cfg.nav&&file!==cfg.slug+'.html')assert.equal(await page.locator(cfg.nav).isVisible(),false,label+': navigation starts after opening a deck');
@@ -67,6 +71,7 @@ await page.keyboard.press('Escape');assert.equal(await page.locator('#helpDialog
 if(file==='dist/index.html'){
 await page.locator('#pptxInput').setInputFiles(path.resolve('test-data/presentation-video-maker-30-slides-long-content.pptx'));
 await page.locator('#guideNarrationHeading').waitFor({timeout:30000});
+assert.equal(await badge.isVisible(),width>cfg.bp,label+': badge after loading a deck');
 assert.equal(await page.locator('[aria-current="step"]').getAttribute('data-guide-step'),'script');
 assert.equal(await page.locator('[data-guide-page]:visible').count(),1);
 assert.equal(await page.locator('#slideList button').count(),30);

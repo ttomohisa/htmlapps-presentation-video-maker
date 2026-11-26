@@ -48,10 +48,13 @@ test('Help continues using native showModal, Close and geometric backdrop dismis
   assert.doesNotMatch(source, /helpDialog\.addEventListener\(['"]cancel['"]/);
 });
 
-test('the existing local-processing badge keeps its decorative shield and labels', () => {
-  const badge = source.match(/<span class="local-badge">([\s\S]*?)<span data-i18n="localBadge">/)[1];
-  assert.match(badge, /aria-hidden="true"/);
-  assert.match(badge, /M12 3 5 6v5c0 4\.6 2\.8 8 7 10 4\.2-2 7-5\.4 7-10V6z/);
+test('one shield badge in the shared header identifies on-device processing', () => {
+  const header = source.match(/<header class="app-header">([\s\S]*?)<\/header>/)[1];
+  assert.match(header, /<span class="local-badge">\s*<svg[^>]*aria-hidden="true"[\s\S]*?<span data-i18n="localBadge">/);
+  assert.equal((source.match(/data-i18n="localBadge"/g) || []).length, 1);
+  const style = declarationsFor('.local-badge');
+  assert.equal(style.background, 'var(--accent-soft)');
+  assert.equal(style['border-radius'], '999px');
   assert.equal(translations.ja.localBadge, '完全ローカル処理');
   assert.equal(translations.en.localBadge, 'Fully local processing');
 });
