@@ -401,7 +401,11 @@
     .local-tts-files a { color:var(--accent-strong); overflow-wrap:anywhere; }
     .local-tts-files ul { margin:7px 0; padding-inline-start:22px; }
     .local-tts-files li { margin:4px 0; }
-    .local-tts-run { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:8px; }
+    .local-tts-run { display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; margin-top:10px; padding:12px; border-radius:10px; background:var(--surface-muted); }
+    .local-tts-progress { flex:1 1 180px; min-width:0; display:grid; gap:5px; }
+    #localTtsCount { font-weight:750; font-variant-numeric:tabular-nums; }
+    #localTtsStatus { font-size:.88rem; }
+    #localTtsProgress { width:100%; height:10px; accent-color:var(--accent); }
     .local-tts-run[hidden],#localTtsCancel[hidden],#testPage.local-output [data-desktop-tts-capture],#testPage.local-output #captureStatusChip { display:none; }
     .mic-live { display:inline-flex; align-items:center; gap:6px; color:#8d2922; font-size:10px; font-weight:800; }
     .mic-live::before { content:""; width:8px; height:8px; border-radius:50%; background:#c53b32; box-shadow:0 0 0 4px rgba(197,59,50,.12); }
@@ -754,7 +758,14 @@
             <button class="button" type="button" id="guideUseFile" hidden data-i18n="sourceFile">音声ファイルを使う</button>
             <button class="button" type="button" id="guideContinuePC" hidden data-i18n="guideContinuePC">作業を保存してPCで続ける</button>
           </div>
-          <div id="localTtsRun" class="local-tts-run" hidden><span id="localTtsStatus" role="status" tabindex="-1"></span><button id="localTtsCancel" class="button" type="button" data-i18n="localCancel" hidden>生成を中止</button></div>
+          <div id="localTtsRun" class="local-tts-run" hidden>
+            <div class="local-tts-progress">
+              <span id="localTtsCount" hidden></span>
+              <span id="localTtsStatus" role="status" tabindex="-1"></span>
+              <progress id="localTtsProgress" aria-describedby="localTtsCount" data-i18n-aria-label="guideSpeechProgress" aria-label="スライド内の音声生成の進捗" hidden></progress>
+            </div>
+            <button id="localTtsCancel" class="button" type="button" data-i18n="localCancel" hidden>生成を中止</button>
+          </div>
         </div>
         <div id="slideWorkspace" class="guide-editor" hidden>
             <details class="guide-slides" id="guideSlides" open>
@@ -1146,6 +1157,12 @@
         guideReadJaVoice:['日本語の声を読み込む','Load Japanese voice'],
         guideReadEnVoice:['英語の声を読み込む','Load English voice'],
         guideWrongFile:['{file}はこの行のファイルと一致しません。{expected}を読み込んでください。','{file} does not match this row. Load {expected}.'],
+        guideSpeechProgress:['スライド内の音声生成の進捗','Audio generation progress for this slide'],
+        guideSpeechSlides:['{completed} / {total} 枚完了 · スライド {slide}','{completed} of {total} complete · Slide {slide}'],
+        guideSpeechPreparing:['音声生成を開始しています…','Starting audio generation…'],
+        guideSpeechModel:['モデルと声を準備中…','Preparing the model and voice…'],
+        guideSpeechScript:['台本を読み上げ用に準備中…','Preparing the script for narration…'],
+        guideSpeechChunks:['音声を生成中 · {chunksCompleted} / {totalChunks} 区間','Generating audio · {chunksCompleted} of {totalChunks} segments'],
         guidePickSlide:['スライドを選ぶ','Choose a slide'],
         guideFilter:['音声が必要なスライドだけ','Only slides that need audio'],
         guideNoIssues:['音声が必要なスライドはありません。','No slides need audio.'],
@@ -1250,7 +1267,7 @@
       });
       const state = {
         guidePage:'slides', deckMethod:'file', fileLoading:false, importError:'', micStarting:false, audioFileLoading:false, previewRequest:0,
-        localDefaultLanguage:'ja',localFiles:new Map(),localRun:null,localChecking:false,localMessage:null,localFileMessage:null,
+        localDefaultLanguage:'ja',localFiles:new Map(),localRun:null,localProgress:null,localChecking:false,localMessage:null,localFileMessage:null,
         sourceGeneration: 0, sourceFile: null, sourceBuffer: null, slides: [], selectedSlideIndex: -1,
         voices: [], selectedVoiceURI: '', rate: 1, speechRunId: 0,
         rendererModule: null, rendererModulePromise: null, rendererModuleUrl: '', rendererMode: 'loading', html2canvasModule: null, html2canvasModulePromise: null, html2canvasModuleUrl: '',
@@ -1595,7 +1612,7 @@
       function stopMicStream(){ if(state.micStream){ for(const track of state.micStream.getTracks()) track.stop(); state.micStream=null; } }
       function cancelMicRecording(){ try{ if(state.micRecorder){ state.micRecorder.onstop=null; if(state.micRecorder.state!=='inactive') state.micRecorder.stop(); } }catch{} state.micRecorder=null; state.micRecordingIndex=-1; stopMicStream(); $('#stopMicRecordingButton')?.setAttribute('disabled',''); }
       function invalidateSource(){
-        state.localRun?.abort(); state.localRun=null; state.localMessage=null; state.localDefaultLanguage='ja'; state.deckMethod=defaultDeckMethod();
+        state.localRun?.abort(); state.localRun=null; state.localProgress=null; state.localMessage=null; state.localDefaultLanguage='ja'; state.deckMethod=defaultDeckMethod();
         window.LocalTTS?.dispose?.();
         state.sourceGeneration+=1; $('#sourceGenerationValue').textContent=String(state.sourceGeneration); cancelSpeech(); cancelMicRecording(); stopDisplayStream(); cleanupRecording(); clearVideoResult(); cancelVideo(); state.videoExportPhase='idle'; disposeRendererState();
         state.slides=[]; updateSubtitlePreview(); state.selectedSlideIndex=-1; state.sourceFile=null; state.sourceBuffer=null; $('#scriptInput').value=''; $('#slideList').textContent=''; $('#slidePreviewMount').innerHTML=`<div class="preview-empty">${t('previewPreparing')}</div>`;
@@ -1850,13 +1867,28 @@
       function localMessageText(message) {
         return message ? format(message.key,message.values) : '';
       }
+      function renderLocalProgress() {
+        const current=state.localProgress;
+        $('#localTtsRun').hidden=!state.localRun&&!state.localMessage;
+        $('#localTtsCancel').hidden=!state.localRun;
+        const count=$('#localTtsCount'), status=$('#localTtsStatus'), meter=$('#localTtsProgress');
+        count.hidden=meter.hidden=!current;
+        const summary=current?format('guideSpeechSlides',current):'';
+        if(count.textContent!==summary) count.textContent=summary;
+        const stageKeys={preparing:'guideSpeechPreparing',model:'guideSpeechModel',script:'guideSpeechScript',synthesis:'guideSpeechChunks'};
+        const message=current?format(stageKeys[current.phase],current):localMessageText(state.localMessage);
+        if(status.textContent!==message) status.textContent=message;
+        if(current?.phase==='synthesis') {
+          meter.max=current.totalChunks;
+          meter.value=current.chunksCompleted;
+        }else{
+          meter.removeAttribute('value');
+        }
+      }
       function renderLocalControls(slide) {
         const active=narrationSource(slide)==='local';
         $('#localSourcePanel').hidden=!active;
-        $('#localTtsRun').hidden=!state.localRun&&!state.localMessage;
-        $('#localTtsCancel').hidden=!state.localRun;
-        const message=localMessageText(state.localMessage);
-        if($('#localTtsStatus').textContent!==message) $('#localTtsStatus').textContent=message;
+        renderLocalProgress();
         $('#localTtsDefaultLanguage').value=state.localDefaultLanguage;
         if(!active) return;
         $('#localTtsLanguage').value=slide.localLanguage||'inherit';
@@ -1940,15 +1972,22 @@
               state.localMessage={key:'localNeedFiles',values:{...values,files:missing.join(', ')}};
               break;
             }
-            state.localMessage={key:'localProgress',values};
+            const firstSlide=!state.localProgress;
+            state.localProgress={...values,completed,phase:'preparing'};
             renderSceneRecordings();
             refreshCaptureReady();
+            if(firstSlide&&state.guidePage==='script') focusGuideControl('#localTtsStatus');
             const text=slide.script, language=localLanguage(slide), rate=slide.rate, voice=localVoiceName(slide);
             const matches=()=>state.slides[index]===slide && narrationSource(slide)==='local' &&
               slide.script===text && localLanguage(slide)===language && slide.rate===rate && slide.enabled;
             try {
               const {blob,duration}=await window.LocalTTS.synthesize({
-                text,language,rate,model:state.localFiles.get('model_quantized.onnx'),voice:state.localFiles.get(voice),signal
+                text,language,rate,model:state.localFiles.get('model_quantized.onnx'),voice:state.localFiles.get(voice),signal,
+                onProgress: progress=>{
+                  if(signal.aborted||state.localRun!==controller) return;
+                  state.localProgress={...progress,...values,completed};
+                  renderLocalProgress();
+                }
               });
               if(signal.aborted) throw new DOMException('Cancelled','AbortError');
               if(!blob?.size||!Number.isFinite(duration)||duration<=0) throw new Error('Invalid generated audio');
@@ -1967,7 +2006,7 @@
               break;
             }
           }
-          if(state.localMessage?.key==='localProgress') state.localMessage={key:'localDone',values:{count:completed}};
+          if(state.localProgress&&!state.localMessage) state.localMessage={key:'localDone',values:{count:completed}};
         } catch(error) {
           if(state.localRun===controller) {
             state.localMessage=signal.aborted || error?.name==='AbortError'
@@ -1977,6 +2016,7 @@
         } finally {
           if(state.localRun===controller) {
             state.localRun=null;
+            state.localProgress=null;
             renderSceneRecordings();
             refreshCaptureReady();
           }
@@ -2484,7 +2524,7 @@
         $('#guideContinuePC').disabled=busy;
         note.hidden=!hint;
         note.textContent=hint;
-        sampleButton.hidden=sample<0||(!sampleReady&&(!local||missingLocalFiles(slides[sample]).length>0));
+        sampleButton.hidden=Boolean(state.localRun)||sample<0||(!sampleReady&&(!local||missingLocalFiles(slides[sample]).length>0));
         sampleButton.disabled=busy;
         sampleButton.dataset.index=String(sample);
         sampleButton.textContent=format(sampleReady?'guideListen':'guideSample',{n:sample+1});

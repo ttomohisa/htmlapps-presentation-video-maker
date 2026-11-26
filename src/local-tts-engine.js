@@ -50,12 +50,16 @@
     };
     instance.onmessage = ({data}) => {
       if (instance !== worker) return;
+      if (data.progress) {
+        pending?.onProgress?.(data.progress);
+        return;
+      }
       if (data.error) dispose(failure(data.code || "runtime", data.error));
       else finish(null, {blob: data.blob, duration: data.duration});
     };
   }
 
-  async function synthesize({text, language, rate = 1, model, voice, signal}) {
+  async function synthesize({text, language, rate = 1, model, voice, signal, onProgress}) {
     if (signal?.aborted) throw abortError();
     if (!text?.trim()) throw failure("text", "Enter a narration script.");
     if (!["ja", "en"].includes(language)) throw failure("voice", "Unsupported voice language.");
@@ -66,7 +70,7 @@
     if (pending) throw failure("runtime", "A speech generation is already running.");
     return new Promise((resolve, reject) => {
       const onAbort = () => dispose();
-      pending = {resolve, reject, signal, onAbort};
+      pending = {resolve, reject, signal, onAbort, onProgress};
       signal?.addEventListener("abort", onAbort, {once: true});
       try {
         const message = {text, language, rate};

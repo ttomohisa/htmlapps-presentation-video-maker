@@ -80,7 +80,7 @@ Node.js, Python, and a local web server are not required for the normal Windows 
 ## Usage
 
 1. **Open file** — Open or drop a .pptx file (up to 150 MB). To resume, use **Open saved work (.pvm)**.
-2. **Narration** — Choose a language and prepare the voice files, then create audio for all remaining slides. When a slide has no notes, **Check script** opens the draft made from the slide text.
+2. **Narration** — Choose a language and prepare the voice files, then create audio for all remaining slides. While the model is running, the app shows how many slides have finished and the progress of the current slide. When a slide has no notes, **Check script** opens the draft made from the slide text.
 3. **Edit a slide** — Pick a slide from the list. **Settings for this slide** includes its narration method, language, speed, timing and inclusion. You can record your voice or select a local audio file.
 4. **Record computer speech on Windows** — Choose a local system voice, then select **Entire Screen** and **Share system audio** when prompted. Other sounds from your computer may also be recorded.
 5. **Video** — Create the MP4, preview it and select **Save MP4**. Find subtitles, background music and transitions under **Finishing settings**. Select **Save work** to keep a separate .pvm for future edits.

@@ -11,7 +11,7 @@ const {chromium, devices} = require('playwright');
 const app = pathToFileURL(path.resolve(process.env.PVM_TEST_HTML || 'dist/index.html')).href;
 const fixtures = process.env.PVM_KOKORO_DIR;
 const timeout = 180000;
-const narration = ['本日は、Presentation Video Makerと新製品Lumivexaを紹介します。', 'We have three plans for 2026.'];
+const narration = ['本日は、Presentation Video Makerと新製品Lumivexaを紹介します。', 'We have three plans for 2026.\nNext, we will go over the schedule.'];
 
 async function download(page, button, destination) {
   const ready = page.waitForEvent('download');
@@ -157,7 +157,9 @@ async function main() {
     await loadKokoroFile(page,'model_quantized.onnx');
     await loadKokoroFile(page,'af_heart.bin');
     await page.locator('#guidePrimary[data-action="batch"]').click();
+    await page.locator('#localTtsProgress').waitFor();
     await page.locator('#localTtsCancel').click();
+    await page.locator('#localTtsProgress').waitFor({state:'hidden'});
     await page.locator('#guidePrimary[data-action="batch"]').click({timeout});
     await page.locator('#guidePrimary[data-action="output"]').waitFor({timeout});
     await page.setViewportSize({width: 1280, height: 720});
@@ -198,11 +200,25 @@ async function main() {
     assert.equal(await phone.locator('#guideCapture').isVisible(), false);
     await loadKokoroFile(phone,'model_quantized.onnx');
     await loadKokoroFile(phone,'af_heart.bin');
+    await phone.evaluate(()=>{
+      const root=document.querySelector('#localTtsRun'), status=root.querySelector('#localTtsStatus');
+      const meter=root.querySelector('#localTtsProgress'), count=root.querySelector('#localTtsCount');
+      window.pvmTestSpeechProgress=[];
+      new MutationObserver(()=>{
+        if(meter.hidden) return;
+        window.pvmTestSpeechProgress.push({status:status.textContent,count:count.textContent,total:meter.max,value:meter.value,measured:meter.hasAttribute('value')});
+      }).observe(root,{subtree:true,childList:true,attributes:true});
+    });
     const workerStarted = phone.waitForEvent('worker');
     await phone.locator('#guidePrimary[data-action="batch"]').click();
     const worker = await workerStarted;
     assert.equal(await worker.evaluate(() => self.name), 'Kokoro speech synthesis');
     await phone.locator('#guidePrimary[data-action="output"]').click({timeout});
+    const updates=await phone.evaluate(()=>window.pvmTestSpeechProgress);
+    assert.ok(updates.some(update=>!update.measured&&update.status.startsWith('Preparing the model')));
+    assert.ok(updates.some(update=>update.count==='0 of 1 complete · Slide 2'&&update.measured&&update.value>0&&update.value<update.total));
+    assert.ok(updates.some(update=>update.measured&&update.total>1&&update.value===update.total));
+    assert.equal(await phone.locator('#localTtsProgress').isVisible(),false);
     const phoneProject = await download(phone, '#saveProjectButton', path.join(workspace, 'mobile-bilingual.pvm'));
     checkProject(phoneProject);
     assert.deepEqual(wav(phoneProject,0),wav(sample,0));
