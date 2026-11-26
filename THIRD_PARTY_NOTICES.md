@@ -1,6 +1,6 @@
 # Third-party notices
 
-Presentation Video Maker v2.0.0 includes the following components.
+Presentation Video Maker includes the following components.
 
 ## Local narration
 

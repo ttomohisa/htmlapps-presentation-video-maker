@@ -6,7 +6,7 @@
 
 [日本語版 README](README.ja.md)
 
-A privacy-focused, single-HTML app for turning a PowerPoint (PPTX) deck into a narrated MP4 in the browser. Use on-device speech, your own microphone recording, or local audio files, save/resume the work as a local `.pvm` project, and export scripts/subtitles without uploading the presentation, narration, BGM, project, or generated video to the app.
+Turn PowerPoint speaker notes into a narrated MP4 in Japanese or US English. On supported computers and phones, everything from opening the slides to saving the video runs on your device. You can also record your voice or use an audio file for individual slides.
 
 ## Generate Japanese and English narration from speaker notes
 
@@ -24,7 +24,7 @@ Choose the deck’s narration language or set a different language for one slide
 
 ### [Open Presentation Video Maker on GitHub Pages](https://ttomohisa.github.io/htmlapps-presentation-video-maker/)
 
-GitHub Pages delivers the initial HTML. After it loads, PPTX parsing, speaker-note extraction, slide rendering, narration editing, audio handling, video composition, and MP4 conversion are processed locally on your device. Files selected in the app are not uploaded by the app.
+GitHub Pages delivers the initial HTML. The optional model and voice downloads are hosted on Hugging Face. After it loads, PPTX parsing, speaker-note extraction, slide rendering, narration editing, audio handling, video composition, and MP4 conversion are processed locally on your device. Files selected in the app are not uploaded by the app.
 
 [![Presentation Video Maker screenshot](assets/screenshot-en.png)](https://ttomohisa.github.io/htmlapps-presentation-video-maker/)
 
@@ -64,7 +64,7 @@ Open the [GitHub Pages demo](https://ttomohisa.github.io/htmlapps-presentation-v
 ### Use the single HTML file
 
 1. Download the standalone `.html` file from [GitHub Releases](https://github.com/ttomohisa/htmlapps-presentation-video-maker/releases), or build `dist/index.html` locally.
-2. Open it in a current Chromium-based browser.
+2. Open it in desktop Chrome or Edge, or a supported smartphone browser.
 3. For the Windows Web Speech API recording workflow, follow the in-app instructions to share **Entire Screen** and enable **system audio** when requested.
 
 ### Build a fully embedded file yourself
@@ -87,9 +87,9 @@ Node.js, Python, and a local web server are not required for the normal Windows 
 
 ## Project files and text exports
 
-`.pvm` holds the source PPTX, scene scripts and settings, generated or recorded narration, optional BGM, and output settings. v2.0.0 opens v1.x projects. Model files and the exported MP4 stay separate from the project.
+`.pvm` holds the source PPTX, scene scripts and settings, generated or recorded narration, optional BGM, and output settings. v2.1.0 opens projects saved in v1.x and v2.0.0. Model files and the exported MP4 stay separate from the project.
 
-The project container is written and read locally by the app; no project data is sent to a server. It is not an autosave format, so save a new `.pvm` file when you want a resumable checkpoint.
+The project container is written and read locally by the app; no project data is sent to a server. Changing scripts, audio or settings shows **Unsaved** beside **Save work**. Select **Save work** before closing the page.
 
 The output area can also save:
 
@@ -103,7 +103,7 @@ The preview shares the download serializer (the invisible UTF-8 BOM is omitted f
 
 ## Video creation pipeline
 
-Video creation is fully local and uses two stages:
+Supported browsers encode H.264 video and AAC audio directly into an MP4 with WebCodecs. When accelerated export is unavailable, the app uses two stages:
 
 1. The browser renders the included slides, plays scene narration on a Canvas/Web Audio timeline, mixes optional BGM, burns subtitles, and records an intermediate WebM with MediaRecorder. This composition stage runs approximately in real time because the timeline is captured while it plays.
 2. The embedded FFmpeg WASM Builder v1.6.0 `video-compressor` runtime converts the intermediate WebM to H.264/AAC MP4.
@@ -153,7 +153,8 @@ Each deployment rebuilds the generated HTML from pinned dependencies and validat
 └─ .github/workflows/
    ├─ build-standalone.yml                 # Pull-request validation
    ├─ dependency-updates.yml               # Scheduled dependency checks
-   └─ deploy-pages.yml                     # GitHub Pages deployment
+   ├─ deploy-pages.yml                     # GitHub Pages deployment
+   └─ release.yml                          # Tag and publish when the version changes on main
 ```
 
 ### Update dependencies
@@ -191,7 +192,7 @@ The GitHub Pages version still requires the initial HTML request. To use the app
 
 ### Accelerated video export
 
-On supported browsers, H.264 and AAC are encoded locally with WebCodecs and written directly into MP4 by the app’s built-in ISO BMFF muxer. The accelerated path does not create an intermediate WebM and does not start FFmpeg WASM. Unchanged slide intervals use variable-duration video samples instead of encoding the same image 30 times per second; new frames are emitted for subtitle changes and during fades. If the browser cannot provide the required codecs or the accelerated path cannot complete, the app automatically falls back to the v1.2.0 compatibility exporter. Neither path uploads presentation or audio data.
+On supported browsers, H.264 and AAC are encoded locally with WebCodecs and written directly into MP4 by the app’s built-in ISO BMFF muxer. The accelerated path does not create an intermediate WebM and does not start FFmpeg WASM. Unchanged slide intervals use variable-duration video samples instead of encoding the same image 30 times per second; new frames are emitted for subtitle changes and during fades. If the browser cannot provide the required codecs or the accelerated path cannot complete, the app automatically falls back to the compatibility exporter. Neither path uploads presentation or audio data.
 
 ## Limitations
 
@@ -225,7 +226,7 @@ Bug reports and feature proposals are welcome through GitHub Issues. See [CONTRI
 
 ### Application regression checks
 
-Run `node --test tests/*.test.cjs` with Node.js 20 or later. The canonical `scripts/check-repository.ps1` check runs all application suites against the source and again against the generated readable HTML. The build verifies that the self-extracting payload restores the same readable bytes. `PVM_TEST_HTML` selects another readable HTML for a focused artifact check. These dependency-free tests cover actual source functions and event handlers using DOM/media doubles, plus static Help-layout guards; they do not replace native desktop/mobile wheel, focus, viewport, or real-media testing.
+Run `node --test tests/*.test.cjs` with Node.js 20 or later. The canonical `scripts/check-repository.ps1` check checks the text and audio engines and runs the workflow, subtitle, language, Help layout and video regressions against both the source and the generated readable HTML. The build verifies that the self-extracting payload restores the same readable bytes. `PVM_TEST_HTML` selects another readable HTML for a focused artifact check. These dependency-free tests cover actual source functions and event handlers using DOM/media doubles, plus static Help-layout guards; they do not replace native desktop/mobile wheel, focus, viewport, or real-media testing.
 
 ## License
 

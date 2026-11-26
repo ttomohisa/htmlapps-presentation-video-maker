@@ -1,8 +1,13 @@
 # Changelog
 
-## Unreleased
+## [2.1.0] - 2026-11-27
 
-- Standardize the phone informational footer, final Help build metadata, and equivalent local-processing badge wording.
+- Open a PowerPoint, prepare narration from its speaker notes, then create and save the MP4 in three steps. On supported phones and computers, new decks default to Kokoro narration.
+- Load the shared Kokoro model and language-specific voices separately. Generate one slide to hear it, then generate the remaining Japanese or English narration with progress across the whole batch.
+- Edit a single slide, listen to its audio and regenerate it in place. The Video screen takes you back to any narration that still needs work.
+- See the estimated video length before export and an unsaved indicator when scripts, audio or project settings change. Projects saved in v1.x and v2.0.0 remain readable.
+- Keep recorded or imported narration usable when a slide is excluded and included again. Track changes between per-slide and deck narration settings even when both use the same voice method.
+- Update Japanese and English Help, mobile instructions and screenshots. Include the README images and contribution guide in the release ZIP.
 
 ## [2.0.0] - 2026-11-26
 

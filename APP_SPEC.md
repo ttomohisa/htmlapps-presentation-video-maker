@@ -4,13 +4,15 @@
 
 Presentation Video Maker is a Browser Kitty app for turning a local PowerPoint deck into a narrated video without uploading the deck, scripts, or narration audio.
 
+Version `2.1.0` introduces the Open file, Narration and Video workflow. Compatible phones can generate Kokoro narration from speaker notes. Users can prepare one slide, generate the rest as a batch, then save an editable project or export the MP4. [Workflow design](docs/superpowers/specs/2026-11-26-guided-narration-design.md)
+
 Version `2.0.0` adds local Japanese and US English model narration. Slides can inherit the presentation language or use an explicit language. The application loads a user-selected Kokoro model and voice, generates scene audio locally, and saves that audio in the project. [Local TTS design](docs/superpowers/specs/2026-11-25-local-tts-design.md)
 
 Version `1.3.0` keeps the tested v1.2.0 smartphone/project/narration behavior and adds an accelerated local video-export path. On browsers that can encode H.264 and AAC with WebCodecs, the app avoids real-time MediaRecorder composition and writes encoded tracks directly into MP4 with a built-in ISO BMFF muxer; FFmpeg WASM is not started on this path. The v1.2.0 MediaRecorder + FFmpeg pipeline remains the compatibility fallback. Native PowerPoint animations/transitions remain out of scope.
 
 ## 2. Current release
 
-- Version: `2.0.0`
+- Version: `2.1.0`
 - Readable one-file build: `dist/index.html`
 - Self-extracting one-file build: `dist/index.self-extract.html`
 - Japanese and English in the same HTML. The header language switch shows `EN` in Japanese and `JA` in English, with a localized target-language accessible name and tooltip. Help retains its localized title and tooltip.
@@ -22,7 +24,7 @@ Version `1.3.0` keeps the tested v1.2.0 smartphone/project/narration behavior an
 1. **Open file.** Open a .pptx up to 150 MB. Import notes and use slide text as the draft when notes are absent. A .pvm opens in Narration or Video after restoration, depending on whether the audio is ready.
 2. **Narration.** Prepare the deck’s audio. Compatible desktop and phone browsers default to local model narration with Japanese selected. Otherwise, the app defaults to microphone recording if supported, then to audio files. Model setup lists the shared model and voices needed for the batch with separate downloads and single-file pickers. Creating and listening to a sample produces the actual WAV for that slide.
 3. **Edit individual slides.** Choose a slide to edit its script or settings. Batch synthesis and batch computer-speech capture skip audio that is already usable for the selected method. An included reading slide with an empty script can appear without narration. Audio recorded through the microphone or selected from a file can be used with an empty script.
-4. **Video.** Show the output duration, included slide count and resolution. Link unmet audio requirements to the affected slide. Show progress, cancellation, preview and saving at the same location. Provide transition, BGM, subtitle and timeline controls under Finishing settings, and text exports under a separate disclosure.
+4. **Video.** Show the output duration, included slide count and resolution. Link unmet audio requirements to the affected slide. Show progress, cancellation, preview and saving at the same location. Provide transition, BGM, subtitle and timeline controls under Subtitles, music and transitions, and text exports under a separate disclosure.
 5. **Save work.** Store deck and individual audio methods as optional fields in the v2 manifest, alongside the existing actual method. Older projects restore their saved methods as explicit choices. Preserve source and model compatibility across reopening.
 
 ## 4. Local-processing boundary
@@ -35,7 +37,7 @@ Runtime network requirements:
 - No external font.
 - No analytics or telemetry.
 - No AI API.
-- No cloud TTS API.
+- No cloud TTS API. The download links for the model and voices open Hugging Face. Once saved, the files can be selected offline.
 - CSP keeps `connect-src 'none'`.
 - Third-party JavaScript needed at runtime is downloaded only during the build and embedded into the standalone HTML.
 
@@ -218,7 +220,7 @@ A no-signal/empty-data scene is automatically tried one additional time before b
 
 ## 13. Project save/resume and text export
 
-Project persistence is explicit and file-based. The app does not autosave presentation content.
+Project persistence is explicit and file-based. Unsaved appears beside Save work when the content differs from the last import or save. Navigation and interface language do not change that status.
 
 The `.pvm` container uses a small local binary format with no additional runtime dependency:
 
@@ -229,7 +231,7 @@ N bytes   UTF-8 JSON manifest
 remaining raw payload blobs (PPTX / scene audio / BGM)
 ```
 
-The manifest identifies `presentation-video-maker-project`. v2.0.0 writes schema version `2` and reads versions `1` and `2`. It stores source metadata, one record per slide, optional BGM, output settings, and byte ranges for embedded assets. Active model generation, browser speech capture, microphone recording, and video export block project operations. Opening a project with current work loaded requires confirmation.
+The manifest identifies `presentation-video-maker-project`. The app writes schema version `2` and reads versions `1` and `2`. It stores source metadata, one record per slide, optional BGM, output settings, and byte ranges for embedded assets. Active model generation, browser speech capture, microphone recording, and video export block project operations. Opening a project with current work loaded requires confirmation.
 
 The project includes:
 

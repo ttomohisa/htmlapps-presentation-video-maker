@@ -101,6 +101,22 @@ test('passive edits keep the stored browser voice when this device shows a fallb
   assert.equal(slide.recordingStatus, 'stale');
 });
 
+test('excluding and restoring a slide keeps usable recordings for every narration method', () => {
+  for (const method of ['local', 'mic', 'file', 'tts']) {
+    const h = harness(), slide = localScene(h);
+    Object.assign(slide, {audioSource: method, recordingSource: method, voiceURI: '', prePadding: 0, postPadding: 0});
+    const recording = slide.recordingBlob;
+    for (const included of [false, true]) {
+      complete(h);
+      h.$('#sceneEnabledInput').checked = included;
+      h.ctx.saveCurrentScript();
+      assert.equal(h.ctx.state.videoResultStale, true, method);
+      assert.equal(slide.recordingStatus, 'success', method);
+      assert.equal(slide.recordingBlob, recording);
+    }
+  }
+});
+
 test('undoing a script reset marks narration generated since the reset stale', () => {
   const h = harness(), slide = localScene(h);
   h.ctx.resetCurrentScript();

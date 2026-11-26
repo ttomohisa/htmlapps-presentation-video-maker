@@ -3,6 +3,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const {pathToFileURL}=require('node:url'),{chromium}=require('playwright');
 const cfg={"slug": "presentation-video-maker", "bp": 600, "nav": "#workflowNav"};
+const releaseVersion=require('../app.config.json').version;
 const evidence=path.resolve('test-results/mobile-layout');
 async function bounds(locator,width,height,label,vertical=true){const r=await locator.boundingBox();assert.ok(r&&r.x>=-1&&r.x+r.width<=width+1&&(!vertical||(r.y>=-1&&r.y+r.height<=height+1)),label+': bounds '+JSON.stringify(r));}
 async function checkHelpGuide(page,language){
@@ -40,6 +41,8 @@ for(const {file,language,width,height}of cases){const context=await browser.newC
 page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});page.on('request',r=>{if(/^https?:/.test(r.url()))requests.push(r.url());});
 try{await page.goto(pathToFileURL(path.resolve(file)).href);await page.locator('#helpButton').waitFor();
 await page.waitForFunction(()=>/^\d+\.\d+\.\d+$/.test(document.querySelector('#buildVersion').textContent));
+assert.equal(await page.locator('#versionBadge').textContent(),'v'+releaseVersion,label+': release version in header');
+assert.equal(await page.locator('#buildVersion').textContent(),releaseVersion,label+': release version in Help');
 if(await page.locator('html').getAttribute('lang')!==language)await page.locator('#languageButton').click();
 const intro=page.locator('.page-intro'),badge=intro.locator('.local-badge');
 assert.equal(await intro.getByRole('heading').count(),0,label+': introduction has no heading');
@@ -88,6 +91,15 @@ await page.waitForFunction(()=>{
 });
 assert.match(await page.locator('#guideModelSetup').innerText(),language==='ja'?/Hugging Face\(外部サイト\)/:/Hugging Face \(external site\)/);
 assert.equal(await page.locator('[data-model-file="model_quantized.onnx"] button').innerText(),language==='ja'?'保存したファイルを選ぶ':'Choose saved file');
+if(language==='en'&&width===1360){
+  const status=page.locator('#projectUnsaved');
+  await page.locator('#guideSlideSettings > summary').click();
+  await page.locator('[data-narration-source="local"]').click();
+  assert.equal(await status.innerText(),'Unsaved',label+': choosing the same method explicitly changes the saved project');
+  await page.locator('#guideInherit').click();
+  assert.equal(await status.textContent(),'',label+': restoring inheritance returns to the saved settings');
+  await page.locator('#guideSlideSettings > summary').click();
+}
 const modelRow=page.locator('[data-model-file="model_quantized.onnx"]');
 const picker=modelRow.getByRole('button',{name:language==='ja'?'保存したファイルを選ぶ（共通モデル）':'Choose saved file (shared model)',exact:true});
 const [pick,download]=await Promise.all([picker.boundingBox(),modelRow.getByRole('link').boundingBox()]);

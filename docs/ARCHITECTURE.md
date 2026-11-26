@@ -46,7 +46,7 @@ No presentation, `.pvm` project, narration, BGM, intermediate video, or generate
 
 ## Project container
 
-The `.pvm` project format is a local binary container. v2.0.0 writes manifest version 2 and reads versions 1 and 2:
+The `.pvm` project format is a local binary container. The app writes manifest version 2 and reads versions 1 and 2:
 
 ```text
 PVMPRJ1\n                       # 8-byte magic
