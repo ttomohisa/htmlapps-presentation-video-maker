@@ -325,7 +325,7 @@ The application repository is distributed under GPL-3.0 in v1.3.0. See `THIRD_PA
 
 Help uses a viewport-bounded native dialog with one scrollable body and a fixed header. Closing it restores ordinary page scrolling and preserves the page position. The final build metadata remains readable in both languages at narrow, short viewport sizes.
 
-The introduction uses a single sentence describing the PowerPoint-to-narrated-MP4 workflow. Above 600 px, the shared header shows a pale green local-processing badge with a shield beside the language switch on every workflow step. The informational footer also appears at these widths. At 600 px and below, the badge and footer are hidden while navigation and controls remain available.
+The introduction uses a single sentence describing the PowerPoint-to-narrated-MP4 workflow. Above 600 px, the shared header shows the local-processing badge beside the language switch on every workflow step. Its green shield and text match Video Contact Sheet. The informational footer also appears at these widths. At 600 px and below, the badge and footer are hidden while navigation and controls remain available.
 
 ### Shared navigation
 

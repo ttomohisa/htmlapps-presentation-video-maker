@@ -53,8 +53,11 @@ test('one shield badge in the shared header identifies on-device processing', ()
   assert.match(header, /<span class="local-badge">\s*<svg[^>]*aria-hidden="true"[\s\S]*?<span data-i18n="localBadge">/);
   assert.equal((source.match(/data-i18n="localBadge"/g) || []).length, 1);
   const style = declarationsFor('.local-badge');
-  assert.equal(style.background, 'var(--accent-soft)');
-  assert.equal(style['border-radius'], '999px');
+  assert.equal(style.background, 'transparent');
+  assert.equal(style.border, '0');
+  assert.equal(style['font-weight'], '500');
+  assert.equal(style.padding, '7px 0');
+  assert.equal(declarationsFor('.local-badge svg').width, '14px');
   assert.equal(translations.ja.localBadge, '完全ローカル処理');
   assert.equal(translations.en.localBadge, 'Fully local processing');
 });
