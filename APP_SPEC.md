@@ -1,33 +1,23 @@
 # APP_SPEC.md — Presentation Video Maker
 
-## Phone footer and Help metadata
-
-- Hide only the informational footer at the existing 600px phone breakpoint. Preserve functional navigation and controls.
-- Show existing build metadata quietly at the very end of How to use & Notes on both desktop and phone. No new phone metadata hiding.
-- Use `Fully local processing` for the existing `完全ローカル処理` badge. Keep distinct privacy statements, app versions, dependencies and application behavior unchanged.
-
 ## 1. Product summary
 
 Presentation Video Maker is a Browser Kitty app for turning a local PowerPoint deck into a narrated video without uploading the deck, scripts, or narration audio.
 
-Version `1.3.3` is the current stable release. Version `1.2.0` added the practical smartphone workflow while preserving the v1.1.0 project and narration features.
-
-The v1 product promise is:
-
-> Open the PowerPoint. Review the notes. Choose how each slide should sound. Create a narrated video without uploading the deck or audio.
+Version `2.0.0` adds local Japanese and US English model narration. Slides can inherit the presentation language or use an explicit language. The application loads a user-selected Kokoro model and voice, generates scene audio locally, and saves that audio in the project. [Local TTS design](docs/superpowers/specs/2026-11-25-local-tts-design.md)
 
 Version `1.3.0` keeps the tested v1.2.0 smartphone/project/narration behavior and adds an accelerated local video-export path. On browsers that can encode H.264 and AAC with WebCodecs, the app avoids real-time MediaRecorder composition and writes encoded tracks directly into MP4 with a built-in ISO BMFF muxer; FFmpeg WASM is not started on this path. The v1.2.0 MediaRecorder + FFmpeg pipeline remains the compatibility fallback. Native PowerPoint animations/transitions remain out of scope.
 
 ## 2. Current release
 
-- Version: `1.3.3`
+- Version: `2.0.0`
 - Readable one-file build: `dist/index.html`
 - Self-extracting one-file build: `dist/index.self-extract.html`
 - Japanese and English in the same HTML. The header language switch shows `EN` in Japanese and `JA` in English, with a localized target-language accessible name and tooltip. Help retains its localized title and tooltip.
 - Intended hosting: GitHub Pages / Azure Static Web Apps.
-- Direct `file://` opening remains supported for PPTX parsing, rendering, scene editing, and SpeechSynthesis preview. Browser capture policy may require HTTP(S) for system-audio capture.
+- Direct `file://` opening supports PPTX parsing, rendering, editing, and model narration. Browser capture policy may require HTTP(S) for system-audio capture.
 
-## 3. Primary v1.3.0 flow
+## 3. Primary flow
 
 1. Open the app.
 2. Drop or choose one `.pptx` file, up to 150 MB.
@@ -35,26 +25,27 @@ Version `1.3.0` keeps the tested v1.2.0 smartphone/project/narration behavior an
 4. Build the high-fidelity presentation model with pinned `@aiden0z/pptx-renderer@1.2.4` when the dependency is embedded.
 5. Treat each slide as one scene.
 6. Use speaker notes as the narration script when present; otherwise create a plain draft from slide text.
-7. Edit per-scene script, include/exclude state, before/after padding, and choose one narration source: on-device speech, microphone, or local audio file.
-8. For on-device speech scenes, choose voice/rate and either record the selected slide with **Record this slide** or use **Record all scenes** for the TTS subset. For microphone scenes, record the selected slide directly. For file scenes, choose a local audio file.
-9. For every TTS capture run, request display capture once for that run, require `displaySurface === "monitor"` plus an audio track, and run the measurable-signal preflight before replacing scene audio.
-10. In an all-scene run, reuse the same system-audio stream across all target TTS scenes. In a selected-scene run, pass only that scene to the same capture engine. Each target scene receives its own MediaRecorder Blob; an empty/no-signal scene is retried once automatically.
-11. For microphone scenes, request microphone access only after the user presses the selected-slide record action, and keep the previous scene audio until the replacement succeeds.
-12. For file scenes, accept a local audio file up to 100 MB, read its duration locally, and keep the File/Blob in memory without upload.
-13. Keep all successful per-scene audio Blobs locally and expose playback. Different narration sources may coexist in the same presentation.
-14. If the active narration source or its script/voice/rate changes, preserve the old Blob but mark it stale until a matching replacement exists.
-15. Show ready/unrecorded/stale/failed counts and allow the user to jump to the next scene that needs attention.
-16. Allow explicit `.pvm` project save/open. A project contains the source PPTX, scene scripts/settings, local narration assets, optional BGM, and output settings; generated MP4 is intentionally excluded.
-17. Keep the PowerPoint picker and `.pvm` project picker visually and technically separate; the project picker accepts `.pvm` files only.
-18. In the per-scene narration asset list, provide a direct row action appropriate to the narration source (record TTS, record/stop microphone, or choose a local audio file), and show playback as an explicit interactive control.
-17. Allow local TXT script export and SRT/VTT subtitle export from the current app timeline.
-18. Verify that every included scene that requires narration has a fresh successful recording from its currently selected source before video creation.
-19. Render each included slide to a 720p or 1080p snapshot using the high-fidelity renderer plus origin-clean html2canvas rasterization when available; keep the simple preview only as an editing fallback.
-20. Choose Cut or Fade transitions, optional burned-in subtitles, and optional local BGM with volume/loop settings.
-21. Probe local H.264/AAC WebCodecs encoder support. When both codecs are available, encode the visual timeline and mixed narration/BGM as fast as the device allows without real-time waiting.
-22. On the accelerated path, write AVC samples and AAC access units directly into an ISO BMFF/MP4 container with the built-in muxer. No intermediate WebM, FFmpeg startup, or second video/audio encode is performed.
-23. If the accelerated path is unavailable or cannot complete, automatically use the v1.2.0 Canvas + Web Audio + MediaRecorder intermediate-WebM path and FFmpeg H.264/AAC transcode.
-24. Preview the resulting MP4, edit the output filename, and save it through an explicit user action.
+7. Edit per-scene script, inclusion, and padding. Choose local model synthesis, on-device speech, microphone, or a local audio file.
+8. For local model synthesis, select the downloaded model and the voice file for the chosen language. Generate the selected scene or generate included scenes with missing, outdated, or failed local-model audio.
+9. For on-device speech scenes, choose voice/rate and either record the selected slide with **Record this slide** or use **Record all scenes** for the TTS subset. For microphone scenes, record the selected slide directly. For file scenes, choose a local audio file.
+10. For every TTS capture run, request display capture once for that run, require `displaySurface === "monitor"` plus an audio track, and run the measurable-signal preflight before replacing scene audio.
+11. In an all-scene run, reuse the same system-audio stream across all target TTS scenes. In a selected-scene run, pass only that scene to the same capture engine. Each target scene receives its own MediaRecorder Blob; an empty/no-signal scene is retried once automatically.
+12. For microphone scenes, request microphone access only after the user presses the selected-slide record action, and keep the previous scene audio until the replacement succeeds.
+13. For file scenes, accept a local audio file up to 100 MB, read its duration locally, and keep the File/Blob in memory without upload.
+14. Keep all successful per-scene audio Blobs locally and expose playback. Different narration sources may coexist in the same presentation.
+15. If the active narration source or its script/voice/rate changes, preserve the old Blob but mark it stale until a matching replacement exists.
+16. Show ready/unrecorded/stale/failed counts and allow the user to jump to the next scene that needs attention.
+17. Allow explicit `.pvm` project save/open. A project contains the source PPTX, scene scripts/settings, local narration assets, optional BGM, and output settings; generated MP4 is intentionally excluded.
+18. Keep the PowerPoint picker and `.pvm` project picker visually and technically separate; the project picker accepts `.pvm` files only.
+19. In the per-scene narration asset list, provide a direct action appropriate to the source and an explicit playback control.
+20. Allow local TXT script export and SRT/VTT subtitle export from the current app timeline.
+21. Verify that every included scene that requires narration has a fresh successful recording from its currently selected source before video creation.
+22. Render each included slide to a 720p or 1080p snapshot using the high-fidelity renderer plus origin-clean html2canvas rasterization when available; keep the simple preview only as an editing fallback.
+23. Choose Cut or Fade transitions, optional burned-in subtitles, and optional local BGM with volume/loop settings.
+24. Probe local H.264/AAC WebCodecs encoder support. When both codecs are available, encode the visual timeline and mixed narration/BGM as fast as the device allows without real-time waiting.
+25. On the accelerated path, write AVC samples and AAC access units directly into an ISO BMFF/MP4 container with the built-in muxer. No intermediate WebM, FFmpeg startup, or second video/audio encode is performed.
+26. If the accelerated path is unavailable or cannot complete, automatically use the v1.2.0 Canvas + Web Audio + MediaRecorder intermediate-WebM path and FFmpeg H.264/AAC transcode.
+27. Preview the resulting MP4, edit the output filename, and save it through an explicit user action.
 
 ## 4. Local-processing boundary
 
@@ -165,7 +156,7 @@ The recorded Blob intentionally contains only a small technical lead/tail around
 
 ## 8. Narration editing and stale recordings
 
-Changing script, voice, speech rate, or include/exclude state invalidates a previously recorded scene for final output. The previous Blob is not immediately destroyed; the scene is marked `stale / 再録音` and the old recording remains playable until a successful replacement or source reset.
+Changes to the script, speech settings, or audio source can make scene audio stale. The old recording remains playable while a replacement is needed. For local model synthesis, changing the effective language invalidates its previous audio. Changing only whether the slide is included leaves its audio reusable.
 
 This prevents accidental loss while making it clear that current settings and current audio no longer match.
 
@@ -173,13 +164,14 @@ Applying voice/rate to all scenes and restoring source scripts preserve Undo beh
 
 ## 9. Narration sources
 
-Each scene has `audioSource` with one of `tts`, `mic`, or `file`. A successful audio asset records its provenance in `recordingSource`. If the user switches to a different source, the previous Blob is preserved but marked stale until a matching replacement is created.
+Each scene has `audioSource` with one of `local`, `tts`, `mic`, or `file`. A successful audio asset records its provenance in `recordingSource`. Switching sources preserves the previous Blob and makes an unmatched recording stale.
 
-- `tts`: uses the existing on-device SpeechSynthesis + Windows system-audio capture path on supported desktop browsers. The selected TTS scene can be recorded alone, or all recordable TTS scenes can be handled in one batch run. On smartphones, SpeechSynthesis preview may be available but TTS audio capture is explicitly unsupported; users must use `mic` or `file` for video narration.
+- `local`: synthesizes WAV audio from the selected Kokoro model and Japanese or US English voice, entirely inside a browser worker. A scene inherits the project language or overrides it, and can set its own speed. The worker uses the English lexicon and spelling rules when Japanese scripts contain English words. Typical abbreviations retain letter-by-letter readings. Model synthesis is validated on desktop Chromium.
+- `tts`: uses SpeechSynthesis and Windows system-audio capture on supported desktop browsers. The selected scene or all eligible scenes can be captured. Smartphones can preview browser speech where available and use microphone or file narration for the supported recording workflow.
 - `mic`: uses `getUserMedia({audio:true})` and MediaRecorder to record the selected slide directly from the microphone. Existing audio is not destroyed until a new recording succeeds.
 - `file`: accepts a local audio file up to 100 MB, reads duration locally, and stores the File directly as the scene audio Blob.
 
-All three sources remain local and can coexist in one final MP4.
+All four sources remain local and can coexist in one final MP4.
 
 ## 10. On-device SpeechSynthesis
 
@@ -257,18 +249,19 @@ N bytes   UTF-8 JSON manifest
 remaining raw payload blobs (PPTX / scene audio / BGM)
 ```
 
-The manifest identifies `presentation-video-maker-project`, schema version `1`, source metadata, one saved record per slide, optional BGM, output settings, and byte ranges for each embedded asset. Project save/open is blocked while TTS capture, microphone recording, or video generation is active. Opening a project with current work loaded requires confirmation.
+The manifest identifies `presentation-video-maker-project`. v2.0.0 writes schema version `2` and reads versions `1` and `2`. It stores source metadata, one record per slide, optional BGM, output settings, and byte ranges for embedded assets. Active model generation, browser speech capture, microphone recording, and video export block project operations. Opening a project with current work loaded requires confirmation.
 
 The project includes:
 
 - source PPTX;
 - per-scene script, include state, narration source, voice, rate, timing/padding, transition/subtitle flags;
+- project default and per-scene override for local narration language, plus model and voice identifiers for generated audio;
 - successful/stale scene audio assets where present;
 - optional BGM file;
 - current video output filename/resolution/transition/subtitle/BGM settings;
 - selected scene index.
 
-The generated MP4 is excluded because it is reproducible and can be much larger than the editable project state.
+Model and voice files stay separate from the project. Saved narration can be played and exported before selecting model files again. The generated MP4 also stays separate.
 
 TXT export writes non-empty scripts grouped by slide. SRT/VTT export uses enabled-scene ordering, pre-padding, scene duration, and the existing subtitle-export transition timing. Recorded/measured narration duration is preferred; otherwise the current estimate is used. External cues retain equal segment timing and the existing 45 ms Cut gap, so exact synchronization with burned-in subtitles or the accelerated video path is not guaranteed. All exports are created locally through explicit download actions.
 
@@ -352,7 +345,9 @@ The application repository is distributed under GPL-3.0 in v1.3.0. See `THIRD_PA
 
 ### Help
 
-Help uses the existing native dialog with a viewport-bounded grid shell, a visible Close header, and an independently scrolling body. While a native dialog is modal, both the root and body prevent background scrolling and overscroll chaining. Closing it restores ordinary page scrolling without changing the page position. Close, Escape, geometric backdrop dismissal, native keyboard behavior, and the existing shield-marked local-processing badge remain unchanged. Japanese and English Help must remain readable to the final paragraph at narrow, short viewport sizes.
+Help uses a viewport-bounded native dialog with one scrollable body and a fixed header. Closing it restores ordinary page scrolling and preserves the page position. The final build metadata remains readable in both languages at narrow, short viewport sizes.
+
+The introduction uses a single sentence describing the PowerPoint-to-narrated-MP4 workflow. The shield-marked local-processing badge and informational footer appear above 600 px. At 600 px and below, both are hidden while navigation and controls remain available.
 
 ### Desktop
 
@@ -396,7 +391,7 @@ Smartphone requirements:
 - keep Previous / Next scene actions side-by-side with explicit labels and at least 44 px tap targets;
 - keep text inputs/selects at a mobile-safe font size to avoid browser zoom during editing;
 - keep selected-slide context near the top of the Script & audio view while editing long scripts;
-- keep the three narration-source choices in one compact row;
+- keep narration-source controls usable at narrow widths;
 - new PPTX scenes default to microphone narration on detected smartphones; project restore must preserve the source saved in `.pvm`;
 - show an explicit warning in the TTS panel that on-device speech is preview-only on smartphones and cannot be recorded as a video narration asset;
 - hide desktop Entire Screen / system-audio batch-capture controls on detected smartphones while leaving the per-scene narration list available;
@@ -453,9 +448,9 @@ Runtime remains network-free after building.
 
 Required for the current stable line:
 
-- each scene can select `tts`, `mic`, or `file` as its narration source;
+- each scene can select `local`, `tts`, `mic`, or `file` as its narration source;
 - TTS can be captured for the selected scene alone or as an all-scene TTS batch through the same validated system-audio path;
-- all three narration sources can coexist in one presentation;
+- all four narration sources can coexist, and local model synthesis works offline for Japanese and US English;
 - `.pvm` save/open round-trips PPTX, scene settings, narration assets, BGM, and output settings without network access;
 - ready/unrecorded/stale/failed narration counts and next-attention navigation work on large decks;
 - TXT, SRT, and VTT export work locally from current script/timeline data;

@@ -52,6 +52,67 @@ function complete(h, content = 'synthetic MP4') {
   return blob;
 }
 
+function localScene(h) {
+  const slide = {
+    script: 'Edited', enabled: true, rate: 1, localLanguage: 'inherit',
+    audioSource: 'local', recordingSource: 'local', recordingStatus: 'success',
+    recordingBlob: new Blob(['edited narration']), narrationDuration: 2
+  };
+  h.ctx.state.slides = [slide];
+  h.ctx.state.selectedSlideIndex = 0;
+  h.ctx.state.rate = 1;
+  h.ctx.state.localDefaultLanguage = 'ja';
+  h.$('#scriptInput').value = slide.script;
+  h.$('#sceneEnabledInput').checked = true;
+  Object.assign(h.ctx, {
+    narrationSource: scene => scene.audioSource,
+    selectedVoice: () => null, format: () => '', formatRate: String,
+    sourceScript: () => 'Original', updateNarrationDuration() {},
+    renderSceneRecordings() {}, updateRecordingPlan() {}, updateVideoExportState() {}, syncNarrationControlsForScene() {},
+    AppToast: {show({onAction}) { h.undo = onAction; }}
+  });
+  vm.runInContext(['markSceneRecordingStale', 'saveCurrentScript', 'resetCurrentScript', 'localLanguage', 'applyNarrationToAll'].map(extract).join('\n'), h.ctx);
+  return slide;
+}
+
+test('excluding local narration or editing its padding makes the old MP4 stale without invalidating speech', () => {
+  const h = harness(), slide = localScene(h);
+  for (const [id, key, value] of [['#sceneEnabledInput', 'checked', false], ['#prePaddingInput', 'value', '0.7']]) {
+    complete(h);
+    h.$(id)[key] = value;
+    h.ctx.saveCurrentScript();
+    assert.equal(h.ctx.state.videoResultStale, true);
+    assert.equal(slide.recordingStatus, 'success');
+  }
+});
+
+test('undoing a script reset marks narration generated since the reset stale', () => {
+  const h = harness(), slide = localScene(h);
+  h.ctx.resetCurrentScript();
+  const replacement = new Blob(['original narration']);
+  slide.recordingBlob = replacement;
+  slide.recordingStatus = 'success';
+  slide.recordingStaleReason = '';
+  complete(h);
+  h.undo();
+  assert.equal(slide.script, 'Edited');
+  assert.equal(slide.recordingBlob, replacement);
+  assert.equal(slide.recordingStatus, 'stale');
+  assert.equal(h.ctx.state.videoResultStale, true);
+});
+
+test('undoing changes to browser voices leaves later local narration edits stale', () => {
+  const h = harness(), slide = localScene(h);
+  h.ctx.state.slides.push({audioSource: 'tts', voiceURI: 'previous', rate: 1, script: 'Browser speech'});
+  h.ctx.selectedVoice = () => ({voiceURI: 'new'});
+  h.ctx.applyNarrationToAll();
+  h.$('#scriptInput').value = 'Changed after applying browser voices';
+  h.ctx.saveCurrentScript();
+  h.undo();
+  assert.equal(h.ctx.state.slides[1].voiceURI, 'previous');
+  assert.equal(slide.recordingStatus, 'stale');
+});
+
 test('the hidden stale notice overrides its visible flex layout', () => {
   assert.match(source, /\.video-result-stale\s*\{[^}]*display\s*:\s*flex\s*;/);
   assert.match(source, /\.video-result-stale\[hidden\]\s*\{\s*display\s*:\s*none\s*!important\s*;?\s*\}/,

@@ -47,6 +47,10 @@ When replacing the FFmpeg vendor runtime:
 5. run `scripts/check-repository.ps1` and the release checklist;
 6. confirm H.264/AAC MP4 output in a browser regression.
 
+## Local narration runtime
+
+The standalone embeds ONNX Runtime Web and pronunciation resources from `vendor/local-tts-engine/` and `vendor/local-tts-phonemes/`. The vendor notices pin their source versions and licenses. `scripts/prepare-local-tts-phonemes.py` reproduces the dictionary and eSpeak build inputs from verified archives. The Windows standalone build uses the checked-in assets. The Kokoro ONNX weights and voice files are separate, user-selected downloads.
+
 ## Build cache
 
 The local `.cache/` directory stores npm tarballs/extracted packages for faster rebuilds and is not part of the release archive. Use `prepare-and-build.bat` for the first build on Windows or when the cache is missing.

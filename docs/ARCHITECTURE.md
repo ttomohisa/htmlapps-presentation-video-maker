@@ -10,7 +10,7 @@ dependencies.json            Exact npm dependencies and embedded asset paths
 dependencies.lock.json       Committed npm tarball SHA-256 lock
 src/index.template.html      Editable application source
 build-standalone.ps1         Standalone HTML builder
-vendor/                      Pinned FFmpeg WASM runtime produced by FFmpeg WASM Builder
+vendor/                      Pinned FFmpeg and local speech synthesis resources
 scripts/                     Build, verification, and dependency-maintenance tools
 dist/index.html              Readable single-HTML release artifact
 dist/index.self-extract.html Gzip self-extracting single-HTML variant
@@ -20,7 +20,7 @@ Generated files under `dist/` must not be edited directly.
 
 ## Help modal
 
-The native Help dialog keeps its existing grid shell, header, independently scrolling body, and desktop/mobile height bounds. CSS `html:has(dialog:modal)` and `body:has(dialog:modal)` disable background overflow and overscroll only while a native modal is present. No JavaScript scroll-state tracking or changes to the native open/close, Escape, backdrop, or focus behavior are needed. Ordinary scrolling resumes when the dialog closes.
+The native Help dialog lays out its header and body as two grid rows. The dialog bounds the desktop and mobile height and clips outer overflow. Only the body scrolls. CSS `html:has(dialog:modal)` and `body:has(dialog:modal)` disable background overflow and overscroll while a native modal is present. Ordinary page scrolling resumes when the dialog closes.
 
 The canonical repository check runs the application regressions against the source and generated readable HTML. Help tests are static guards; actual wheel behavior, end-of-content reachability, focus return, and repeated dismissal must also be verified in a browser. The self-extract verifier checks equality with the tested readable HTML.
 
@@ -29,8 +29,9 @@ The canonical repository check runs the application regressions against the sour
 1. The user selects a local `.pptx` file.
 2. `@aiden0z/pptx-renderer` parses and renders the presentation in the browser.
 3. Speaker notes become the initial narration script where available; otherwise slide text is used as a fallback.
-4. Each scene can use one of three narration sources:
+4. Each scene can use one of four narration sources:
    - local `SpeechSynthesis` voice captured through explicit system-audio display sharing, either for the selected scene or as an all-scene TTS batch;
+   - Japanese or US English Kokoro synthesis using the selected local model and voice files. The browser worker performs text normalization, phonemization and ONNX inference, then returns a WAV and its duration;
    - microphone recording through `getUserMedia()`;
    - a local audio file.
 5. The app tracks ready / unrecorded / stale / failed narration and can jump to the next scene needing attention.
@@ -45,7 +46,7 @@ No presentation, `.pvm` project, narration, BGM, intermediate video, or generate
 
 ## Project container
 
-The v1.1.0+ `.pvm` project format is a local, dependency-free binary container:
+The `.pvm` project format is a local binary container. v2.0.0 writes manifest version 2 and reads versions 1 and 2:
 
 ```text
 PVMPRJ1\n                       # 8-byte magic
@@ -54,9 +55,9 @@ PVMPRJ1\n                       # 8-byte magic
 <raw payload blobs>              # PPTX, scene audio, optional BGM
 ```
 
-The manifest stores schema/version metadata, per-scene editable state, output settings, and byte ranges into the raw payload. The generated MP4 is not duplicated into the project file. Projects are saved only after an explicit user action; presentation content is not autosaved to LocalStorage or IndexedDB.
+The manifest stores per-scene editable state, model/voice identifiers, the project narration language, output settings, and byte ranges into the raw payload. Generated WAVs are scene audio assets, so playback and export can resume without the model files. Model files, voice files, and the generated MP4 stay separate. Saving is explicit.
 
-Opening a project reconstructs the source PPTX locally, runs the normal PPTX parser/renderer, then restores saved scene/audio/BGM/output state. Project save/open is disabled while capture, microphone recording, or video generation is active.
+Opening a project reconstructs the source PPTX locally, runs the normal PPTX parser/renderer, then restores saved scene/audio/BGM/output state. Model synthesis, browser speech capture, microphone recording, and video export block project save/open.
 
 ## Accelerated export path
 
@@ -66,7 +67,7 @@ The v1.3.0 accelerated path is intentionally dependency-light and preserves the 
 - `AudioEncoder.isConfigSupported()` probes AAC-LC at 48 kHz stereo.
 - Visual frames, subtitles, and fade frames are submitted to WebCodecs without wall-clock waits.
 - Narration audio is decoded one scene at a time, resampled into small PCM blocks, mixed with optional local BGM, and submitted to `AudioEncoder` without playing the whole timeline in real time.
-- AAC chunks receive local ADTS headers and H.264 is requested in Annex-B form.
+- The encoder receives continuous 1,024-sample AAC input blocks across scene/transition boundaries and flushes once, at the end. The muxer receives raw AAC access units and length-prefixed AVC samples.
 - The built-in ISO BMFF muxer receives WebCodecs AVC/AAC packets and writes the MP4 container directly. FFmpeg WASM is reserved for the compatibility path.
 - If any capability/configuration/mux step fails, auto mode falls back to the compatibility pipeline instead of losing the export.
 - `PVMPerformance.getLastReport()` exposes development timing data; `PVMPerformance.setMode("fast" | "legacy" | "auto")` is intentionally console-only and is not part of the general-user UI.
@@ -95,7 +96,7 @@ These changes do not add network services, cloud TTS, analytics, or remote stora
 4. Verify its SHA-256 against `dependencies.lock.json`.
 5. Read only the declared browser assets and embed them in the generated HTML.
 6. Embed the canonical `assets/favicon.svg` as both browser favicon and upper-left app icon.
-7. Embed the pinned FFmpeg runtime from `vendor/ffmpeg-video-compressor-v1.6.0/`.
+7. Embed the pinned FFmpeg runtime and the vendored local speech runtime, dictionaries, and spelling rules. Users select Kokoro weights and voice files separately.
 8. Generate and verify `dist/index.html`.
 9. Generate `dist/index.self-extract.html` and verify byte-for-byte restoration of `dist/index.html`.
 10. Write dependency, self-extract, and size manifests under `dist/`.
@@ -104,6 +105,6 @@ These changes do not add network services, cloud TTS, analytics, or remote stora
 
 The standalone HTML keeps `connect-src 'none'`, so ordinary runtime fetch/XHR/WebSocket traffic is blocked. The app does not use a CDN, analytics, telemetry, cloud TTS, or an AI API.
 
-`script-src` permits `'wasm-unsafe-eval'` for local FFmpeg WebAssembly compilation, but plain `'unsafe-eval'` is not enabled. `frame-src 'self' data: blob:` is retained for html2canvas's local clone iframe.
+`script-src` permits `'wasm-unsafe-eval'` for local FFmpeg, ONNX Runtime Web, and eSpeak NG WebAssembly compilation. `frame-src 'self' data: blob:` is retained for html2canvas's local clone iframe.
 
 The browser's microphone and display-sharing permission dialogs remain authoritative. The application requests those permissions only after an explicit user action.

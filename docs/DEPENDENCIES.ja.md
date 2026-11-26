@@ -47,6 +47,10 @@ FFmpeg vendor runtimeを更新する場合は、次を一式で確認します�
 5. `scripts/check-repository.ps1` とrelease checklistを実行する。
 6. ブラウザでH.264/AAC MP4生成を回帰確認する。
 
+## ローカルTTSの依存資材
+
+単一HTMLには `vendor/local-tts-engine/` と `vendor/local-tts-phonemes/` のONNX Runtime Web、読み変換辞書、発音推定用の資材を埋め込みます。各ディレクトリの通知文書に出典とライセンスを記録しています。`scripts/prepare-local-tts-phonemes.py` は固定ハッシュ付きの配布物から辞書とeSpeakの資材を再作成します。通常のWindowsビルドは同梱資材を使います。Kokoroのモデル本体と声は利用者が別途ダウンロードします。
+
 ## ビルドキャッシュ
 
 `.cache/` はnpm tarballや展開済みpackageを保持するローカルキャッシュで、release ZIPには含めません。Windowsで初回ビルドするときやcacheがない場合は `prepare-and-build.bat` を使用してください。

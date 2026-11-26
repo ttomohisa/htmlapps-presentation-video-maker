@@ -184,13 +184,15 @@ function Invoke-ApplicationRegressionTests {
   $previousTestHtml = $env:PVM_TEST_HTML
   try {
     $env:PVM_TEST_HTML = $HtmlPath
-    & node --test (Join-Path $Root "tests/subtitle-export.test.cjs") (Join-Path $Root "tests/header-language.test.cjs") (Join-Path $Root "tests/video-result-stale.test.cjs") (Join-Path $Root "tests/help-modal-layout.test.cjs")
+    & node --test (Join-Path $Root "tests/subtitle-export.test.cjs") (Join-Path $Root "tests/header-language.test.cjs") (Join-Path $Root "tests/video-result-stale.test.cjs") (Join-Path $Root "tests/video-audio-encoding.test.cjs") (Join-Path $Root "tests/help-modal-layout.test.cjs")
     if ($LASTEXITCODE -ne 0) { throw "Application regression tests failed for $HtmlPath." }
   } finally {
     $env:PVM_TEST_HTML = $previousTestHtml
   }
 }
 Invoke-ApplicationRegressionTests -HtmlPath (Join-Path $Root "src/index.template.html")
+& node --test (Join-Path $Root "tests/local-tts-engine.test.cjs") (Join-Path $Root "tests/local-tts-phonemes.test.cjs")
+if ($LASTEXITCODE -ne 0) { throw "Local TTS regression failed." }
 
 $app = Get-Content -Raw -Encoding UTF8 (Join-Path $Root "app.config.json") | ConvertFrom-Json
 if ([string]::IsNullOrWhiteSpace([string]$app.name)) { throw "app.config.json: name is required" }

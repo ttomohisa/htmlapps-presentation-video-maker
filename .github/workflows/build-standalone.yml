@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - "src/**"
+      - "vendor/local-tts-*/**"
       - "tests/**"
       - "scripts/**"
       - "app.config.json"
@@ -19,6 +20,7 @@ on:
       - "scripts/build-self-extract.ps1"
       - "scripts/verify-self-extract.ps1"
       - ".github/workflows/build-standalone.yml"
+      - ".github/workflows/release.yml"
 
 permissions:
   contents: read
@@ -38,6 +40,10 @@ jobs:
       - name: Build and verify standalone HTML
         shell: pwsh
         run: ./scripts/check-repository.ps1
+
+      - name: Verify release packaging
+        shell: pwsh
+        run: ./scripts/package-release.ps1 -OutputPath (Join-Path $env:RUNNER_TEMP 'release-check')
 
       - name: Upload standalone artifact
         uses: actions/upload-artifact@v7

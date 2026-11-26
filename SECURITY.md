@@ -8,8 +8,9 @@ The application accepts a local `.pptx` selected by the user and parses it in th
 
 The high-fidelity visual path uses pinned standalone browser builds of `@aiden0z/pptx-renderer@1.2.4` and `html2canvas@1.4.1`. Both packages are acquired by repository build tooling, hash-locked, and embedded in the generated HTML. They are not fetched at application runtime. html2canvas uses its normal Canvas renderer with `foreignObjectRendering: false`; local Blob media/Canvas content is normalized before rasterization to avoid exporting a tainted Canvas under `file://` / opaque origins.
 
-Narration can come from three local sources:
+Narration can come from four local sources:
 
+- **Local TTS model**: verifies the selected model and voice files against pinned hashes, then uses embedded text processing and inference in a browser worker to produce scene audio.
 - **On-device speech**: local `SpeechSynthesis` voices plus explicit `getDisplayMedia()` system-audio capture on supported desktop browsers. The same capture engine can target only the selected TTS scene or the full TTS batch. Smartphone TTS recording is intentionally unavailable; mobile users are directed to microphone or local audio-file narration.
 - **Microphone**: `getUserMedia({audio:true})` after the user explicitly starts recording the selected slide.
 - **Local audio file**: a user-selected audio file read locally and used as the scene recording.
@@ -28,7 +29,7 @@ The standalone HTML keeps a restrictive Content Security Policy. In particular:
 connect-src 'none'
 ```
 
-`script-src` permits `'wasm-unsafe-eval'` only so the embedded FFmpeg WebAssembly core can compile locally. It does not enable general `'unsafe-eval'`. `frame-src` is limited to local `self`, `data:`, and `blob:` because html2canvas uses an internal clone iframe.
+`script-src` permits `'wasm-unsafe-eval'` for embedded FFmpeg, ONNX Runtime Web, and eSpeak NG. General `'unsafe-eval'` remains disabled. `frame-src` is limited to local `self`, `data:`, and `blob:` for html2canvas's clone iframe.
 
 No runtime CDN, analytics, telemetry, external font, cloud TTS API, AI API, or cloud storage API is used.
 
@@ -44,6 +45,8 @@ No runtime CDN, analytics, telemetry, external font, cloud TTS API, AI API, or c
 - Export occurs only after an explicit user action.
 
 ## Browser permissions
+
+Local model synthesis processes explicitly selected, pinned model and voice files in a browser worker. Text processing and inference use resources embedded in the standalone HTML. Opening a model download link navigates to Hugging Face. The presentation and scripts stay on the device.
 
 The application does not request microphone or display/system-audio capture on page load. The user must initiate the relevant action, and browser/operating-system permission dialogs remain authoritative.
 

@@ -86,11 +86,10 @@
     .header-icon-button { width:32px; height:32px; display:grid; place-items:center; border-radius:8px; }
     .language-button:hover,.header-icon-button:hover { color:var(--text); background:transparent; }
     .header-icon-button svg { width:20px; height:20px; }
-    .main { width:min(1220px,100%); margin:0 auto; padding:22px clamp(14px,2.8vw,30px) 64px; }
-    .page-intro { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; padding:0 2px 18px; }
-    .page-intro h2 { margin:0; font-size:clamp(22px,3vw,28px); line-height:1.25; letter-spacing:-.025em; }
-    .page-intro p { max-width:760px; margin:6px 0 0; color:var(--muted); font-size:13px; }
-    .local-badge { display:inline-flex; align-items:center; gap:7px; flex:0 0 auto; margin-top:3px; padding:7px 0; border:0; border-radius:0; color:var(--accent); background:transparent; font-size:12px; font-weight:500; white-space:nowrap; }
+    .main { width:min(1220px,100%); margin:0 auto; padding:18px clamp(14px,2.8vw,30px) 64px; }
+    .page-intro { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:0 2px 14px; }
+    .page-intro p { margin:0; color:var(--muted); font-size:14px; line-height:1.5; text-wrap:pretty; }
+    .local-badge { display:inline-flex; align-items:center; gap:7px; flex:0 0 auto; color:var(--accent); font-size:12px; font-weight:500; white-space:nowrap; }
     .local-badge svg { width:15px; height:15px; }
     .workflow-nav { display:grid; gap:10px; margin:0 0 14px; padding:12px; border:1px solid var(--line); border-radius:14px; background:color-mix(in srgb,var(--surface) 96%,var(--accent-soft)); box-shadow:var(--shadow-sm); }
     .workflow-nav-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
@@ -297,10 +296,10 @@
     .tech-body dt { font-weight:750; color:var(--text); }
     .tech-body dd { margin:0; }
     .footer { margin-top:28px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; display:flex; justify-content:flex-start; gap:12px; flex-wrap:wrap; }
-    .help-dialog { width:min(660px,calc(100vw - 28px)); max-height:min(82vh,760px); padding:0; border:1px solid var(--line); border-radius:16px; background:var(--surface); box-shadow:var(--shadow-md); }
+    .help-dialog { width:min(660px,calc(100vw - 28px)); max-height:min(82vh,760px); overflow:clip; padding:0; border:1px solid var(--line); border-radius:16px; background:var(--surface); box-shadow:var(--shadow-md); }
+    .help-dialog[open] { display:grid; grid-template-rows:auto minmax(0,1fr); }
     .help-dialog::backdrop { background:rgba(18,22,20,.35); backdrop-filter:blur(2px); }
-    .help-shell { display:grid; grid-template-rows:auto minmax(0,1fr); max-height:min(82vh,760px); }
-    .help-head { position:sticky; top:0; z-index:1; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:15px 17px; border-bottom:1px solid var(--line); background:var(--surface); }
+    .help-head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:15px 17px; border-bottom:1px solid var(--line); background:var(--surface); }
     .help-head h2 { margin:0; font-size:17px; }
     .help-body { overflow:auto; padding:16px 18px calc(20px + env(safe-area-inset-bottom)); }
     .help-body h3 { margin:18px 0 6px; font-size:14px; }
@@ -316,8 +315,6 @@
     .toast-action { border:0; background:transparent; color:#bfe5d7; font-weight:800; cursor:pointer; }
     .app-mobile-bottom-bar { display:none; }
     @media (max-width: 760px) {
-      .page-intro { display:block; }
-      .local-badge { margin-top:10px; }
       .workflow-nav-list { grid-template-columns:repeat(2,minmax(0,1fr)); }
       .slide-layout { grid-template-columns:1fr; }
       .slide-list { max-height:230px; }
@@ -328,13 +325,14 @@
     @media (max-width: 600px) { main > footer.footer { display: none; } }
     @media (max-width: 600px) {
       body { padding-bottom:calc(var(--mobile-bottom-height) + env(safe-area-inset-bottom)); }
-      .main { padding-top:16px; padding-bottom:24px; }
+      .main { padding-top:14px; padding-bottom:24px; }
       .header-inner { gap:8px; }
       .brand { flex:1 1 auto; overflow:hidden; }
       .header-actions { gap:6px; flex:0 0 auto; }
       .language-button { font-size:11px; }
       .brand-meta { display:none; }
-      .page-intro h2 { font-size:21px; }
+      .page-intro { padding-bottom:12px; }
+      .local-badge { display:none; }
       body.has-mobile-page-tabs .app-mobile-page { display:none; }
       body.has-mobile-page-tabs .app-mobile-page.is-mobile-active { display:block; }
       .panel-head { padding:14px; }
@@ -365,7 +363,6 @@
       .app-mobile-bottom-item.is-active,.app-mobile-bottom-item:focus-visible { color:var(--accent); background:var(--accent-soft); }
       .toast { bottom:calc(var(--mobile-bottom-height) + env(safe-area-inset-bottom) + 10px); }
       .help-dialog { width:calc(100vw - 18px); max-height:calc(100dvh - 18px); }
-      .help-shell { max-height:calc(100dvh - 18px); }
     }
 
     /* Scene editor */
@@ -432,7 +429,7 @@
     .text-button { min-height:32px; padding:5px 8px; border:1px solid var(--line); border-radius:8px; background:var(--surface); color:var(--muted); font-size:10px; font-weight:750; cursor:pointer; }
     .text-button:hover:not(:disabled) { background:var(--surface-hover); color:var(--text); }
     .text-button:disabled { opacity:.4; cursor:not-allowed; }
-    .narration-source-tabs { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; margin:12px 0 14px; padding:4px; border:1px solid var(--line); border-radius:12px; background:var(--surface-muted); }
+    .narration-source-tabs { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; margin:12px 0 14px; padding:4px; border:1px solid var(--line); border-radius:12px; background:var(--surface-muted); }
     .narration-source-button { min-height:38px; padding:7px 8px; border:0; border-radius:9px; background:transparent; color:var(--muted); font:inherit; font-size:10px; font-weight:800; cursor:pointer; }
     .narration-source-button[aria-pressed="true"] { background:#fff; color:var(--accent-strong); box-shadow:0 1px 3px rgba(0,0,0,.08); }
     .narration-source-panel[hidden] { display:none !important; }
@@ -440,6 +437,11 @@
     .source-action-card strong { font-size:12px; }
     .source-action-copy { color:var(--muted); font-size:10px; line-height:1.55; }
     .source-file-name { min-width:0; overflow-wrap:anywhere; color:var(--muted); font-size:10px; line-height:1.45; }
+    .local-tts-files a { color:var(--accent-strong); overflow-wrap:anywhere; }
+    .local-tts-files ul { margin:7px 0; padding-inline-start:22px; }
+    .local-tts-files li { margin:4px 0; }
+    .local-tts-run { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:8px; }
+    .local-tts-run[hidden],#localTtsCancel[hidden],#testPage.local-output [data-desktop-tts-capture],#testPage.local-output #captureStatusChip { display:none; }
     .mic-live { display:inline-flex; align-items:center; gap:6px; color:#8d2922; font-size:10px; font-weight:800; }
     .mic-live::before { content:""; width:8px; height:8px; border-radius:50%; background:#c53b32; box-shadow:0 0 0 4px rgba(197,59,50,.12); }
     .narration-section-head { display:flex; align-items:flex-end; justify-content:space-between; gap:10px; margin-top:1px; }
@@ -543,7 +545,7 @@
       .scene-play-button { width:38px; height:38px; }
       .scene-editor-meta { position:sticky; z-index:8; top:calc(var(--header-height) + 6px); margin:-2px -2px 10px; padding:8px 2px 10px; background:linear-gradient(to bottom,var(--surface) 82%,color-mix(in srgb,var(--surface) 88%,transparent)); border-bottom:1px solid var(--line); }
       .scene-editor-meta .source-badge { max-width:96px; overflow:hidden; text-overflow:ellipsis; }
-      .narration-source-tabs { grid-template-columns:repeat(3,minmax(0,1fr)); gap:4px; }
+      .narration-source-tabs { grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px; }
       .narration-source-button { min-height:44px; padding:6px 5px; font-size:10px; line-height:1.25; white-space:normal; overflow-wrap:anywhere; }
       .narration-section-head { align-items:flex-start; flex-direction:column; }
       .scene-voice-status { width:100%; max-width:none; justify-content:space-between; }
@@ -580,7 +582,7 @@
       <div class="brand">
         <span class="brand-mark"><img id="appBrandIcon" src="__APP_ICON_DATA_URI__" alt=""></span>
         <div class="brand-copy">
-          <h1 class="brand-name"><span id="brandName">Presentation Video Maker</span><span class="version-badge" id="versionBadge">v1.3.3</span></h1>
+          <h1 class="brand-name"><span id="brandName">Presentation Video Maker</span><span class="version-badge" id="versionBadge">v2.0.0</span></h1>
           <p class="brand-meta" data-i18n="brandMeta">PowerPoint → ナレーション動画</p>
         </div>
       </div>
@@ -594,16 +596,13 @@
   </header>
 
   <main class="main">
-    <section class="page-intro">
-      <div>
-        <h2 data-i18n="introTitle">PowerPointからナレーション動画を組み立てる</h2>
-        <p data-i18n="introText">PowerPointからナレーション付きMP4を、ブラウザ内の完全ローカル処理で作成します。</p>
-      </div>
+    <div class="page-intro">
+      <p data-i18n="introText">PowerPointからナレーション付きMP4を作れます。</p>
       <span class="local-badge">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 2.8 8 7 10 4.2-2 7-5.4 7-10V6z"/><path d="m9 12 2 2 4-5"/></svg>
         <span data-i18n="localBadge">完全ローカル処理</span>
       </span>
-    </section>
+    </div>
 
     <div class="workflow-nav" id="workflowNav">
       <div class="workflow-nav-head">
@@ -738,11 +737,12 @@
           </div>
 
           <div class="narration-section-head">
-            <div><strong data-i18n="sceneVoiceHeading">このスライドの音声</strong><span data-i18n="sceneVoiceDescriptionV7">スライドごとに、端末内読み上げ・自分の声・音声ファイルを選べます。</span></div>
+            <div><strong data-i18n="sceneVoiceHeading">このスライドの音声</strong><span data-i18n="sceneVoiceDescriptionV7">スライドごとにローカルTTS・端末内読み上げ・自分の声・音声ファイルを選べます。</span></div>
             <div class="scene-voice-status"><span class="scene-voice-summary" id="sceneVoiceSummary">—</span><span class="recording-state" id="sceneAudioStatus" data-state="pending" aria-live="polite">—</span></div>
           </div>
           <div class="narration-source-tabs" id="narrationSourceTabs" data-i18n-aria-label="narrationSourceLabel" aria-label="ナレーション方法">
             <button class="narration-source-button" type="button" data-narration-source="tts" aria-pressed="true" data-i18n="sourceTts">端末内読み上げ</button>
+            <button class="narration-source-button" type="button" data-narration-source="local" aria-pressed="false" data-i18n="sourceLocal">ローカルTTSモデル</button>
             <button class="narration-source-button" type="button" data-narration-source="mic" aria-pressed="false" data-i18n="sourceMic">自分の声</button>
             <button class="narration-source-button" type="button" data-narration-source="file" aria-pressed="false" data-i18n="sourceFile">音声ファイル</button>
           </div>
@@ -776,6 +776,45 @@
             <div class="notice" id="voiceNotice" style="margin-top:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span id="voiceNoticeText" data-i18n="voiceLoading">端末内で使える音声を確認しています。</span></div>
           </div>
 
+          <div class="narration-source-panel" id="localSourcePanel" hidden>
+            <div class="source-action-card">
+              <div class="control-grid">
+                <label class="field"><span class="field-label" data-i18n="localDefaultLanguage">資料の既定言語</span>
+                  <select id="localTtsDefaultLanguage"><option value="ja" data-i18n="localJapanese">日本語</option><option value="en" data-i18n="localEnglish">英語（米国）</option></select>
+                </label>
+                <label class="field"><span class="field-label" data-i18n="localSlideLanguage">このスライドの言語</span>
+                  <select id="localTtsLanguage"><option value="inherit" data-i18n="localInherit">資料の設定に従う</option><option value="ja" data-i18n="localJapanese">日本語</option><option value="en" data-i18n="localEnglish">英語（米国）</option></select>
+                </label>
+              </div>
+              <label class="rate-slider-card"><span class="rate-slider-head"><span class="field-label" data-i18n="rateLabel">速度</span><span id="localTtsRateValue" class="rate-current">1x</span></span>
+                <input id="localTtsRate" type="range" min="0.8" max="1.5" step="0.05" value="1">
+              </label>
+              <details class="local-tts-files">
+                <summary data-i18n="localGetFiles">モデルと声の入手方法</summary>
+                <p class="helper" data-i18n="localFileGuide">共通モデルと使う言語の声をHugging Faceから保存します。</p>
+                <ul class="helper">
+                  <li><a href="https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/1939ad2a8e416c0acfeecc08a694d14ef25f2231/onnx/model_quantized.onnx?download=true" target="_blank" rel="noopener noreferrer">model_quantized.onnx</a> · 92 MB · Kokoro-82M v1.0</li>
+                  <li><a href="https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/1939ad2a8e416c0acfeecc08a694d14ef25f2231/voices/jf_alpha.bin?download=true" target="_blank" rel="noopener noreferrer">jf_alpha.bin</a> · 522 kB · <span data-i18n="localJapanese">日本語</span></li>
+                  <li><a href="https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/1939ad2a8e416c0acfeecc08a694d14ef25f2231/voices/af_heart.bin?download=true" target="_blank" rel="noopener noreferrer">af_heart.bin</a> · 522 kB · <span data-i18n="localEnglish">英語（米国）</span></li>
+                </ul>
+                <p class="helper"><a href="https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/blob/1939ad2a8e416c0acfeecc08a694d14ef25f2231/README.md" target="_blank" rel="noopener noreferrer">ONNX Community · Kokoro-82M (Apache-2.0)</a> · <button type="button" id="localTtsNotices" class="text-button" data-i18n="localNotices">同梱ライセンス</button></p>
+              </details>
+              <input type="file" id="localTtsFiles" accept=".onnx,.bin" multiple hidden>
+              <div class="button-row"><button type="button" class="button" id="localTtsChoose" data-i18n="localChoose">モデル・声のファイルを選択</button></div>
+              <div id="localTtsFileStatus" class="source-file-name" aria-live="polite"></div>
+              <div class="button-row">
+                <button type="button" id="localTtsGenerate" class="button primary" data-i18n="localGenerate">このスライドの音声を生成</button>
+                <button type="button" id="localTtsPreview" class="button" data-i18n="previewVoice">試聴</button>
+                <button type="button" id="localTtsBatch" class="button" data-i18n="localBatch">未生成・要更新の音声を一括生成</button>
+              </div>
+              <div class="button-row"><button id="localTtsApply" type="button" class="button"></button></div>
+              <span class="helper" data-i18n="localBatchScope">動画に含めるローカルTTSスライドのうち、未生成・要更新・失敗分を順に生成します。生成済みの音声はプロジェクトに保存されます。</span>
+            </div>
+          </div>
+          <div id="localTtsRun" class="local-tts-run" hidden>
+            <span class="helper" id="localTtsStatus" role="status"></span>
+            <button id="localTtsCancel" class="button" type="button" data-i18n="localCancel" hidden>生成を中止</button>
+          </div>
           <div class="narration-source-panel" id="micSourcePanel" hidden>
             <div class="source-action-card">
               <div><strong data-i18n="micTitle">自分の声を録音</strong><div class="source-action-copy" data-i18n="micDescription">このスライドのナレーションだけをマイクから録音します。システム音声共有は不要です。</div></div>
@@ -856,7 +895,7 @@
           </div>
 
           <div class="scene-recordings-card" id="sceneRecordingsCard">
-            <div class="scene-recordings-head"><div><strong data-i18n="sceneRecordingsTitle">シーン別の録音素材</strong><span data-i18n="sceneRecordingsDescription">前後の余白は録音せず、動画生成時に追加します。</span></div><span class="mini-badge" data-i18n="localBadge">完全ローカル処理</span></div>
+            <div class="scene-recordings-head"><div><strong data-i18n="sceneRecordingsTitle">シーン別の音声素材</strong><span data-i18n="sceneRecordingsDescription">前後の余白は録音せず、動画生成時に追加します。</span></div><span class="mini-badge" data-i18n="localBadge">完全ローカル処理</span></div>
             <div class="scene-recordings-list" id="sceneRecordingsList"></div>
           </div>
 
@@ -946,26 +985,26 @@
   </nav>
 
   <dialog class="help-dialog" id="helpDialog">
-    <div class="help-shell">
-      <div class="help-head"><h2 data-i18n="helpTitle">使い方と注意事項</h2><button class="dialog-close" id="closeHelpButton" type="button" data-i18n-aria-label="close" aria-label="閉じる"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12"/><path d="M18 6 6 18"/></svg></button></div>
-      <div class="help-body">
-        <!-- APP:HELP:BEGIN -->
-        <h3 data-i18n="helpWhatTitle">この版でできること</h3><p data-i18n="helpWhatText">PowerPointの各スライドに台本と音声を設定し、ナレーション付きMP4をブラウザ内で作成できます。</p>
-        <p data-i18n="helpDialogText">閉じるボタン、Escキー、または枠外のクリックで閉じます。</p>
-        <h3 data-i18n="helpUseTitle">基本操作</h3><ul><li data-i18n="helpUseOne">PPTXを読み込み、スライドと発表者ノートを確認します。</li><li data-i18n="helpUseTwo">端末内の音声を選び、試聴します。</li><li data-i18n="helpUseThree">「全シーンを録音」を開始し、共有画面で「画面全体」と「システム音声を共有」を選びます。</li><li data-i18n="helpUseFour">録音完了後、「動画を作成」でMP4を書き出して保存します。</li></ul>
-        <h3 data-i18n="helpPrivacyTitle">プライバシー</h3><p data-i18n="helpPrivacyText">PPTX、発表者ノート、台本、録音は外部サーバーへ送信しません。オンラインTTSは使用せず、端末内として報告された音声だけを候補にします。</p>
-        <h3 data-i18n="helpCaptureTitle">システム音声について</h3><p data-i18n="helpCaptureText">システム音声を取得できるかはブラウザ・OS・共有対象に依存します。失敗したシーンがあってもPPTXの読込結果や他の録音済みシーンは失われません。Chrome / EdgeのPC版を主な確認対象としています。</p><h3 data-i18n="helpSmartphoneTitle">スマートフォンで使う場合</h3><p data-i18n="helpSmartphoneText">スマホでは端末内読み上げの試聴はできますが、TTS音声を録音素材として取り込めません。自分の声または音声ファイルを使用し、動画は720pを推奨します。</p>
-        <h3 data-i18n="helpFileTitle">対応ファイル</h3><p data-i18n="helpFileText">.pptx、最大150 MB。古い .ppt は対象外です。PowerPointのアニメーションや切り替え効果は静的なスライドとして扱います。</p>
-        <h3 data-i18n="helpPersistenceTitle">作業内容</h3><p data-i18n="helpPersistenceText">PPTXや台本、録音は自動保存しません。ページを再読み込みすると消えます。</p>
-        <h3 data-i18n="helpSubtitlePreviewTitle">字幕を保存する前に確認</h3><p data-i18n="helpSubtitlePreviewText">出力画面の「字幕プレビュー」を開き、SRT / VTTを選ぶと、保存する字幕の全文と件数を確認できます。内容は読み取り専用で、編集は台本欄で行います。未計測の音声は推定時間を使い、焼き込み字幕とタイミングが異なる場合があります。プレビューを開いてもファイルは保存されません。</p>
-        <!-- APP:HELP:END -->
-        <p class="help-build">v<span id="buildVersion">1.3.3</span> · <span id="builtAt">—</span> · deps <span id="dependencyCount">0</span></p>
-      </div>
+    <div class="help-head"><h2 data-i18n="helpTitle">使い方と注意事項</h2><button class="dialog-close" id="closeHelpButton" type="button" data-i18n-aria-label="close" aria-label="閉じる"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12"/><path d="M18 6 6 18"/></svg></button></div>
+    <div class="help-body">
+      <!-- APP:HELP:BEGIN -->
+      <h3 data-i18n="helpWhatTitle">この版でできること</h3><p data-i18n="helpWhatText">PowerPointの各スライドに台本と音声を設定し、ナレーション付きMP4をブラウザ内で作成できます。</p>
+      <p data-i18n="helpDialogText">閉じるボタン、Escキー、または枠外のクリックで閉じます。</p>
+      <h3 data-i18n="helpUseTitle">基本操作</h3><ul><li data-i18n="helpUseOne">PPTXを読み込み、スライドと発表者ノートを確認します。</li><li data-i18n="helpUseTwo">端末内の音声を選び、試聴します。</li><li data-i18n="helpUseThree">「全シーンを録音」を開始し、共有画面で「画面全体」と「システム音声を共有」を選びます。</li><li data-i18n="helpUseFour">録音完了後、「動画を作成」でMP4を書き出して保存します。</li></ul>
+      <h3 data-i18n="helpPrivacyTitle">プライバシー</h3><p data-i18n="helpPrivacyText">PPTX、発表者ノート、台本、録音は外部サーバーへ送信しません。オンラインTTSは使用せず、端末内として報告された音声だけを候補にします。</p>
+      <h3 data-i18n="helpCaptureTitle">システム音声について</h3><p data-i18n="helpCaptureText">システム音声を取得できるかはブラウザ・OS・共有対象に依存します。失敗したシーンがあってもPPTXの読込結果や他の録音済みシーンは失われません。Chrome / EdgeのPC版を主な確認対象としています。</p><h3 data-i18n="helpSmartphoneTitle">スマートフォンで使う場合</h3><p data-i18n="helpSmartphoneText">スマホでは端末内読み上げの試聴はできますが、TTS音声を録音素材として取り込めません。自分の声または音声ファイルを使用し、動画は720pを推奨します。</p>
+      <h3 data-i18n="helpLocalTitle">ローカルTTSモデルで音声を作る</h3><p data-i18n="helpLocalText">PC版Chrome・Edge向けの機能です。「ローカルTTSモデル」の入手案内からモデルと使う言語の声を保存し、アプリで選びます。資料の既定言語とスライドの言語を設定し、音声を生成して試聴できます。.pvmには生成音声を保存します。再度開いたとき、モデルと声の選び直しが必要なのは再生成するときだけです。</p>
+      <h3 data-i18n="helpFileTitle">対応ファイル</h3><p data-i18n="helpFileText">.pptx、最大150 MB。古い .ppt は対象外です。PowerPointのアニメーションや切り替え効果は静的なスライドとして扱います。</p>
+      <h3 data-i18n="helpPersistenceTitle">作業内容</h3><p data-i18n="helpPersistenceText">PPTXや台本、録音は自動保存しません。ページを再読み込みすると消えます。</p>
+      <h3 data-i18n="helpSubtitlePreviewTitle">字幕を保存する前に確認</h3><p data-i18n="helpSubtitlePreviewText">出力画面の「字幕プレビュー」を開き、SRT / VTTを選ぶと、保存する字幕の全文と件数を確認できます。内容は読み取り専用で、編集は台本欄で行います。未計測の音声は推定時間を使い、焼き込み字幕とタイミングが異なる場合があります。プレビューを開いてもファイルは保存されません。</p>
+      <!-- APP:HELP:END -->
+      <p class="help-build">v<span id="buildVersion">2.0.0</span> · <span id="builtAt">—</span> · deps <span id="dependencyCount">0</span></p>
     </div>
   </dialog>
 
   <div class="toast" id="appToast" role="status" aria-live="polite"><span class="toast-message" id="appToastMessage"></span><button class="toast-action" id="appToastAction" type="button" hidden></button></div>
 
+  __LOCAL_TTS_SCRIPTS__
   <script>__FFMPEG_RUNTIME_JS__</script>
   <script>
     (() => {
@@ -1032,7 +1071,7 @@
 
       const $ = selector => document.querySelector(selector);
       const $$ = selector => Array.from(document.querySelectorAll(selector));
-      const translations = {"ja":{"brandMeta":"PowerPoint → ナレーション動画","help":"使い方と注意事項","close":"閉じる","introTitle":"PowerPointからナレーション動画を組み立てる","introText":"PowerPointからナレーション付きMP4を、ブラウザ内の完全ローカル処理で作成します。","localBadge":"完全ローカル処理","pptxTitle":"PowerPointを読み込む","pptxDescription":"PPTXをブラウザ内で解析し、スライドを表示します。","statusNotLoaded":"未読込","statusLoading":"読込中","statusReady":"準備完了","statusError":"エラー","dropTitle":"PPTXファイルをここにドロップ","dropHint":"またはボタンから選択してください。最大150 MB。","chooseFile":"PowerPointを選択","replaceFile":"変更","selectedSlide":"選択中のスライド","scriptLabel":"ナレーション原稿","scriptPlaceholder":"発表者ノートがここに入ります。","scriptHint":"発表者ノートがある場合は自動で使用します。","scriptFromNotes":"発表者ノートを使用しています。","scriptFromSlide":"発表者ノートがないため、スライド本文を下書きにしています。","techDetails":"技術情報","zipMethod":"PPTX展開","zipMethodValue":"ブラウザ標準のZIP展開（外部ライブラリなし）","network":"外部通信","networkNone":"なし","sourceGeneration":"読込世代","notesYes":"発表者ノートあり","notesNo":"ノートなし","slideN":"スライド {n}","loadedSummary":"{slides}枚 / 発表者ノート {notes}枚 / {size}","invalidPptx":"PPTXファイルを選択してください。","fileTooLarge":"150 MBを超えるファイルは読み込めません。","parseFailed":"PowerPointを読み込めませんでした。ファイルが破損しているか、このブラウザで扱えないPPTX形式の可能性があります。","voiceTitle":"端末内の音声を選ぶ","voiceDescription":"オンライン音声は候補から除外します。","statusChecking":"確認中","statusVoiceReady":"利用可能","statusVoiceMissing":"音声なし","voiceLabel":"音声","rateLabel":"速度","onDevice":"端末内","previewVoice":"試聴","stopVoice":"停止","voiceLoading":"端末内で使える音声を確認しています。","voiceFound":"端末内音声 {count}件。{matching}","voiceMatching":"現在の言語に合う音声があります。","voiceNotMatching":"現在の言語に合う端末内音声はありません。別言語の音声は選べます。","noLocalVoices":"このブラウザで端末内として確認できる音声がありません。OSの音声を追加するか、Chrome / EdgeのPC版で確認してください。","selectVoice":"音声を選択してください","previewStarted":"読み上げを開始しました。","previewBlockedDuringCapture":"全シーン録音中は試聴できません。スライドの確認や移動はそのまま行えます。","speechFailed":"読み上げを開始できませんでした。別の音声を選択してください。","captureTitle":"全シーンのナレーションを録音する","captureDescription":"端末内読み上げを使うシーンだけを、1回のシステム音声共有でまとめて録音します。","statusNotTested":"未テスト","statusTesting":"録音中","statusPassed":"録音済み","statusFailed":"要確認","captureNotice":"ブラウザの共有画面では「画面全体」を選び、「システム音声も共有」を有効にしてください。共有先は外部サーバーではなく、このページ自身です。","guideOne":"テスト開始を押す","guideTwo":"画面全体 + システム音声を選ぶ","guideThree":"読み上げ音声を自動確認","startCapture":"録音テストを開始","cancelCapture":"中止","captureReadyTitle":"準備待ち","captureReadyMessage":"端末内音声を選ぶとテストできます。","captureReadyNow":"録音テストを開始できます。","requestingShare":"音声共有を準備しています","requestingShareMessage":"「画面全体」と「システム音声を共有」を選択してください。","recordingTitle":"読み上げ音声を録音しています","recordingMessage":"この間はタブを閉じたり、共有を停止したりしないでください。","checkingTitle":"録音素材を確認しています","successTitle":"録音テストに成功しました","captureSuccess":"音声トラック・音声信号・録音データを確認できました。{seconds}秒 / {size}","captureErrorTitle":"録音を開始できませんでした。","captureCancelled":"録音テストを中止しました。","permissionDenied":"共有が許可されませんでした。もう一度試すことができます。","noDisplayMedia":"このブラウザではシステム音声の共有を開始できません。Windows版Chrome / Edgeで確認してください。","noAudioTrack":"共有ストリームに音声がありません。「画面全体」と「システム音声を共有」を選んでください。","noSignal":"システム音声トラックは取得できましたが、読み上げ音声の信号を確認できませんでした。この環境ではWeb Speech APIの音声をブラウザから録音できない可能性があります。","emptyRecording":"音声データを録音できませんでした。","captureGenericError":"録音テストを完了できませんでした。","audioTrack":"音声トラック","signalLevel":"音声信号","recordedData":"録音データ","metricYes":"あり","metricNo":"なし","metricDetected":"検出","metricBytes":"{size}","captureTech":"録音の詳細","selectedSurface":"共有対象","capturedAudio":"取得音声","wrongSurface":"共有対象が「画面全体」ではありません。もう一度開始し、「画面全体」と「システム音声を共有」を選んでください。","recordingMime":"録音形式","maxRms":"最大信号","outputFilename":"出力ファイル名","outputFilenameHint":"拡張子は自動で .webm が付きます","saveRecording":"録音を保存","saved":"録音を保存しました。","mobileSlides":"スライド","mobileVoice":"音声","mobileTest":"テスト","footerPrivacy":"動画の生成はブラウザー内で完結","helpTitle":"使い方と注意事項","helpDialogText":"閉じるボタン、Escキー、または枠外のクリックで閉じます。","helpWhatTitle":"この版でできること","helpWhatText":"PowerPointの各スライドに台本と音声を設定し、端末内読み上げ・自分の声・音声ファイルを混在させたナレーション付きMP4を作成できます。","helpUseTitle":"基本操作","helpUseOne":"PPTXを読み込み、スライドと発表者ノートを確認します。","helpUseTwo":"各スライドで原稿を確認し、端末内読み上げ・自分の声・音声ファイルからナレーション方法を選びます。","helpUseThree":"PCの端末内読み上げは1シーンまたは全シーンで録音できます。スマホではTTS録音を使えないため、自分の声または音声ファイルを使用します。","helpUseFour":"録音完了後、切り替え・字幕・BGMを設定し、「動画を作成」でMP4を書き出して保存します。","helpPrivacyTitle":"プライバシー","helpPrivacyText":"PPTX、発表者ノート、台本、マイク録音、音声ファイル、BGM、生成動画は外部サーバーへ送信しません。すべてブラウザ内で処理します。","helpCaptureTitle":"システム音声について","helpCaptureText":"端末内読み上げの録音はWindowsの「画面全体 + システム音声」を使います。スマホではTTS録音に対応していません。システム音声には通知音などが入る可能性があります。","helpFileTitle":"対応ファイル","helpFileText":".pptx、最大150 MB。古い .ppt は対象外です。PowerPoint本体のアニメーションや切り替え効果は静的に扱います。Browser Kitty側のカット / フェードは動画出力時に追加できます。","helpPersistenceTitle":"作業内容","helpPersistenceText":"PowerPoint・台本・録音・BGM・出力設定は .pvm プロジェクトとして保存し、あとから続きを開けます。自動保存はしません。","slidesHeading":"スライド","rendererLabel":"表示エンジン","zipMethodValueV2":"高品質レンダラー + ノート抽出","rendererPrimary":"高品質表示","rendererFallback":"簡易表示","rendererLoading":"準備中","rendererMissing":"高品質表示の依存ファイルがビルドに含まれていません。簡易表示で続行します。","rendererFailed":"高品質表示を開始できなかったため簡易表示へ切り替えました。","previewPreparing":"スライドを準備しています。","previousSlide":"前のスライド","nextSlide":"次のスライド","sceneEditTitle":"台本と音声","sceneEditDescription":"スライドごとのナレーション原稿を確認・編集します。","sceneEditorEmpty":"PowerPointを読み込むと台本を編集できます。","scriptSourceNotes":"発表者ノート","scriptSourceDraft":"本文から下書き","prePadding":"開始前","postPadding":"終了後","sceneEnabled":"このスライドを動画に含める","chars":"{count}文字","resetScript":"元の原稿に戻す","resetScriptDone":"元の原稿に戻しました。","scriptEmpty":"ナレーション原稿が空です。","narrationNotMeasured":"未計測","narrationMeasured":"試聴 {seconds}秒","sceneVoiceHeading":"このスライドの音声","sceneVoiceDescription":"音声と速度はスライドごとに保持されます。","bulkVoiceTitle":"全スライドの音声をそろえる","bulkVoiceDescription":"現在選んでいる音声と速度を、すべてのスライドへ反映します。","applyNarrationAll":"音声と速度を全スライドに適用","appliedNarrationAll":"全スライドへ音声と速度を適用しました。","undo":"元に戻す","compatTransition":"切り替え効果","compatAnimation":"アニメーション","compatMedia":"埋め込み音声・動画","compatMessage":"このスライドには動画化時にそのまま再現しない要素があります: {items}","deckNotes":"ノート {count}","deckDrafts":"下書き {count}","deckLimited":"要確認 {count}","deckRenderer":"表示: {renderer}","mobileScript":"台本・音声","mobileOutput":"動画","statusNotRecorded":"未録音","captureNoticeV4":"開始後の共有画面では「画面全体」を選び、「システム音声も共有」を有効にしてください。録音中は通知音・音楽など他の音を止めてください。","guideOneV4":"全シーン録音を開始","guideThreeV4":"各シーンを自動で順番に録音","startBatchCapture":"全シーンを録音","captureReadyTitleV4":"録音の準備","captureReadyMessageV4":"PowerPointと端末内音声を準備すると開始できます。","captureReadyNowV4":"録音を開始できます。","recordingPlanTitle":"自動録音対象","estimatedNarration":"推定ナレーション","recordingPlanReady":"録音済み","recordedScenes":"録音シーン","sceneRecordingsTitle":"シーン別の録音素材","sceneRecordingsDescription":"前後の余白は録音せず、動画生成時に追加します。","sceneStatusPending":"未録音","sceneStatusRecording":"録音中","sceneStatusSuccess":"完了","sceneStatusError":"失敗","sceneStatusStale":"再録音","sceneStatusSkipped":"対象外","sceneRecordingStale":"設定変更後の旧録音","sceneDurationSize":"{seconds}秒 · {size}","sceneVoiceRate":"{voice} · {rate}x","sceneNoScript":"原稿なし","sceneDisabled":"動画に含めない","preflightTitle":"音声経路を確認しています","preflightMessage":"短い読み上げでシステム音声が取得できるか確認します。","recordingAllTitle":"ナレーションを録音しています","recordingAllMessage":"{current} / {total} · スライド {slide}","recordingSceneMessage":"スライド {slide} · {voice} · {rate}x","batchSuccessTitle":"全シーンの録音が完了しました","batchSuccess":"{success}シーンを録音しました。合計 {seconds}秒 / {size}","batchPartialTitle":"一部のシーンを録音できませんでした","batchPartial":"{success}件成功 / {failed}件失敗。失敗したシーンは一覧から個別に録音してください。","batchCancelled":"録音を中止しました。完了済みのシーンは残しています。","noScenesToRecord":"録音対象のシーンがありません。動画に含める設定と原稿を確認してください。","missingSceneVoice":"スライド {slide}で利用できる端末内音声が見つかりません。音声設定を確認してください。","preflightPhrase":"音声を確認します。","confirmReplaceRecordings":"すでにある録音素材を録音し直します。続けますか？","retryingScene":"スライド {slide}をもう一度録音します。","autoRetry":"音声信号を確認できなかったため自動でもう一度試します。","playSceneRecording":"このシーンの録音を再生","recordingReplaced":"録音素材を更新しました。","videoExportTitle":"動画を作成する","videoExportDescription":"録音済みのナレーションとスライドをまとめ、MP4として保存します。","videoExportIdle":"準備待ち","videoExportReady":"作成可能","videoExportWorking":"作成中","videoExportDone":"完了","videoExportError":"失敗","videoExportStaleResult":"設定変更あり","videoFilename":"ファイル名","videoResolution":"解像度","videoScenes":"動画シーン","videoEstimatedDuration":"推定時間","videoFormat":"形式","videoNeedRecordings":"動画に含める全シーンのナレーションを録音すると作成できます。","videoReady":"録音済みのシーンから動画を作成できます。","videoStaleRecordings":"再録音が必要なシーンがあります。録音を更新してから動画を作成してください。","videoMissingRecordings":"未録音または失敗したシーンがあります。全シーンの録音を完了してください。","createVideo":"動画を作成","cancelVideo":"中止","videoComplete":"動画を作成しました","saveVideo":"MP4を保存","videoRealtimeNote":"対応環境では動画を高速に作成します。互換モードでは、動画の長さと同程度以上の時間がかかる場合があります。","transitionLabel":"切り替え","transitionFade":"フェード","transitionCut":"カット","subtitleLabel":"字幕","subtitleBurnIn":"原稿から字幕を入れる","bgmLabel":"BGM","bgmLoop":"動画の長さまで繰り返す","chooseBgm":"BGMを選択","bgmNone":"BGMなし","clearBgm":"外す","bgmVolume":"BGM音量","bgmHint":"BGMは端末内でナレーションと合成します。","bgmTooLarge":"100 MBを超えるBGMは使用できません。","bgmDecodeFailed":"BGMを読み込めませんでした。別の音声ファイルを選択してください。","timelineSlide":"スライド {n}","timelineTransitionFade":"フェード","timelineTransitionCut":"カット","videoStagePreparing":"スライドを準備しています","videoStageComposing":"動画を組み立てています","videoStageTranscoding":"MP4へ変換しています","videoStageFinishing":"動画を仕上げています","videoCancelled":"動画作成を中止しました。録音済み素材はそのまま残っています。","videoExportFailed":"動画を作成できませんでした。メモリ不足またはブラウザの動画機能に対応していない可能性があります。","videoSaved":"MP4を保存しました。","videoNoMediaRecorder":"このブラウザでは動画の組み立てに必要な機能を利用できません。別の対応ブラウザで確認してください。","videoSnapshotFallback":"一部のスライドは簡易表示で動画へ出力されます。","videoHighFidelityFailed":"プレビューと同じ見た目でスライドを動画化できませんでした。ページを再読み込みせず、同じPowerPointで再度お試しください。","videoResultStaleNotice":"出力設定が変更されています。この動画は変更前の設定で作成されたものです。再作成すると新しい設定が反映されます。","sceneVoiceDescriptionV7":"スライドごとに、端末内読み上げ・自分の声・音声ファイルを選べます。","sourceTts":"端末内読み上げ","sourceMic":"自分の声","sourceFile":"音声ファイル","micTitle":"自分の声を録音","micDescription":"このスライドのナレーションだけをマイクから録音します。システム音声共有は不要です。","startMicRecording":"このスライドを録音","stopMicRecording":"録音を停止","micReady":"マイク録音を開始できます。","micRecordingNow":"録音中です。原稿を読み上げ、終わったら停止してください。","micRecorded":"自分の声を録音済み","micRecordedToast":"このスライドの音声を録音しました。","micUnsupported":"このブラウザではマイク録音を利用できません。","micPermissionDenied":"マイクの使用が許可されませんでした。","micRecordingFailed":"マイク録音に失敗しました。","micStopBeforeSwitch":"マイク録音を停止してからスライドや音声方式を変更してください。","narrationFileTitle":"音声ファイルを使う","narrationFileDescription":"このスライド用の音声ファイルを端末内から選びます。ファイルはアップロードされません。","chooseNarrationFile":"音声ファイルを選択","clearNarrationFile":"外す","narrationFileNone":"音声ファイル未選択","narrationFileTooLarge":"100 MBを超える音声ファイルは使用できません。","narrationFileInvalid":"音声ファイルを読み込めませんでした。別のファイルを選択してください。","narrationFileLoaded":"このスライドの音声ファイルを設定しました。","confirmClearNarrationFile":"このスライドに設定した音声ファイルを外しますか？","confirmReplaceSceneAudio":"このスライドには録音済みの音声があります。新しい音声に差し替えますか？","noTtsScenes":"端末内読み上げを使うシーンはありません。自分の声や音声ファイルは各スライドの「台本と音声」で設定できます。","narrationSourceLabel":"ナレーション方法","mobileNavLabel":"画面切り替え","videoTimelineLabel":"動画タイムライン","workflowNavTitle":"クイックナビゲーション","workflowNavReady":"4つの工程をすぐ移動できます","workflowNavLoaded":"読み込み後に利用できます","workflowNavSlides":"読み込み","workflowNavScript":"台本と音声","workflowNavCapture":"録音素材","workflowNavVideo":"動画作成","workflowNavToggle":"ナビゲーションを開閉","previousShort":"前へ","nextShort":"次へ","voiceCurrent":"現在の音声","rateNatural":"標準","captureNoticeTitle":"共有画面でこの3点を確認してください","captureNoticeStep1":"「画面全体」を選ぶ","captureNoticeStep2":"「システム音声も共有」を有効にする","captureNoticeStep3":"録音中は通知音・音楽などを止める","outputShortcutNarration":"ナレーション素材","outputShortcutVideo":"動画を作成","projectTitle":"プロジェクト","projectDescription":"PowerPoint・台本・録音・BGM・出力設定を1つの .pvm ファイルに保存できます。","saveProject":"プロジェクトを保存","openProject":"プロジェクトを開く","projectSaved":"プロジェクトを保存しました。","projectLoaded":"プロジェクトを開きました。","projectSaveFailed":"プロジェクトを保存できませんでした。","projectLoadFailed":"プロジェクトを開けませんでした。ファイルが破損しているか、対応していない形式です。","projectNoSource":"PowerPointを読み込んでからプロジェクトを保存してください。","confirmOpenProject":"現在の作業内容を閉じてプロジェクトを開きます。続けますか？","projectBusy":"録音または動画作成が終わってからプロジェクトを操作してください。","projectFormatMismatch":"このプロジェクト形式には対応していません。","projectSlideMismatch":"プロジェクト内のPowerPointと編集情報が一致しません。","sceneProgressTitle":"作業状況","sceneProgressSummary":"台本 {scripts}/{included} · 音声 {ready}/{required}","nextAttention":"次の要対応へ","progressReady":"準備済み","progressPending":"未録音","progressStale":"再録音","progressError":"失敗","allScenesReady":"要対応のスライドはありません。","singleTtsTitle":"このスライドだけ録音","singleTtsDescription":"端末内読み上げを、選択中のスライド1枚だけシステム音声から録音します。","recordCurrentTts":"このスライドを録音","singleTtsNotReady":"このスライドの原稿と端末内音声を確認してください。","singleSceneRecordingTitle":"このスライドを録音しています","singleSceneRecordingMessage":"スライド {slide} の端末内読み上げを録音しています。","singleSceneSuccessTitle":"このスライドの録音が完了しました","singleSceneSuccess":"スライド {slide} · {seconds}秒 / {size}","singleSceneFailed":"このスライドを録音できませんでした。共有設定と音声を確認してください。","textExportTitle":"台本・字幕を書き出す","textExportDescription":"台本はTXT、動画のタイミングに合わせた字幕はSRT / VTTで保存できます。","textExportEmpty":"書き出せる台本がありません。","textExportSaved":"{format}を保存しました。","openProjectStartTitle":"保存した作業を再開","openProjectStartDescription":"Presentation Video Makerの .pvm プロジェクトを開きます。PowerPointとは別のファイルです。","recordSceneAction":"録音","stopSceneRecordingAction":"停止","chooseSceneAudioAction":"音声を選択","recordSceneAria":"このシーンを録音","chooseSceneAudioAria":"このシーンの音声ファイルを選択","mobileOutputTitle":"録音素材と動画","mobileOutputDescription":"シーン別の音声を確認し、字幕・BGMなどを設定してMP4を作成します。","mobileTtsTitle":"スマホでは端末内読み上げを録音できません","mobileTtsDescription":"読み上げの試聴はできますが、動画用の録音素材として取り込めません。「自分の声」または「音声ファイル」を使用してください。","mobileTtsCaptureUnavailable":"スマホでは端末内読み上げを録音できません。「自分の声」または「音声ファイル」を使用してください。","sourceTtsMobile":"端末内読み上げ（試聴のみ）","mobile1080Warning":"スマホの1080p生成はメモリ使用量が大きくなります。長いプレゼンでは720pを推奨します。","helpSmartphoneTitle":"スマートフォンで使う場合","helpSmartphoneText":"スマホでは端末内読み上げの試聴はできますが、TTS音声を録音素材として取り込めません。自分の声または音声ファイルを使用し、動画は720pを推奨します。","sceneTtsPreviewOnly":"端末内読み上げ · スマホでは試聴のみ","recordWithMicAction":"自分の声で録音","recordWithMicAria":"このシーンを自分の声で録音","subtitlePreviewTitle":"字幕プレビュー","subtitlePreviewFormat":"形式","subtitlePreviewText":"書き出す字幕の内容","subtitlePreviewCues":"字幕 {count} 件","subtitlePreviewNote":"録音・実測時間を優先し、未計測の場合は推定時間を使います。焼き込み字幕とタイミングが異なる場合があります。","helpSubtitlePreviewTitle":"字幕を保存する前に確認","helpSubtitlePreviewText":"出力画面の「字幕プレビュー」を開き、SRT / VTTを選ぶと、保存する字幕の全文と件数を確認できます。内容は読み取り専用で、編集は台本欄で行います。未計測の音声は推定時間を使い、焼き込み字幕とタイミングが異なる場合があります。プレビューを開いてもファイルは保存されません。"},"en":{"brandMeta":"PowerPoint → narrated video","help":"How to use & notes","close":"Close","introTitle":"Build a narrated video from PowerPoint","introText":"Create a narrated MP4 from PowerPoint with fully local browser processing.","localBadge":"Fully local processing","pptxTitle":"Open a PowerPoint","pptxDescription":"The PPTX is parsed and displayed locally in your browser.","statusNotLoaded":"Not loaded","statusLoading":"Loading","statusReady":"Ready","statusError":"Error","dropTitle":"Drop a PPTX file here","dropHint":"Or choose one with the button. Maximum 150 MB.","chooseFile":"Choose PowerPoint","replaceFile":"Change","selectedSlide":"Selected slide","scriptLabel":"Narration script","scriptPlaceholder":"Speaker notes appear here.","scriptHint":"Speaker notes are used automatically when available.","scriptFromNotes":"Using this slide’s speaker notes.","scriptFromSlide":"No speaker notes were found, so slide text is used as a draft.","techDetails":"Technical details","zipMethod":"PPTX unpacking","zipMethodValue":"Browser-native ZIP handling (no external library)","network":"External network","networkNone":"None","sourceGeneration":"Source generation","notesYes":"Speaker notes","notesNo":"No notes","slideN":"Slide {n}","loadedSummary":"{slides} slides / {notes} with speaker notes / {size}","invalidPptx":"Choose a PPTX file.","fileTooLarge":"Files larger than 150 MB are not accepted.","parseFailed":"The PowerPoint could not be read. It may be damaged or use a PPTX form this browser cannot handle.","voiceTitle":"Choose an on-device voice","voiceDescription":"Online voices are excluded from the list.","statusChecking":"Checking","statusVoiceReady":"Available","statusVoiceMissing":"No voice","voiceLabel":"Voice","rateLabel":"Rate","onDevice":"On device","previewVoice":"Preview","stopVoice":"Stop","voiceLoading":"Checking voices available on this device.","voiceFound":"{count} on-device voices. {matching}","voiceMatching":"A voice matching the current language is available.","voiceNotMatching":"No on-device voice matches the current language. Other local voices remain selectable.","noLocalVoices":"No voice reported as on-device is available in this browser. Add an OS voice or check with desktop Chrome / Edge.","selectVoice":"Choose a voice","previewStarted":"Speech preview started.","previewBlockedDuringCapture":"Speech preview is unavailable while all-scene recording is running. You can still review and move between slides.","speechFailed":"Speech could not start. Choose another voice.","captureTitle":"Record narration for all scenes","captureDescription":"Record only scenes using on-device speech in one system-audio sharing session.","statusNotTested":"Not tested","statusTesting":"Recording","statusPassed":"Recorded","statusFailed":"Review","captureNotice":"In the browser share dialog, choose “Entire Screen” and enable system audio. The audio is shared back into this page, not to an external server.","guideOne":"Start the test","guideTwo":"Choose entire screen + system audio","guideThree":"The app checks the spoken signal","startCapture":"Start recording test","cancelCapture":"Cancel","captureReadyTitle":"Waiting","captureReadyMessage":"Choose an on-device voice to enable the test.","captureReadyNow":"The recording test is ready.","requestingShare":"Preparing system audio","requestingShareMessage":"Choose Entire Screen and enable system audio.","recordingTitle":"Recording the spoken audio","recordingMessage":"Do not close the tab or stop sharing during this step.","checkingTitle":"Checking narration assets","successTitle":"Recording test passed","captureSuccess":"Audio track, audio signal, and recorded data were all detected. {seconds}s / {size}","captureErrorTitle":"Narration recording could not start.","captureCancelled":"Recording test cancelled.","permissionDenied":"Sharing was not allowed. You can try again.","noDisplayMedia":"This browser cannot start system-audio sharing. Check with Chrome / Edge on Windows.","noAudioTrack":"The shared stream contains no audio. Choose Entire Screen and enable system audio.","noSignal":"A system-audio track was captured, but no speech signal was detected. In this environment Web Speech API output may not be recordable by the browser.","emptyRecording":"No audio data was recorded.","captureGenericError":"The recording test could not be completed.","audioTrack":"Audio track","signalLevel":"Audio signal","recordedData":"Recorded data","metricYes":"Yes","metricNo":"No","metricDetected":"Detected","metricBytes":"{size}","captureTech":"Recording details","selectedSurface":"Shared surface","capturedAudio":"Captured audio","wrongSurface":"The selected source is not an entire screen. Start again and choose Entire Screen with system audio enabled.","recordingMime":"Recording format","maxRms":"Peak signal","outputFilename":"Output filename","outputFilenameHint":"The .webm extension is added automatically","saveRecording":"Save recording","saved":"Recording saved.","mobileSlides":"Slides","mobileVoice":"Voice","mobileTest":"Test","footerPrivacy":"Video creation stays in the browser","helpTitle":"How to use & notes","helpDialogText":"Use the Close button, Esc, or a click outside the dialog to close it.","helpWhatTitle":"What this version does","helpWhatText":"Set a script and narration source for each PowerPoint slide, mix on-device speech, microphone recordings, and local audio files, then create a narrated MP4.","helpUseTitle":"Basic flow","helpUseOne":"Open a PPTX and review slides and speaker notes.","helpUseTwo":"For each slide, review the script and choose on-device speech, your own voice, or an audio file.","helpUseThree":"On desktop, on-device speech can be captured for one scene or in a batch. Smartphones cannot capture TTS, so use My voice or Audio file.","helpUseFour":"After recording, choose the transition, subtitles, and optional BGM, then create and save the MP4.","helpPrivacyTitle":"Privacy","helpPrivacyText":"PPTX, speaker notes, scripts, microphone recordings, audio files, BGM, and generated videos are not sent to an external server. Processing stays in the browser.","helpCaptureTitle":"About system audio","helpCaptureText":"On-device speech capture uses Entire Screen + system audio on Windows. Smartphone TTS capture is not supported. System audio may also include notifications or other sounds.","helpFileTitle":"Supported file","helpFileText":".pptx up to 150 MB. Legacy .ppt is not supported. Native PowerPoint animations/transitions are treated as static slides; Browser Kitty Cut/Fade can be added during export.","helpPersistenceTitle":"Work data","helpPersistenceText":"Save the PowerPoint, scripts, narration recordings, BGM, and output settings as a .pvm project and continue later. Projects are not autosaved.","slidesHeading":"Slides","rendererLabel":"Display engine","zipMethodValueV2":"High-fidelity renderer + notes extraction","rendererPrimary":"High fidelity","rendererFallback":"Simple view","rendererLoading":"Preparing","rendererMissing":"The high-fidelity renderer asset is not included in this build. Continuing with the simple view.","rendererFailed":"High-fidelity rendering could not start, so the app switched to the simple view.","previewPreparing":"Preparing the slide.","previousSlide":"Previous slide","nextSlide":"Next slide","sceneEditTitle":"Script & voice","sceneEditDescription":"Review and edit the narration script for each slide.","sceneEditorEmpty":"Open a PowerPoint to edit slide scripts.","scriptSourceNotes":"Speaker notes","scriptSourceDraft":"Draft from slide text","prePadding":"Before","postPadding":"After","sceneEnabled":"Include this slide in the video","chars":"{count} characters","resetScript":"Restore source script","resetScriptDone":"The source script was restored.","scriptEmpty":"The narration script is empty.","narrationNotMeasured":"Not measured","narrationMeasured":"Preview {seconds}s","sceneVoiceHeading":"Voice for this slide","sceneVoiceDescription":"Voice and rate are stored per slide.","bulkVoiceTitle":"Match voice across all slides","bulkVoiceDescription":"Apply the currently selected voice and rate to every slide.","applyNarrationAll":"Apply voice & rate to all slides","appliedNarrationAll":"Voice and rate were applied to all slides.","undo":"Undo","compatTransition":"transition","compatAnimation":"animation","compatMedia":"embedded audio/video","compatMessage":"This slide contains items that will not be reproduced as-is in the video: {items}","deckNotes":"Notes {count}","deckDrafts":"Drafts {count}","deckLimited":"Review {count}","deckRenderer":"Display: {renderer}","mobileScript":"Script & audio","mobileOutput":"Video","statusNotRecorded":"Not recorded","captureNoticeV4":"In the share dialog choose Entire Screen and enable system audio. Stop music, notifications, and other sounds while narration is being recorded.","guideOneV4":"Start all-scene recording","guideThreeV4":"Scenes are recorded automatically in order","startBatchCapture":"Record all scenes","captureReadyTitleV4":"Prepare narration","captureReadyMessageV4":"Open a PowerPoint and prepare on-device voices to start.","captureReadyNowV4":"Ready to record narration.","recordingPlanTitle":"Auto-record scenes","estimatedNarration":"Estimated narration","recordingPlanReady":"Recorded","recordedScenes":"Recorded scenes","sceneRecordingsTitle":"Per-scene narration assets","sceneRecordingsDescription":"Before/after padding is not recorded; it will be added during video generation.","sceneStatusPending":"Not recorded","sceneStatusRecording":"Recording","sceneStatusSuccess":"Done","sceneStatusError":"Failed","sceneStatusStale":"Re-record","sceneStatusSkipped":"Excluded","sceneRecordingStale":"Previous recording after edits","sceneDurationSize":"{seconds}s · {size}","sceneVoiceRate":"{voice} · {rate}x","sceneNoScript":"No script","sceneDisabled":"Excluded from video","preflightTitle":"Checking the audio path","preflightMessage":"A short phrase verifies that system audio is actually being captured.","recordingAllTitle":"Recording narration","recordingAllMessage":"{current} / {total} · Slide {slide}","recordingSceneMessage":"Slide {slide} · {voice} · {rate}x","batchSuccessTitle":"All-scene narration is ready","batchSuccess":"Recorded {success} scenes. {seconds}s total / {size}","batchPartialTitle":"Some scenes could not be recorded","batchPartial":"{success} succeeded / {failed} failed. Re-record failed scenes individually from the per-scene list.","batchCancelled":"Recording was cancelled. Completed scene recordings were kept.","noScenesToRecord":"There are no scenes to record. Check the include setting and narration scripts.","missingSceneVoice":"No available on-device voice matches Slide {slide}. Review its voice setting.","preflightPhrase":"Checking audio.","confirmReplaceRecordings":"Existing narration assets will be recorded again. Continue?","retryingScene":"Recording Slide {slide} again.","autoRetry":"No speech signal was detected, so this scene will be tried once more automatically.","playSceneRecording":"Play this scene recording","recordingReplaced":"Narration assets were updated.","videoExportTitle":"Create video","videoExportDescription":"Combine recorded narration and slides, then save the result as MP4.","videoExportIdle":"Waiting","videoExportReady":"Ready","videoExportWorking":"Creating","videoExportDone":"Done","videoExportError":"Failed","videoFilename":"Filename","videoResolution":"Resolution","videoScenes":"Video scenes","videoEstimatedDuration":"Estimated duration","videoFormat":"Format","videoNeedRecordings":"Record narration for every included scene before creating the video.","videoReady":"The recorded scenes are ready to create a video.","videoStaleRecordings":"Some scenes need to be re-recorded. Update their narration before creating the video.","videoMissingRecordings":"Some included scenes are not recorded or failed. Finish narration recording first.","createVideo":"Create video","cancelVideo":"Cancel","videoComplete":"Video created","saveVideo":"Save MP4","videoRealtimeNote":"Supported browsers create the video with the faster export path. Compatibility mode may take roughly the video duration or longer.","transitionLabel":"Transition","transitionFade":"Fade","transitionCut":"Cut","subtitleLabel":"Subtitles","subtitleBurnIn":"Burn in subtitles from the script","bgmLabel":"BGM","bgmLoop":"Loop to the end of the video","chooseBgm":"Choose BGM","bgmNone":"No BGM","clearBgm":"Remove","bgmVolume":"BGM volume","bgmHint":"BGM is mixed with narration entirely on this device.","bgmTooLarge":"BGM files over 100 MB are not supported.","bgmDecodeFailed":"The BGM file could not be decoded. Choose another audio file.","timelineSlide":"Slide {n}","timelineTransitionFade":"Fade","timelineTransitionCut":"Cut","videoStagePreparing":"Preparing slides","videoStageComposing":"Composing video","videoStageTranscoding":"Converting to MP4","videoStageFinishing":"Finishing video","videoCancelled":"Video creation was cancelled. Existing narration assets were kept.","videoExportFailed":"The video could not be created. The browser may be unsupported or available memory may be insufficient.","videoSaved":"MP4 saved.","videoNoMediaRecorder":"This browser does not provide the video features required by the app. Try another supported browser.","videoSnapshotFallback":"Some slides will use a simplified representation in the exported video.","videoHighFidelityFailed":"A slide could not be exported with the same high-fidelity appearance as the preview. Retry with the same PowerPoint without reloading the page.","videoResultStaleNotice":"Output settings have changed. This video was created with the previous settings. Create the video again to apply the new settings.","sceneVoiceDescriptionV7":"Choose on-device speech, your own voice, or an audio file for each slide.","sourceTts":"On-device speech","sourceMic":"My voice","sourceFile":"Audio file","micTitle":"Record your own voice","micDescription":"Record narration for this slide directly from the microphone. System-audio sharing is not required.","startMicRecording":"Record this slide","stopMicRecording":"Stop recording","micReady":"Ready for microphone recording.","micRecordingNow":"Recording. Read the script, then stop when finished.","micRecorded":"Microphone recording ready","micRecordedToast":"Recorded narration for this slide.","micUnsupported":"Microphone recording is unavailable in this browser.","micPermissionDenied":"Microphone access was not allowed.","micRecordingFailed":"Microphone recording failed.","micStopBeforeSwitch":"Stop microphone recording before changing slides or narration source.","narrationFileTitle":"Use an audio file","narrationFileDescription":"Choose a local audio file for this slide. The file is not uploaded.","chooseNarrationFile":"Choose audio file","clearNarrationFile":"Remove","narrationFileNone":"No audio file selected","narrationFileTooLarge":"Audio files larger than 100 MB are not accepted.","narrationFileInvalid":"The audio file could not be read. Choose another file.","narrationFileLoaded":"Audio file set for this slide.","confirmClearNarrationFile":"Remove the audio file assigned to this slide?","confirmReplaceSceneAudio":"This slide already has narration audio. Replace it with new audio?","noTtsScenes":"No scenes use on-device speech. Set microphone recordings or audio files from Script & voice for each slide.","narrationSourceLabel":"Narration source","mobileNavLabel":"Screen navigation","videoTimelineLabel":"Video timeline","workflowNavTitle":"Quick navigation","workflowNavReady":"Jump between the four steps","workflowNavLoaded":"Available after a PPTX is loaded","workflowNavSlides":"Open slides","workflowNavScript":"Script & voice","workflowNavCapture":"Narration assets","workflowNavVideo":"Create video","workflowNavToggle":"Toggle navigation","previousShort":"Previous","nextShort":"Next","voiceCurrent":"Current voice","rateNatural":"Normal","captureNoticeTitle":"Check these three items in the share dialog","captureNoticeStep1":"Choose Entire Screen","captureNoticeStep2":"Enable Share system audio","captureNoticeStep3":"Stop notifications, music, and other sounds while recording","outputShortcutNarration":"Narration assets","outputShortcutVideo":"Create video","videoExportStaleResult":"Settings changed","projectTitle":"Project","projectDescription":"Save the PowerPoint, scripts, narration audio, BGM, and output settings together in one .pvm file.","saveProject":"Save project","openProject":"Open project","projectSaved":"Project saved.","projectLoaded":"Project opened.","projectSaveFailed":"The project could not be saved.","projectLoadFailed":"The project could not be opened. It may be damaged or use an unsupported format.","projectNoSource":"Open a PowerPoint before saving a project.","confirmOpenProject":"Close the current work and open this project?","projectBusy":"Wait for recording or video creation to finish before using project actions.","projectFormatMismatch":"This project format is not supported.","projectSlideMismatch":"The PowerPoint and edit data in this project do not match.","sceneProgressTitle":"Progress","sceneProgressSummary":"Scripts {scripts}/{included} · Audio {ready}/{required}","nextAttention":"Next item to fix","progressReady":"Ready","progressPending":"Not recorded","progressStale":"Re-record","progressError":"Failed","allScenesReady":"No slides need attention.","singleTtsTitle":"Record only this slide","singleTtsDescription":"Capture on-device speech for only the selected slide through shared system audio.","recordCurrentTts":"Record this slide","singleTtsNotReady":"Check this slide's script and on-device voice.","singleSceneRecordingTitle":"Recording this slide","singleSceneRecordingMessage":"Recording on-device speech for slide {slide}.","singleSceneSuccessTitle":"Slide recording complete","singleSceneSuccess":"Slide {slide} · {seconds}s / {size}","singleSceneFailed":"This slide could not be recorded. Check the share settings and voice.","textExportTitle":"Export script and subtitles","textExportDescription":"Save scripts as TXT, or subtitles timed to the video as SRT / VTT.","textExportEmpty":"There are no scripts to export.","textExportSaved":"{format} saved.","openProjectStartTitle":"Resume saved work","openProjectStartDescription":"Open a Presentation Video Maker .pvm project. This is separate from the PowerPoint file.","recordSceneAction":"Record","stopSceneRecordingAction":"Stop","chooseSceneAudioAction":"Choose audio","recordSceneAria":"Record this scene","chooseSceneAudioAria":"Choose an audio file for this scene","mobileOutputTitle":"Narration assets & video","mobileOutputDescription":"Review per-scene narration, configure subtitles/BGM, and create the MP4.","mobileTtsTitle":"On-device speech cannot be recorded on smartphones","mobileTtsDescription":"Speech preview can work, but synthesized speech cannot be captured as narration audio on mobile. Use My voice or Audio file.","mobileTtsCaptureUnavailable":"On-device speech cannot be recorded on smartphones. Use My voice or Audio file.","sourceTtsMobile":"On-device speech (preview only)","mobile1080Warning":"1080p video uses much more memory on smartphones. 720p is recommended for longer presentations.","helpSmartphoneTitle":"Using a smartphone","helpSmartphoneText":"On smartphones, on-device speech can be previewed but cannot be captured as narration audio. Use My voice or Audio file, and prefer 720p for video output.","sceneTtsPreviewOnly":"On-device speech · preview only on smartphones","recordWithMicAction":"Record my voice","recordWithMicAria":"Record this scene with my voice","subtitlePreviewTitle":"Subtitle preview","subtitlePreviewFormat":"Format","subtitlePreviewText":"Subtitle download contents","subtitlePreviewCues":"{count} cues","subtitlePreviewNote":"Timing uses recorded or measured duration when available, otherwise estimates. It may differ from burned-in subtitles.","helpSubtitlePreviewTitle":"Review subtitles before saving","helpSubtitlePreviewText":"Open Subtitle preview in the output area and choose SRT / VTT to inspect the full download text and cue count. The preview is read-only; edit the script in the script field. Unmeasured narration uses estimates, and timing may differ from burned-in subtitles. Opening the preview does not save a file."}};
+      const translations = {"ja":{"sourceLocal":"ローカルTTSモデル","localApply":"未録音の端末内読み上げ {count} 枚をローカルTTSに変更","localApplied":"未録音のスライド {count} 枚をローカルTTSに変更しました。","helpLocalTitle":"ローカルTTSモデルで音声を作る","helpLocalText":"PC版Chrome・Edge向けの機能です。「ローカルTTSモデル」の入手案内からモデルと使う言語の声を保存し、アプリで選びます。資料の既定言語とスライドの言語を設定し、音声を生成して試聴できます。.pvmには生成音声を保存します。再度開いたとき、モデルと声の選び直しが必要なのは再生成するときだけです。","localDefaultLanguage":"資料の既定言語","localSlideLanguage":"このスライドの言語","localJapanese":"日本語","localEnglish":"英語（米国）","localInherit":"資料の設定に従う","localGetFiles":"モデルと声の入手方法","localFileGuide":"Hugging Faceから共通モデルと使う言語の声を保存し、下のボタンで選択してください。台本は指定した言語で読みます。","localNotices":"同梱ライセンス (.txt)","localChoose":"モデル・声のファイルを選択","localGenerate":"このスライドの音声を生成","localBatch":"未生成・要更新の音声を一括生成","localCancel":"生成を中止","localRequired":"この言語に必要なファイル：{files}","localLoaded":"選択済み：{files}","localVerifying":"ファイルを確認中…","localInvalid":"{files} を確認できません。上の配布元から同じ名前のファイルを保存し直してください。","localVerifyUnavailable":"このブラウザではファイルを検証できません。デスクトップ版ChromeまたはEdgeで開いてください。","localFileReady":"この言語のモデルと声を使用できます。","localProgress":"{position} / {total} · スライド {slide} の音声を生成中","localDone":"{count} 枚の音声を生成しました。","localStopped":"生成を中止しました。完了：{count} 枚。","localChanged":"スライド {slide} の設定が変更されたため、生成を中断しました。","localNeedFiles":"スライド {slide} に必要なファイル：{files}","localErrorModel":"スライド {slide}：モデルファイルを確認してください。","localErrorVoice":"スライド {slide}：選んだ言語の声を確認してください。","localErrorText":"スライド {slide}：読み上げられる文字を台本に入力してください。","localErrorReading":"スライド {slide} の台本に読みを確認できない漢字があります。該当箇所をかなで入力してください。","localErrorRuntime":"スライド {slide} の音声を生成できませんでした。デスクトップ版ChromeまたはEdgeで再試行してください。","localListGenerate":"生成","localBatchScope":"動画に含めるローカルTTSスライドのうち、未生成・要更新・失敗分を順に生成します。生成済みの音声はプロジェクトに保存されます。","brandMeta":"PowerPoint → ナレーション動画","help":"使い方と注意事項","close":"閉じる","introText":"PowerPointからナレーション付きMP4を作れます。","localBadge":"完全ローカル処理","pptxTitle":"PowerPointを読み込む","pptxDescription":"PPTXをブラウザ内で解析し、スライドを表示します。","statusNotLoaded":"未読込","statusLoading":"読込中","statusReady":"準備完了","statusError":"エラー","dropTitle":"PPTXファイルをここにドロップ","dropHint":"またはボタンから選択してください。最大150 MB。","chooseFile":"PowerPointを選択","replaceFile":"変更","selectedSlide":"選択中のスライド","scriptLabel":"ナレーション原稿","scriptPlaceholder":"発表者ノートがここに入ります。","scriptHint":"発表者ノートがある場合は自動で使用します。","scriptFromNotes":"発表者ノートを使用しています。","scriptFromSlide":"発表者ノートがないため、スライド本文を下書きにしています。","techDetails":"技術情報","zipMethod":"PPTX展開","zipMethodValue":"ブラウザ標準のZIP展開（外部ライブラリなし）","network":"外部通信","networkNone":"なし","sourceGeneration":"読込世代","notesYes":"発表者ノートあり","notesNo":"ノートなし","slideN":"スライド {n}","loadedSummary":"{slides}枚 / 発表者ノート {notes}枚 / {size}","invalidPptx":"PPTXファイルを選択してください。","fileTooLarge":"150 MBを超えるファイルは読み込めません。","parseFailed":"PowerPointを読み込めませんでした。ファイルが破損しているか、このブラウザで扱えないPPTX形式の可能性があります。","voiceTitle":"端末内の音声を選ぶ","voiceDescription":"オンライン音声は候補から除外します。","statusChecking":"確認中","statusVoiceReady":"利用可能","statusVoiceMissing":"音声なし","voiceLabel":"音声","rateLabel":"速度","onDevice":"端末内","previewVoice":"試聴","stopVoice":"停止","voiceLoading":"端末内で使える音声を確認しています。","voiceFound":"端末内音声 {count}件。{matching}","voiceMatching":"現在の言語に合う音声があります。","voiceNotMatching":"現在の言語に合う端末内音声はありません。別言語の音声は選べます。","noLocalVoices":"このブラウザで端末内として確認できる音声がありません。OSの音声を追加するか、Chrome / EdgeのPC版で確認してください。","selectVoice":"音声を選択してください","previewStarted":"読み上げを開始しました。","previewBlockedDuringCapture":"全シーン録音中は試聴できません。スライドの確認や移動はそのまま行えます。","speechFailed":"読み上げを開始できませんでした。別の音声を選択してください。","captureTitle":"全シーンのナレーションを録音する","captureDescription":"端末内読み上げを使うシーンだけを、1回のシステム音声共有でまとめて録音します。","statusNotTested":"未テスト","statusTesting":"録音中","statusPassed":"録音済み","statusFailed":"要確認","captureNotice":"ブラウザの共有画面では「画面全体」を選び、「システム音声も共有」を有効にしてください。共有先は外部サーバーではなく、このページ自身です。","guideOne":"テスト開始を押す","guideTwo":"画面全体 + システム音声を選ぶ","guideThree":"読み上げ音声を自動確認","startCapture":"録音テストを開始","cancelCapture":"中止","captureReadyTitle":"準備待ち","captureReadyMessage":"端末内音声を選ぶとテストできます。","captureReadyNow":"録音テストを開始できます。","requestingShare":"音声共有を準備しています","requestingShareMessage":"「画面全体」と「システム音声を共有」を選択してください。","recordingTitle":"読み上げ音声を録音しています","recordingMessage":"この間はタブを閉じたり、共有を停止したりしないでください。","checkingTitle":"録音素材を確認しています","successTitle":"録音テストに成功しました","captureSuccess":"音声トラック・音声信号・録音データを確認できました。{seconds}秒 / {size}","captureErrorTitle":"録音を開始できませんでした。","captureCancelled":"録音テストを中止しました。","permissionDenied":"共有が許可されませんでした。もう一度試すことができます。","noDisplayMedia":"このブラウザではシステム音声の共有を開始できません。Windows版Chrome / Edgeで確認してください。","noAudioTrack":"共有ストリームに音声がありません。「画面全体」と「システム音声を共有」を選んでください。","noSignal":"システム音声トラックは取得できましたが、読み上げ音声の信号を確認できませんでした。この環境ではWeb Speech APIの音声をブラウザから録音できない可能性があります。","emptyRecording":"音声データを録音できませんでした。","captureGenericError":"録音テストを完了できませんでした。","audioTrack":"音声トラック","signalLevel":"音声信号","recordedData":"録音データ","metricYes":"あり","metricNo":"なし","metricDetected":"検出","metricBytes":"{size}","captureTech":"録音の詳細","selectedSurface":"共有対象","capturedAudio":"取得音声","wrongSurface":"共有対象が「画面全体」ではありません。もう一度開始し、「画面全体」と「システム音声を共有」を選んでください。","recordingMime":"録音形式","maxRms":"最大信号","outputFilename":"出力ファイル名","outputFilenameHint":"拡張子は自動で .webm が付きます","saveRecording":"録音を保存","saved":"録音を保存しました。","mobileSlides":"スライド","mobileVoice":"音声","mobileTest":"テスト","footerPrivacy":"動画の生成はブラウザー内で完結","helpTitle":"使い方と注意事項","helpDialogText":"閉じるボタン、Escキー、または枠外のクリックで閉じます。","helpWhatTitle":"この版でできること","helpWhatText":"PowerPointの各スライドに台本と音声を設定し、端末内読み上げ・自分の声・音声ファイルを混在させたナレーション付きMP4を作成できます。","helpUseTitle":"基本操作","helpUseOne":"PPTXを読み込み、スライドと発表者ノートを確認します。","helpUseTwo":"各スライドの台本を確認し、ローカルTTS・端末内読み上げ・自分の声・音声ファイルから音声方式を選びます。","helpUseThree":"ローカルTTSでは1枚ずつ、または一括で音声を生成できます。端末内読み上げを動画に使う場合は、PCでシステム音声を録音します。","helpUseFour":"録音完了後、切り替え・字幕・BGMを設定し、「動画を作成」でMP4を書き出して保存します。","helpPrivacyTitle":"プライバシー","helpPrivacyText":"PPTX、発表者ノート、台本、マイク録音、音声ファイル、BGM、生成動画は外部サーバーへ送信しません。すべてブラウザ内で処理します。","helpCaptureTitle":"システム音声について","helpCaptureText":"端末内読み上げの録音はWindowsの「画面全体 + システム音声」を使います。スマホではTTS録音に対応していません。システム音声には通知音などが入る可能性があります。","helpFileTitle":"対応ファイル","helpFileText":".pptx、最大150 MB。古い .ppt は対象外です。PowerPoint本体のアニメーションや切り替え効果は静的に扱います。Browser Kitty側のカット / フェードは動画出力時に追加できます。","helpPersistenceTitle":"作業内容","helpPersistenceText":"PowerPoint・台本・録音・BGM・出力設定は .pvm プロジェクトとして保存し、あとから続きを開けます。自動保存はしません。","slidesHeading":"スライド","rendererLabel":"表示エンジン","zipMethodValueV2":"高品質レンダラー + ノート抽出","rendererPrimary":"高品質表示","rendererFallback":"簡易表示","rendererLoading":"準備中","rendererMissing":"高品質表示の依存ファイルがビルドに含まれていません。簡易表示で続行します。","rendererFailed":"高品質表示を開始できなかったため簡易表示へ切り替えました。","previewPreparing":"スライドを準備しています。","previousSlide":"前のスライド","nextSlide":"次のスライド","sceneEditTitle":"台本と音声","sceneEditDescription":"スライドごとのナレーション原稿を確認・編集します。","sceneEditorEmpty":"PowerPointを読み込むと台本を編集できます。","scriptSourceNotes":"発表者ノート","scriptSourceDraft":"本文から下書き","prePadding":"開始前","postPadding":"終了後","sceneEnabled":"このスライドを動画に含める","chars":"{count}文字","resetScript":"元の原稿に戻す","resetScriptDone":"元の原稿に戻しました。","scriptEmpty":"ナレーション原稿が空です。","narrationNotMeasured":"未計測","narrationMeasured":"試聴 {seconds}秒","sceneVoiceHeading":"このスライドの音声","sceneVoiceDescription":"音声と速度はスライドごとに保持されます。","bulkVoiceTitle":"全スライドの音声をそろえる","bulkVoiceDescription":"現在選んでいる音声と速度を、すべてのスライドへ反映します。","applyNarrationAll":"音声と速度を全スライドに適用","appliedNarrationAll":"全スライドへ音声と速度を適用しました。","undo":"元に戻す","compatTransition":"切り替え効果","compatAnimation":"アニメーション","compatMedia":"埋め込み音声・動画","compatMessage":"このスライドには動画化時にそのまま再現しない要素があります: {items}","deckNotes":"ノート {count}","deckDrafts":"下書き {count}","deckLimited":"要確認 {count}","deckRenderer":"表示: {renderer}","mobileScript":"台本・音声","mobileOutput":"動画","statusNotRecorded":"未録音","captureNoticeV4":"開始後の共有画面では「画面全体」を選び、「システム音声も共有」を有効にしてください。録音中は通知音・音楽など他の音を止めてください。","guideOneV4":"全シーン録音を開始","guideThreeV4":"各シーンを自動で順番に録音","startBatchCapture":"全シーンを録音","captureReadyTitleV4":"録音の準備","captureReadyMessageV4":"PowerPointと端末内音声を準備すると開始できます。","captureReadyNowV4":"録音を開始できます。","recordingPlanTitle":"自動録音対象","estimatedNarration":"推定ナレーション","recordingPlanReady":"録音済み","recordedScenes":"録音シーン","sceneRecordingsTitle":"シーン別の音声素材","sceneRecordingsDescription":"前後の余白は録音せず、動画生成時に追加します。","sceneStatusPending":"未録音","sceneStatusRecording":"録音中","sceneStatusSuccess":"完了","sceneStatusError":"失敗","sceneStatusStale":"再録音","sceneStatusSkipped":"対象外","sceneRecordingStale":"設定変更後の旧録音","sceneDurationSize":"{seconds}秒 · {size}","sceneVoiceRate":"{voice} · {rate}x","sceneNoScript":"原稿なし","sceneDisabled":"動画に含めない","preflightTitle":"音声経路を確認しています","preflightMessage":"短い読み上げでシステム音声が取得できるか確認します。","recordingAllTitle":"ナレーションを録音しています","recordingAllMessage":"{current} / {total} · スライド {slide}","recordingSceneMessage":"スライド {slide} · {voice} · {rate}x","batchSuccessTitle":"全シーンの録音が完了しました","batchSuccess":"{success}シーンを録音しました。合計 {seconds}秒 / {size}","batchPartialTitle":"一部のシーンを録音できませんでした","batchPartial":"{success}件成功 / {failed}件失敗。失敗したシーンは一覧から個別に録音してください。","batchCancelled":"録音を中止しました。完了済みのシーンは残しています。","noScenesToRecord":"録音対象のシーンがありません。動画に含める設定と原稿を確認してください。","missingSceneVoice":"スライド {slide}で利用できる端末内音声が見つかりません。音声設定を確認してください。","preflightPhrase":"音声を確認します。","confirmReplaceRecordings":"すでにある録音素材を録音し直します。続けますか？","retryingScene":"スライド {slide}をもう一度録音します。","autoRetry":"音声信号を確認できなかったため自動でもう一度試します。","playSceneRecording":"このシーンの録音を再生","recordingReplaced":"録音素材を更新しました。","videoExportTitle":"動画を作成する","videoExportDescription":"録音済みのナレーションとスライドをまとめ、MP4として保存します。","videoExportIdle":"準備待ち","videoExportReady":"作成可能","videoExportWorking":"作成中","videoExportDone":"完了","videoExportError":"失敗","videoExportStaleResult":"設定変更あり","videoFilename":"ファイル名","videoResolution":"解像度","videoScenes":"動画シーン","videoEstimatedDuration":"推定時間","videoFormat":"形式","videoNeedRecordings":"動画に含める全シーンのナレーションを録音すると作成できます。","videoReady":"録音済みのシーンから動画を作成できます。","videoStaleRecordings":"再録音が必要なシーンがあります。録音を更新してから動画を作成してください。","videoMissingRecordings":"未録音または失敗したシーンがあります。全シーンの録音を完了してください。","createVideo":"動画を作成","cancelVideo":"中止","videoComplete":"動画を作成しました","saveVideo":"MP4を保存","videoRealtimeNote":"対応環境では動画を高速に作成します。互換モードでは、動画の長さと同程度以上の時間がかかる場合があります。","transitionLabel":"切り替え","transitionFade":"フェード","transitionCut":"カット","subtitleLabel":"字幕","subtitleBurnIn":"原稿から字幕を入れる","bgmLabel":"BGM","bgmLoop":"動画の長さまで繰り返す","chooseBgm":"BGMを選択","bgmNone":"BGMなし","clearBgm":"外す","bgmVolume":"BGM音量","bgmHint":"BGMは端末内でナレーションと合成します。","bgmTooLarge":"100 MBを超えるBGMは使用できません。","bgmDecodeFailed":"BGMを読み込めませんでした。別の音声ファイルを選択してください。","timelineSlide":"スライド {n}","timelineTransitionFade":"フェード","timelineTransitionCut":"カット","videoStagePreparing":"スライドを準備しています","videoStageComposing":"動画を組み立てています","videoStageTranscoding":"MP4へ変換しています","videoStageFinishing":"動画を仕上げています","videoCancelled":"動画作成を中止しました。録音済み素材はそのまま残っています。","videoExportFailed":"動画を作成できませんでした。メモリ不足またはブラウザの動画機能に対応していない可能性があります。","videoSaved":"MP4を保存しました。","videoNoMediaRecorder":"このブラウザでは動画の組み立てに必要な機能を利用できません。別の対応ブラウザで確認してください。","videoSnapshotFallback":"一部のスライドは簡易表示で動画へ出力されます。","videoHighFidelityFailed":"プレビューと同じ見た目でスライドを動画化できませんでした。ページを再読み込みせず、同じPowerPointで再度お試しください。","videoResultStaleNotice":"出力設定が変更されています。この動画は変更前の設定で作成されたものです。再作成すると新しい設定が反映されます。","sceneVoiceDescriptionV7":"スライドごとにローカルTTS・端末内読み上げ・自分の声・音声ファイルを選べます。","sourceTts":"端末内読み上げ","sourceMic":"自分の声","sourceFile":"音声ファイル","micTitle":"自分の声を録音","micDescription":"このスライドのナレーションだけをマイクから録音します。システム音声共有は不要です。","startMicRecording":"このスライドを録音","stopMicRecording":"録音を停止","micReady":"マイク録音を開始できます。","micRecordingNow":"録音中です。原稿を読み上げ、終わったら停止してください。","micRecorded":"自分の声を録音済み","micRecordedToast":"このスライドの音声を録音しました。","micUnsupported":"このブラウザではマイク録音を利用できません。","micPermissionDenied":"マイクの使用が許可されませんでした。","micRecordingFailed":"マイク録音に失敗しました。","micStopBeforeSwitch":"マイク録音を停止してからスライドや音声方式を変更してください。","narrationFileTitle":"音声ファイルを使う","narrationFileDescription":"このスライド用の音声ファイルを端末内から選びます。ファイルはアップロードされません。","chooseNarrationFile":"音声ファイルを選択","clearNarrationFile":"外す","narrationFileNone":"音声ファイル未選択","narrationFileTooLarge":"100 MBを超える音声ファイルは使用できません。","narrationFileInvalid":"音声ファイルを読み込めませんでした。別のファイルを選択してください。","narrationFileLoaded":"このスライドの音声ファイルを設定しました。","confirmClearNarrationFile":"このスライドに設定した音声ファイルを外しますか？","confirmReplaceSceneAudio":"このスライドには録音済みの音声があります。新しい音声に差し替えますか？","noTtsScenes":"端末内読み上げを使うシーンはありません。自分の声や音声ファイルは各スライドの「台本と音声」で設定できます。","narrationSourceLabel":"ナレーション方法","mobileNavLabel":"画面切り替え","videoTimelineLabel":"動画タイムライン","workflowNavTitle":"クイックナビゲーション","workflowNavReady":"4つの工程をすぐ移動できます","workflowNavLoaded":"読み込み後に利用できます","workflowNavSlides":"読み込み","workflowNavScript":"台本と音声","workflowNavCapture":"録音素材","workflowNavVideo":"動画作成","workflowNavToggle":"ナビゲーションを開閉","previousShort":"前へ","nextShort":"次へ","voiceCurrent":"現在の音声","rateNatural":"標準","captureNoticeTitle":"共有画面でこの3点を確認してください","captureNoticeStep1":"「画面全体」を選ぶ","captureNoticeStep2":"「システム音声も共有」を有効にする","captureNoticeStep3":"録音中は通知音・音楽などを止める","outputShortcutNarration":"ナレーション素材","outputShortcutVideo":"動画を作成","projectTitle":"プロジェクト","projectDescription":"PowerPoint・台本・録音・BGM・出力設定を1つの .pvm ファイルに保存できます。","saveProject":"プロジェクトを保存","openProject":"プロジェクトを開く","projectSaved":"プロジェクトを保存しました。","projectLoaded":"プロジェクトを開きました。","projectSaveFailed":"プロジェクトを保存できませんでした。","projectLoadFailed":"プロジェクトを開けませんでした。ファイルが破損しているか、対応していない形式です。","projectNoSource":"PowerPointを読み込んでからプロジェクトを保存してください。","confirmOpenProject":"現在の作業内容を閉じてプロジェクトを開きます。続けますか？","projectBusy":"録音または動画作成が終わってからプロジェクトを操作してください。","projectFormatMismatch":"このプロジェクト形式には対応していません。","projectSlideMismatch":"プロジェクト内のPowerPointと編集情報が一致しません。","sceneProgressTitle":"作業状況","sceneProgressSummary":"台本 {scripts}/{included} · 音声 {ready}/{required}","nextAttention":"次の要対応へ","progressReady":"準備済み","progressPending":"未録音","progressStale":"再録音","progressError":"失敗","allScenesReady":"要対応のスライドはありません。","singleTtsTitle":"このスライドだけ録音","singleTtsDescription":"端末内読み上げを、選択中のスライド1枚だけシステム音声から録音します。","recordCurrentTts":"このスライドを録音","singleTtsNotReady":"このスライドの原稿と端末内音声を確認してください。","singleSceneRecordingTitle":"このスライドを録音しています","singleSceneRecordingMessage":"スライド {slide} の端末内読み上げを録音しています。","singleSceneSuccessTitle":"このスライドの録音が完了しました","singleSceneSuccess":"スライド {slide} · {seconds}秒 / {size}","singleSceneFailed":"このスライドを録音できませんでした。共有設定と音声を確認してください。","textExportTitle":"台本・字幕を書き出す","textExportDescription":"台本はTXT、動画のタイミングに合わせた字幕はSRT / VTTで保存できます。","textExportEmpty":"書き出せる台本がありません。","textExportSaved":"{format}を保存しました。","openProjectStartTitle":"保存した作業を再開","openProjectStartDescription":"Presentation Video Makerの .pvm プロジェクトを開きます。PowerPointとは別のファイルです。","recordSceneAction":"録音","stopSceneRecordingAction":"停止","chooseSceneAudioAction":"音声を選択","recordSceneAria":"このシーンを録音","chooseSceneAudioAria":"このシーンの音声ファイルを選択","mobileOutputTitle":"音声素材と動画","mobileOutputDescription":"シーン別の音声を確認し、字幕・BGMなどを設定してMP4を作成します。","mobileTtsTitle":"スマホでは端末内読み上げを録音できません","mobileTtsDescription":"読み上げの試聴はできますが、動画用の録音素材として取り込めません。「自分の声」または「音声ファイル」を使用してください。","mobileTtsCaptureUnavailable":"スマホでは端末内読み上げを録音できません。「自分の声」または「音声ファイル」を使用してください。","sourceTtsMobile":"端末内読み上げ（試聴のみ）","mobile1080Warning":"スマホの1080p生成はメモリ使用量が大きくなります。長いプレゼンでは720pを推奨します。","helpSmartphoneTitle":"スマートフォンで使う場合","helpSmartphoneText":"スマホでは端末内読み上げの試聴はできますが、TTS音声を録音素材として取り込めません。自分の声または音声ファイルを使用し、動画は720pを推奨します。","sceneTtsPreviewOnly":"端末内読み上げ · スマホでは試聴のみ","recordWithMicAction":"自分の声で録音","recordWithMicAria":"このシーンを自分の声で録音","subtitlePreviewTitle":"字幕プレビュー","subtitlePreviewFormat":"形式","subtitlePreviewText":"書き出す字幕の内容","subtitlePreviewCues":"字幕 {count} 件","subtitlePreviewNote":"録音・実測時間を優先し、未計測の場合は推定時間を使います。焼き込み字幕とタイミングが異なる場合があります。","helpSubtitlePreviewTitle":"字幕を保存する前に確認","helpSubtitlePreviewText":"出力画面の「字幕プレビュー」を開き、SRT / VTTを選ぶと、保存する字幕の全文と件数を確認できます。内容は読み取り専用で、編集は台本欄で行います。未計測の音声は推定時間を使い、焼き込み字幕とタイミングが異なる場合があります。プレビューを開いてもファイルは保存されません。"},"en":{"sourceLocal":"Local TTS model","localApply":"Use local TTS for unrecorded browser voices ({count})","localApplied":"Slides switched to local TTS: {count}.","helpLocalTitle":"Generate narration with a local TTS model","helpLocalText":"Use desktop Chrome or Edge. Open the download guide under Local TTS model, save the model and the voices you need, then select those files in the app. Set the presentation and slide languages, generate audio, and preview it. Saved projects include generated narration. Select the model and voices again when you need to regenerate audio.","localDefaultLanguage":"Presentation language","localSlideLanguage":"Slide language","localJapanese":"Japanese","localEnglish":"English (US)","localInherit":"Use deck default","localGetFiles":"Get the model and voices","localFileGuide":"Download the shared model and a voice for each language you use from Hugging Face, then select the saved files below. Write each script in its spoken language.","localNotices":"Bundled licenses (.txt)","localChoose":"Select model or voice files","localGenerate":"Generate this slide","localBatch":"Generate pending slides","localCancel":"Cancel generation","localRequired":"Still needed for this language: {files}","localLoaded":"Loaded: {files}","localVerifying":"Checking files…","localInvalid":"Could not verify {files}. Download the matching file again from the links above.","localVerifyUnavailable":"File verification is unavailable. Open this app in desktop Chrome or Edge.","localFileReady":"The model and voice for this language are ready.","localProgress":"{position} / {total} · Generating slide {slide}","localDone":"Slides generated: {count}.","localStopped":"Generation cancelled. Completed slides: {count}.","localChanged":"Slide {slide} changed. Generate again to use its latest settings.","localNeedFiles":"Slide {slide} needs: {files}","localErrorModel":"Slide {slide}: check the model file.","localErrorVoice":"Slide {slide}: check the voice file for the selected language.","localErrorText":"Slide {slide}: enter text the voice can read.","localErrorReading":"Slide {slide} contains kanji without a dictionary reading. Enter those readings in kana.","localErrorRuntime":"Audio generation failed for slide {slide}. Retry in desktop Chrome or Edge.","localListGenerate":"Generate","localBatchScope":"Batch generation processes included local TTS slides that need audio or a retry. Save your project to keep the generated audio.","brandMeta":"PowerPoint → narrated video","help":"How to use & notes","close":"Close","introText":"Turn PowerPoint slides into a narrated MP4.","localBadge":"Fully local processing","pptxTitle":"Open a PowerPoint","pptxDescription":"The PPTX is parsed and displayed locally in your browser.","statusNotLoaded":"Not loaded","statusLoading":"Loading","statusReady":"Ready","statusError":"Error","dropTitle":"Drop a PPTX file here","dropHint":"Or choose one with the button. Maximum 150 MB.","chooseFile":"Choose PowerPoint","replaceFile":"Change","selectedSlide":"Selected slide","scriptLabel":"Narration script","scriptPlaceholder":"Speaker notes appear here.","scriptHint":"Speaker notes are used automatically when available.","scriptFromNotes":"Using this slide’s speaker notes.","scriptFromSlide":"No speaker notes were found, so slide text is used as a draft.","techDetails":"Technical details","zipMethod":"PPTX unpacking","zipMethodValue":"Browser-native ZIP handling (no external library)","network":"External network","networkNone":"None","sourceGeneration":"Source generation","notesYes":"Speaker notes","notesNo":"No notes","slideN":"Slide {n}","loadedSummary":"{slides} slides / {notes} with speaker notes / {size}","invalidPptx":"Choose a PPTX file.","fileTooLarge":"Files larger than 150 MB are not accepted.","parseFailed":"The PowerPoint could not be read. It may be damaged or use a PPTX form this browser cannot handle.","voiceTitle":"Choose an on-device voice","voiceDescription":"Online voices are excluded from the list.","statusChecking":"Checking","statusVoiceReady":"Available","statusVoiceMissing":"No voice","voiceLabel":"Voice","rateLabel":"Rate","onDevice":"On device","previewVoice":"Preview","stopVoice":"Stop","voiceLoading":"Checking voices available on this device.","voiceFound":"{count} on-device voices. {matching}","voiceMatching":"A voice matching the current language is available.","voiceNotMatching":"No on-device voice matches the current language. Other local voices remain selectable.","noLocalVoices":"No voice reported as on-device is available in this browser. Add an OS voice or check with desktop Chrome / Edge.","selectVoice":"Choose a voice","previewStarted":"Speech preview started.","previewBlockedDuringCapture":"Speech preview is unavailable while all-scene recording is running. You can still review and move between slides.","speechFailed":"Speech could not start. Choose another voice.","captureTitle":"Record narration for all scenes","captureDescription":"Record only scenes using on-device speech in one system-audio sharing session.","statusNotTested":"Not tested","statusTesting":"Recording","statusPassed":"Recorded","statusFailed":"Review","captureNotice":"In the browser share dialog, choose “Entire Screen” and enable system audio. The audio is shared back into this page, not to an external server.","guideOne":"Start the test","guideTwo":"Choose entire screen + system audio","guideThree":"The app checks the spoken signal","startCapture":"Start recording test","cancelCapture":"Cancel","captureReadyTitle":"Waiting","captureReadyMessage":"Choose an on-device voice to enable the test.","captureReadyNow":"The recording test is ready.","requestingShare":"Preparing system audio","requestingShareMessage":"Choose Entire Screen and enable system audio.","recordingTitle":"Recording the spoken audio","recordingMessage":"Do not close the tab or stop sharing during this step.","checkingTitle":"Checking narration assets","successTitle":"Recording test passed","captureSuccess":"Audio track, audio signal, and recorded data were all detected. {seconds}s / {size}","captureErrorTitle":"Narration recording could not start.","captureCancelled":"Recording test cancelled.","permissionDenied":"Sharing was not allowed. You can try again.","noDisplayMedia":"This browser cannot start system-audio sharing. Check with Chrome / Edge on Windows.","noAudioTrack":"The shared stream contains no audio. Choose Entire Screen and enable system audio.","noSignal":"A system-audio track was captured, but no speech signal was detected. In this environment Web Speech API output may not be recordable by the browser.","emptyRecording":"No audio data was recorded.","captureGenericError":"The recording test could not be completed.","audioTrack":"Audio track","signalLevel":"Audio signal","recordedData":"Recorded data","metricYes":"Yes","metricNo":"No","metricDetected":"Detected","metricBytes":"{size}","captureTech":"Recording details","selectedSurface":"Shared surface","capturedAudio":"Captured audio","wrongSurface":"The selected source is not an entire screen. Start again and choose Entire Screen with system audio enabled.","recordingMime":"Recording format","maxRms":"Peak signal","outputFilename":"Output filename","outputFilenameHint":"The .webm extension is added automatically","saveRecording":"Save recording","saved":"Recording saved.","mobileSlides":"Slides","mobileVoice":"Voice","mobileTest":"Test","footerPrivacy":"Video creation stays in the browser","helpTitle":"How to use & notes","helpDialogText":"Use the Close button, Esc, or a click outside the dialog to close it.","helpWhatTitle":"What this version does","helpWhatText":"Set a script and narration source for each PowerPoint slide, mix on-device speech, microphone recordings, and local audio files, then create a narrated MP4.","helpUseTitle":"Basic flow","helpUseOne":"Open a PPTX and review slides and speaker notes.","helpUseTwo":"Review each script and select a local TTS model, browser voice, microphone recording, or audio file.","helpUseThree":"Generate local TTS audio for one slide or a batch. To use a browser voice in your video, record its system audio on desktop.","helpUseFour":"After recording, choose the transition, subtitles, and optional BGM, then create and save the MP4.","helpPrivacyTitle":"Privacy","helpPrivacyText":"PPTX, speaker notes, scripts, microphone recordings, audio files, BGM, and generated videos are not sent to an external server. Processing stays in the browser.","helpCaptureTitle":"About system audio","helpCaptureText":"On-device speech capture uses Entire Screen + system audio on Windows. Smartphone TTS capture is not supported. System audio may also include notifications or other sounds.","helpFileTitle":"Supported file","helpFileText":".pptx up to 150 MB. Legacy .ppt is not supported. Native PowerPoint animations/transitions are treated as static slides; Browser Kitty Cut/Fade can be added during export.","helpPersistenceTitle":"Work data","helpPersistenceText":"Save the PowerPoint, scripts, narration recordings, BGM, and output settings as a .pvm project and continue later. Projects are not autosaved.","slidesHeading":"Slides","rendererLabel":"Display engine","zipMethodValueV2":"High-fidelity renderer + notes extraction","rendererPrimary":"High fidelity","rendererFallback":"Simple view","rendererLoading":"Preparing","rendererMissing":"The high-fidelity renderer asset is not included in this build. Continuing with the simple view.","rendererFailed":"High-fidelity rendering could not start, so the app switched to the simple view.","previewPreparing":"Preparing the slide.","previousSlide":"Previous slide","nextSlide":"Next slide","sceneEditTitle":"Script & voice","sceneEditDescription":"Review and edit the narration script for each slide.","sceneEditorEmpty":"Open a PowerPoint to edit slide scripts.","scriptSourceNotes":"Speaker notes","scriptSourceDraft":"Draft from slide text","prePadding":"Before","postPadding":"After","sceneEnabled":"Include this slide in the video","chars":"{count} characters","resetScript":"Restore source script","resetScriptDone":"The source script was restored.","scriptEmpty":"The narration script is empty.","narrationNotMeasured":"Not measured","narrationMeasured":"Preview {seconds}s","sceneVoiceHeading":"Voice for this slide","sceneVoiceDescription":"Voice and rate are stored per slide.","bulkVoiceTitle":"Match voice across all slides","bulkVoiceDescription":"Apply the currently selected voice and rate to every slide.","applyNarrationAll":"Apply voice & rate to all slides","appliedNarrationAll":"Voice and rate were applied to all slides.","undo":"Undo","compatTransition":"transition","compatAnimation":"animation","compatMedia":"embedded audio/video","compatMessage":"This slide contains items that will not be reproduced as-is in the video: {items}","deckNotes":"Notes {count}","deckDrafts":"Drafts {count}","deckLimited":"Review {count}","deckRenderer":"Display: {renderer}","mobileScript":"Script & audio","mobileOutput":"Video","statusNotRecorded":"Not recorded","captureNoticeV4":"In the share dialog choose Entire Screen and enable system audio. Stop music, notifications, and other sounds while narration is being recorded.","guideOneV4":"Start all-scene recording","guideThreeV4":"Scenes are recorded automatically in order","startBatchCapture":"Record all scenes","captureReadyTitleV4":"Prepare narration","captureReadyMessageV4":"Open a PowerPoint and prepare on-device voices to start.","captureReadyNowV4":"Ready to record narration.","recordingPlanTitle":"Auto-record scenes","estimatedNarration":"Estimated narration","recordingPlanReady":"Recorded","recordedScenes":"Recorded scenes","sceneRecordingsTitle":"Per-scene narration assets","sceneRecordingsDescription":"Before/after padding is not recorded; it will be added during video generation.","sceneStatusPending":"Not recorded","sceneStatusRecording":"Recording","sceneStatusSuccess":"Done","sceneStatusError":"Failed","sceneStatusStale":"Re-record","sceneStatusSkipped":"Excluded","sceneRecordingStale":"Previous recording after edits","sceneDurationSize":"{seconds}s · {size}","sceneVoiceRate":"{voice} · {rate}x","sceneNoScript":"No script","sceneDisabled":"Excluded from video","preflightTitle":"Checking the audio path","preflightMessage":"A short phrase verifies that system audio is actually being captured.","recordingAllTitle":"Recording narration","recordingAllMessage":"{current} / {total} · Slide {slide}","recordingSceneMessage":"Slide {slide} · {voice} · {rate}x","batchSuccessTitle":"All-scene narration is ready","batchSuccess":"Recorded {success} scenes. {seconds}s total / {size}","batchPartialTitle":"Some scenes could not be recorded","batchPartial":"{success} succeeded / {failed} failed. Re-record failed scenes individually from the per-scene list.","batchCancelled":"Recording was cancelled. Completed scene recordings were kept.","noScenesToRecord":"There are no scenes to record. Check the include setting and narration scripts.","missingSceneVoice":"No available on-device voice matches Slide {slide}. Review its voice setting.","preflightPhrase":"Checking audio.","confirmReplaceRecordings":"Existing narration assets will be recorded again. Continue?","retryingScene":"Recording Slide {slide} again.","autoRetry":"No speech signal was detected, so this scene will be tried once more automatically.","playSceneRecording":"Play this scene recording","recordingReplaced":"Narration assets were updated.","videoExportTitle":"Create video","videoExportDescription":"Combine recorded narration and slides, then save the result as MP4.","videoExportIdle":"Waiting","videoExportReady":"Ready","videoExportWorking":"Creating","videoExportDone":"Done","videoExportError":"Failed","videoFilename":"Filename","videoResolution":"Resolution","videoScenes":"Video scenes","videoEstimatedDuration":"Estimated duration","videoFormat":"Format","videoNeedRecordings":"Record narration for every included scene before creating the video.","videoReady":"The recorded scenes are ready to create a video.","videoStaleRecordings":"Some scenes need to be re-recorded. Update their narration before creating the video.","videoMissingRecordings":"Some included scenes are not recorded or failed. Finish narration recording first.","createVideo":"Create video","cancelVideo":"Cancel","videoComplete":"Video created","saveVideo":"Save MP4","videoRealtimeNote":"Supported browsers create the video with the faster export path. Compatibility mode may take roughly the video duration or longer.","transitionLabel":"Transition","transitionFade":"Fade","transitionCut":"Cut","subtitleLabel":"Subtitles","subtitleBurnIn":"Burn in subtitles from the script","bgmLabel":"BGM","bgmLoop":"Loop to the end of the video","chooseBgm":"Choose BGM","bgmNone":"No BGM","clearBgm":"Remove","bgmVolume":"BGM volume","bgmHint":"BGM is mixed with narration entirely on this device.","bgmTooLarge":"BGM files over 100 MB are not supported.","bgmDecodeFailed":"The BGM file could not be decoded. Choose another audio file.","timelineSlide":"Slide {n}","timelineTransitionFade":"Fade","timelineTransitionCut":"Cut","videoStagePreparing":"Preparing slides","videoStageComposing":"Composing video","videoStageTranscoding":"Converting to MP4","videoStageFinishing":"Finishing video","videoCancelled":"Video creation was cancelled. Existing narration assets were kept.","videoExportFailed":"The video could not be created. The browser may be unsupported or available memory may be insufficient.","videoSaved":"MP4 saved.","videoNoMediaRecorder":"This browser does not provide the video features required by the app. Try another supported browser.","videoSnapshotFallback":"Some slides will use a simplified representation in the exported video.","videoHighFidelityFailed":"A slide could not be exported with the same high-fidelity appearance as the preview. Retry with the same PowerPoint without reloading the page.","videoResultStaleNotice":"Output settings have changed. This video was created with the previous settings. Create the video again to apply the new settings.","sceneVoiceDescriptionV7":"Choose a local TTS model, browser voice, microphone recording, or audio file for each slide.","sourceTts":"On-device speech","sourceMic":"My voice","sourceFile":"Audio file","micTitle":"Record your own voice","micDescription":"Record narration for this slide directly from the microphone. System-audio sharing is not required.","startMicRecording":"Record this slide","stopMicRecording":"Stop recording","micReady":"Ready for microphone recording.","micRecordingNow":"Recording. Read the script, then stop when finished.","micRecorded":"Microphone recording ready","micRecordedToast":"Recorded narration for this slide.","micUnsupported":"Microphone recording is unavailable in this browser.","micPermissionDenied":"Microphone access was not allowed.","micRecordingFailed":"Microphone recording failed.","micStopBeforeSwitch":"Stop microphone recording before changing slides or narration source.","narrationFileTitle":"Use an audio file","narrationFileDescription":"Choose a local audio file for this slide. The file is not uploaded.","chooseNarrationFile":"Choose audio file","clearNarrationFile":"Remove","narrationFileNone":"No audio file selected","narrationFileTooLarge":"Audio files larger than 100 MB are not accepted.","narrationFileInvalid":"The audio file could not be read. Choose another file.","narrationFileLoaded":"Audio file set for this slide.","confirmClearNarrationFile":"Remove the audio file assigned to this slide?","confirmReplaceSceneAudio":"This slide already has narration audio. Replace it with new audio?","noTtsScenes":"No scenes use on-device speech. Set microphone recordings or audio files from Script & voice for each slide.","narrationSourceLabel":"Narration source","mobileNavLabel":"Screen navigation","videoTimelineLabel":"Video timeline","workflowNavTitle":"Quick navigation","workflowNavReady":"Jump between the four steps","workflowNavLoaded":"Available after a PPTX is loaded","workflowNavSlides":"Open slides","workflowNavScript":"Script & voice","workflowNavCapture":"Narration assets","workflowNavVideo":"Create video","workflowNavToggle":"Toggle navigation","previousShort":"Previous","nextShort":"Next","voiceCurrent":"Current voice","rateNatural":"Normal","captureNoticeTitle":"Check these three items in the share dialog","captureNoticeStep1":"Choose Entire Screen","captureNoticeStep2":"Enable Share system audio","captureNoticeStep3":"Stop notifications, music, and other sounds while recording","outputShortcutNarration":"Narration assets","outputShortcutVideo":"Create video","videoExportStaleResult":"Settings changed","projectTitle":"Project","projectDescription":"Save the PowerPoint, scripts, narration audio, BGM, and output settings together in one .pvm file.","saveProject":"Save project","openProject":"Open project","projectSaved":"Project saved.","projectLoaded":"Project opened.","projectSaveFailed":"The project could not be saved.","projectLoadFailed":"The project could not be opened. It may be damaged or use an unsupported format.","projectNoSource":"Open a PowerPoint before saving a project.","confirmOpenProject":"Close the current work and open this project?","projectBusy":"Wait for recording or video creation to finish before using project actions.","projectFormatMismatch":"This project format is not supported.","projectSlideMismatch":"The PowerPoint and edit data in this project do not match.","sceneProgressTitle":"Progress","sceneProgressSummary":"Scripts {scripts}/{included} · Audio {ready}/{required}","nextAttention":"Next item to fix","progressReady":"Ready","progressPending":"Not recorded","progressStale":"Re-record","progressError":"Failed","allScenesReady":"No slides need attention.","singleTtsTitle":"Record only this slide","singleTtsDescription":"Capture on-device speech for only the selected slide through shared system audio.","recordCurrentTts":"Record this slide","singleTtsNotReady":"Check this slide's script and on-device voice.","singleSceneRecordingTitle":"Recording this slide","singleSceneRecordingMessage":"Recording on-device speech for slide {slide}.","singleSceneSuccessTitle":"Slide recording complete","singleSceneSuccess":"Slide {slide} · {seconds}s / {size}","singleSceneFailed":"This slide could not be recorded. Check the share settings and voice.","textExportTitle":"Export script and subtitles","textExportDescription":"Save scripts as TXT, or subtitles timed to the video as SRT / VTT.","textExportEmpty":"There are no scripts to export.","textExportSaved":"{format} saved.","openProjectStartTitle":"Resume saved work","openProjectStartDescription":"Open a Presentation Video Maker .pvm project. This is separate from the PowerPoint file.","recordSceneAction":"Record","stopSceneRecordingAction":"Stop","chooseSceneAudioAction":"Choose audio","recordSceneAria":"Record this scene","chooseSceneAudioAria":"Choose an audio file for this scene","mobileOutputTitle":"Narration assets & video","mobileOutputDescription":"Review per-scene narration, configure subtitles/BGM, and create the MP4.","mobileTtsTitle":"On-device speech cannot be recorded on smartphones","mobileTtsDescription":"Speech preview can work, but synthesized speech cannot be captured as narration audio on mobile. Use My voice or Audio file.","mobileTtsCaptureUnavailable":"On-device speech cannot be recorded on smartphones. Use My voice or Audio file.","sourceTtsMobile":"On-device speech (preview only)","mobile1080Warning":"1080p video uses much more memory on smartphones. 720p is recommended for longer presentations.","helpSmartphoneTitle":"Using a smartphone","helpSmartphoneText":"On smartphones, on-device speech can be previewed but cannot be captured as narration audio. Use My voice or Audio file, and prefer 720p for video output.","sceneTtsPreviewOnly":"On-device speech · preview only on smartphones","recordWithMicAction":"Record my voice","recordWithMicAria":"Record this scene with my voice","subtitlePreviewTitle":"Subtitle preview","subtitlePreviewFormat":"Format","subtitlePreviewText":"Subtitle download contents","subtitlePreviewCues":"{count} cues","subtitlePreviewNote":"Timing uses recorded or measured duration when available, otherwise estimates. It may differ from burned-in subtitles.","helpSubtitlePreviewTitle":"Review subtitles before saving","helpSubtitlePreviewText":"Open Subtitle preview in the output area and choose SRT / VTT to inspect the full download text and cue count. The preview is read-only; edit the script in the script field. Unmeasured narration uses estimates, and timing may differ from burned-in subtitles. Opening the preview does not save a file."}};
 
       let language = (() => { try { const saved = localStorage.getItem('pvm-language'); if (saved === 'ja' || saved === 'en') return saved; } catch {} return (navigator.language || '').toLowerCase().startsWith('ja') ? 'ja' : 'en'; })();
       const t = key => translations[language]?.[key] ?? translations.en[key] ?? key;
@@ -1060,15 +1099,19 @@
       }
       function applyDeviceUi(){
         document.body.classList.toggle('is-smartphone', isSmartphoneMode());
-        const heading=$('#outputPageHeading'), description=$('#outputPageDescription');
-        if(heading){ heading.dataset.i18n=isSmartphoneMode()?'mobileOutputTitle':'captureTitle'; heading.textContent=t(heading.dataset.i18n); }
-        if(description){ description.dataset.i18n=isSmartphoneMode()?'mobileOutputDescription':'captureDescription'; description.textContent=t(description.dataset.i18n); }
+        updateRecordingPlan();
         const ttsTab=$('[data-narration-source="tts"]');
         if(ttsTab){ ttsTab.dataset.i18n=isSmartphoneMode()?'sourceTtsMobile':'sourceTts'; ttsTab.textContent=t(ttsTab.dataset.i18n); }
         updateMobileResolutionWarning();
         updateVirtualKeyboardState();
       }
+      const LOCAL_FILES=Object.freeze({
+        'model_quantized.onnx':{size:92361116,sha256:'fbae9257e1e05ffc727e951ef9b9c98418e6d79f1c9b6b13bd59f5c9028a1478'},
+        'jf_alpha.bin':{size:522240,sha256:'56b479360aad9f367aeb8cef908f9201cf48b4555e488c5f4590c9dfcd978bb6'},
+        'af_heart.bin':{size:522240,sha256:'d583ccff3cdca2f7fae535cb998ac07e9fcb90f09737b9a41fa2734ec44a8f0b'}
+      });
       const state = {
+        localDefaultLanguage:'ja',localFiles:new Map(),localRun:null,localChecking:false,localMessage:null,localFileMessage:null,
         sourceGeneration: 0, sourceFile: null, sourceBuffer: null, slides: [], selectedSlideIndex: -1,
         voices: [], selectedVoiceURI: '', rate: 1, speechRunId: 0,
         rendererModule: null, rendererModulePromise: null, rendererModuleUrl: '', rendererMode: 'loading', html2canvasModule: null, html2canvasModulePromise: null, html2canvasModuleUrl: '',
@@ -1113,8 +1156,8 @@
 
       const PROJECT_MAGIC_TEXT='PVMPRJ1\n';
       const PROJECT_SCHEMA='presentation-video-maker-project';
-      const PROJECT_SCHEMA_VERSION=1;
-      function projectOperationBusy(){ return Boolean(state.projectBusy||state.micRecorder||captureIsBusy()||['preparing','composing','transcoding','finishing'].includes(state.videoExportPhase)); }
+      const PROJECT_SCHEMA_VERSION=2;
+      function projectOperationBusy(){ return Boolean(state.localRun||state.projectBusy||state.micRecorder||captureIsBusy()||['preparing','composing','transcoding','finishing'].includes(state.videoExportPhase)); }
       function updateProjectButtons(){
         const hasSource=Boolean(state.sourceFile&&state.sourceBuffer&&state.slides.length), busy=projectOperationBusy();
         if($('#projectActions')) $('#projectActions').hidden=!hasSource;
@@ -1122,11 +1165,13 @@
         if($('#saveProjectButton')) $('#saveProjectButton').disabled=!hasSource||busy;
         if($('#openProjectButton')) $('#openProjectButton').disabled=busy;
         if($('#openProjectFromDropButton')) $('#openProjectFromDropButton').disabled=busy;
+        renderLocalControls(state.slides[state.selectedSlideIndex]);
       }
       function downloadBlob(blob,filename){ const url=URL.createObjectURL(blob); const anchor=document.createElement('a'); anchor.href=url; anchor.download=filename; document.body.append(anchor); anchor.click(); anchor.remove(); setTimeout(()=>URL.revokeObjectURL(url),1600); }
       function projectBaseName(){ return safeOutputBase((state.sourceFile?.name||'presentation').replace(/\.pptx$/i,'')); }
       function addProjectAsset(parts,tracker,blob,{name='',mime=''}={}){ if(!blob) return null; const entry={offset:tracker.offset,length:blob.size,name:String(name||''),mime:String(mime||blob.type||'application/octet-stream')}; tracker.offset+=blob.size; parts.push(blob); return entry; }
       function projectSlideData(slide,recordingAsset){ return {
+        localLanguage:slide.localLanguage||'inherit',localRetry:Boolean(slide.localRetry),localAsset:slide.recordingSource==='local'?slide.localAsset:null,
         script:String(slide.script||''),enabled:slide.enabled!==false,voiceURI:String(slide.voiceURI||''),rate:Number(slide.rate||1),audioSource:narrationSource(slide),narrationDuration:Number(slide.narrationDuration)||null,prePadding:Number(slide.prePadding)||0,postPadding:Number(slide.postPadding)||0,transition:String(slide.transition||'fade'),subtitle:Boolean(slide.subtitle),
         recordingStatus:String(slide.recordingStatus||'pending'),recordingSource:String(slide.recordingSource||''),recordingFileName:String(slide.recordingFileName||''),recordingStaleReason:String(slide.recordingStaleReason||''),recordingMime:String(slide.recordingMime||''),recordingMaxRms:Number(slide.recordingMaxRms)||0,recordingAttempts:Number(slide.recordingAttempts)||0,recordingNarrationDuration:Number(slide.recordingNarrationDuration)||0,recordingSpeechStartOffset:Number(slide.recordingSpeechStartOffset)||0,recordingSpeechEndOffset:Number(slide.recordingSpeechEndOffset)||0,recordingAsset
       }; }
@@ -1135,22 +1180,25 @@
         saveCurrentScript(); const parts=[], tracker={offset:0}; const sourceAsset=addProjectAsset(parts,tracker,state.sourceFile,{name:state.sourceFile.name,mime:state.sourceFile.type||'application/vnd.openxmlformats-officedocument.presentationml.presentation'});
         const slideData=state.slides.map((slide,index)=>{ const asset=slide.recordingBlob?addProjectAsset(parts,tracker,slide.recordingBlob,{name:slide.recordingFileName||`slide-${String(index+1).padStart(3,'0')}.${(slide.recordingMime||'audio/webm').includes('wav')?'wav':'webm'}`,mime:slide.recordingMime||slide.recordingBlob.type}):null; return projectSlideData(slide,asset); });
         const bgmAsset=state.bgmFile?addProjectAsset(parts,tracker,state.bgmFile,{name:state.bgmName||state.bgmFile.name||'bgm',mime:state.bgmFile.type}):null;
-        const manifest={schema:PROJECT_SCHEMA,schemaVersion:PROJECT_SCHEMA_VERSION,appVersion:APP_CONFIG.version,savedAt:new Date().toISOString(),source:{name:state.sourceFile.name,type:state.sourceFile.type||'application/vnd.openxmlformats-officedocument.presentationml.presentation',size:state.sourceFile.size,asset:sourceAsset},slideCount:state.slides.length,selectedSlideIndex:state.selectedSlideIndex,slides:slideData,bgm:bgmAsset?{name:state.bgmName||state.bgmFile.name||'bgm',asset:bgmAsset}:null,settings:{videoOutputName:$('#videoOutputName')?.value||'presentation-video',videoResolution:$('#videoResolution')?.value||'1080',videoTransition:$('#videoTransition')?.value||state.videoTransition||'fade',videoSubtitles:Boolean($('#videoSubtitles')?.checked),bgmLoop:Boolean($('#bgmLoop')?.checked),bgmVolume:Number($('#bgmVolume')?.value||15)}};
+        const manifest={schema:PROJECT_SCHEMA,schemaVersion:PROJECT_SCHEMA_VERSION,appVersion:APP_CONFIG.version,savedAt:new Date().toISOString(),source:{name:state.sourceFile.name,type:state.sourceFile.type||'application/vnd.openxmlformats-officedocument.presentationml.presentation',size:state.sourceFile.size,asset:sourceAsset},slideCount:state.slides.length,selectedSlideIndex:state.selectedSlideIndex,slides:slideData,bgm:bgmAsset?{name:state.bgmName||state.bgmFile.name||'bgm',asset:bgmAsset}:null,settings:{localDefaultLanguage:state.localDefaultLanguage,videoOutputName:$('#videoOutputName')?.value||'presentation-video',videoResolution:$('#videoResolution')?.value||'1080',videoTransition:$('#videoTransition')?.value||state.videoTransition||'fade',videoSubtitles:Boolean($('#videoSubtitles')?.checked),bgmLoop:Boolean($('#bgmLoop')?.checked),bgmVolume:Number($('#bgmVolume')?.value||15)}};
         const jsonBytes=new TextEncoder().encode(JSON.stringify(manifest)); const magic=new TextEncoder().encode(PROJECT_MAGIC_TEXT), lengthBytes=new Uint8Array(4); new DataView(lengthBytes.buffer).setUint32(0,jsonBytes.length,true); return new Blob([magic,lengthBytes,jsonBytes,...parts],{type:'application/x-presentation-video-maker-project'});
       }
       function projectAssetBlob(file,payloadStart,asset){ if(!asset) return null; const offset=Number(asset.offset), length=Number(asset.length); if(!Number.isFinite(offset)||!Number.isFinite(length)||offset<0||length<0||payloadStart+offset+length>file.size) throw new Error('PROJECT_ASSET_BOUNDS'); return file.slice(payloadStart+offset,payloadStart+offset+length,asset.mime||'application/octet-stream'); }
       async function readProjectManifest(file){
-        if(!file||file.size<12) throw new Error('PROJECT_TOO_SMALL'); const header=new Uint8Array(await file.slice(0,12).arrayBuffer()), magic=new TextDecoder().decode(header.slice(0,8)); if(magic!==PROJECT_MAGIC_TEXT) throw new Error('PROJECT_MAGIC'); const jsonLength=new DataView(header.buffer,header.byteOffset+8,4).getUint32(0,true); if(!jsonLength||jsonLength>8*1024*1024||12+jsonLength>file.size) throw new Error('PROJECT_JSON_LENGTH'); const manifest=JSON.parse(new TextDecoder().decode(new Uint8Array(await file.slice(12,12+jsonLength).arrayBuffer()))); if(manifest?.schema!==PROJECT_SCHEMA||Number(manifest?.schemaVersion)!==PROJECT_SCHEMA_VERSION) throw new Error('PROJECT_SCHEMA'); return {manifest,payloadStart:12+jsonLength};
+        if(!file||file.size<12) throw new Error('PROJECT_TOO_SMALL'); const header=new Uint8Array(await file.slice(0,12).arrayBuffer()), magic=new TextDecoder().decode(header.slice(0,8)); if(magic!==PROJECT_MAGIC_TEXT) throw new Error('PROJECT_MAGIC'); const jsonLength=new DataView(header.buffer,header.byteOffset+8,4).getUint32(0,true); if(!jsonLength||jsonLength>8*1024*1024||12+jsonLength>file.size) throw new Error('PROJECT_JSON_LENGTH'); const manifest=JSON.parse(new TextDecoder().decode(new Uint8Array(await file.slice(12,12+jsonLength).arrayBuffer()))); if(manifest?.schema!==PROJECT_SCHEMA||![1,PROJECT_SCHEMA_VERSION].includes(Number(manifest?.schemaVersion))) throw new Error('PROJECT_SCHEMA'); return {manifest,payloadStart:12+jsonLength};
       }
       function restoreProjectSlide(slide,saved,file,payloadStart){
-        slide.script=String(saved?.script??slide.script??''); slide.enabled=saved?.enabled!==false; slide.voiceURI=String(saved?.voiceURI||''); slide.rate=Math.max(.8,Math.min(1.5,Number(saved?.rate)||1)); slide.audioSource=['tts','mic','file'].includes(saved?.audioSource)?saved.audioSource:'tts'; slide.narrationDuration=Number(saved?.narrationDuration)||null; slide.prePadding=Math.max(0,Math.min(10,Number(saved?.prePadding)||0)); slide.postPadding=Math.max(0,Math.min(10,Number(saved?.postPadding)||0)); slide.transition=String(saved?.transition||'fade'); slide.subtitle=Boolean(saved?.subtitle); slide.recordingStatus=String(saved?.recordingStatus||'pending'); slide.recordingSource=String(saved?.recordingSource||''); slide.recordingFileName=String(saved?.recordingFileName||''); slide.recordingStaleReason=String(saved?.recordingStaleReason||''); slide.recordingMime=String(saved?.recordingMime||''); slide.recordingMaxRms=Number(saved?.recordingMaxRms)||0; slide.recordingAttempts=Number(saved?.recordingAttempts)||0; slide.recordingNarrationDuration=Number(saved?.recordingNarrationDuration)||0; slide.recordingSpeechStartOffset=Number(saved?.recordingSpeechStartOffset)||0; slide.recordingSpeechEndOffset=Number(saved?.recordingSpeechEndOffset)||0;
+        slide.localLanguage=['ja','en'].includes(saved?.localLanguage)?saved.localLanguage:'inherit';
+        slide.localRetry=Boolean(saved?.localRetry);
+        slide.localAsset=saved?.recordingSource==='local' ? saved.localAsset : null;
+        slide.script=String(saved?.script??slide.script??''); slide.enabled=saved?.enabled!==false; slide.voiceURI=String(saved?.voiceURI||''); slide.rate=Math.max(.8,Math.min(1.5,Number(saved?.rate)||1)); slide.audioSource=['tts','local','mic','file'].includes(saved?.audioSource)?saved.audioSource:'tts'; slide.narrationDuration=Number(saved?.narrationDuration)||null; slide.prePadding=Math.max(0,Math.min(10,Number(saved?.prePadding)||0)); slide.postPadding=Math.max(0,Math.min(10,Number(saved?.postPadding)||0)); slide.transition=String(saved?.transition||'fade'); slide.subtitle=Boolean(saved?.subtitle); slide.recordingStatus=String(saved?.recordingStatus||'pending'); slide.recordingSource=String(saved?.recordingSource||''); slide.recordingFileName=String(saved?.recordingFileName||''); slide.recordingStaleReason=String(saved?.recordingStaleReason||''); slide.recordingMime=String(saved?.recordingMime||''); slide.recordingMaxRms=Number(saved?.recordingMaxRms)||0; slide.recordingAttempts=Number(saved?.recordingAttempts)||0; slide.recordingNarrationDuration=Number(saved?.recordingNarrationDuration)||0; slide.recordingSpeechStartOffset=Number(saved?.recordingSpeechStartOffset)||0; slide.recordingSpeechEndOffset=Number(saved?.recordingSpeechEndOffset)||0;
         if(saved?.recordingAsset){ const blob=projectAssetBlob(file,payloadStart,saved.recordingAsset); slide.recordingBlob=blob; slide.recordingUrl=URL.createObjectURL(blob); slide.recordingBytes=blob.size; slide.recordingMime=blob.type||slide.recordingMime; } else { slide.recordingBlob=null; slide.recordingUrl=''; slide.recordingBytes=0; if(['success','stale'].includes(slide.recordingStatus)) slide.recordingStatus='pending'; }
       }
       async function saveProject(){
         if(projectOperationBusy()){ showToast(t('projectBusy')); return; } if(!state.sourceFile||!state.slides.length){ showToast(t('projectNoSource')); return; } state.projectBusy=true; updateProjectButtons(); try{ const blob=await createProjectBlob(); downloadBlob(blob,`${projectBaseName()}.pvm`); showToast(t('projectSaved')); }catch(error){ console.error(error); showToast(t('projectSaveFailed')); }finally{ state.projectBusy=false; updateProjectButtons(); }
       }
       async function openProjectFile(file){
-        if(projectOperationBusy()){ showToast(t('projectBusy')); return; } if(state.slides.length&&!confirm(t('confirmOpenProject'))) return; state.projectBusy=true; updateProjectButtons(); try{ const {manifest,payloadStart}=await readProjectManifest(file); const sourceBlob=projectAssetBlob(file,payloadStart,manifest.source?.asset); if(!sourceBlob) throw new Error('PROJECT_SOURCE'); const sourceName=String(manifest.source?.name||'presentation.pptx'); const sourceFile=new File([sourceBlob],/\.pptx$/i.test(sourceName)?sourceName:`${sourceName}.pptx`,{type:manifest.source?.type||sourceBlob.type||'application/vnd.openxmlformats-officedocument.presentationml.presentation'}); await loadPptx(sourceFile); if(!state.slides.length) throw new Error('PROJECT_PPTX_LOAD'); if(Number(manifest.slideCount)!==state.slides.length||!Array.isArray(manifest.slides)||manifest.slides.length!==state.slides.length) throw new Error('PROJECT_SLIDE_MISMATCH'); state.selectedSlideIndex=-1; manifest.slides.forEach((saved,index)=>restoreProjectSlide(state.slides[index],saved,file,payloadStart));
+        if(projectOperationBusy()){ showToast(t('projectBusy')); return; } if(state.slides.length&&!confirm(t('confirmOpenProject'))) return; state.projectBusy=true; updateProjectButtons(); try{ const {manifest,payloadStart}=await readProjectManifest(file); const sourceBlob=projectAssetBlob(file,payloadStart,manifest.source?.asset); if(!sourceBlob) throw new Error('PROJECT_SOURCE'); const sourceName=String(manifest.source?.name||'presentation.pptx'); const sourceFile=new File([sourceBlob],/\.pptx$/i.test(sourceName)?sourceName:`${sourceName}.pptx`,{type:manifest.source?.type||sourceBlob.type||'application/vnd.openxmlformats-officedocument.presentationml.presentation'}); await loadPptx(sourceFile); if(!state.slides.length) throw new Error('PROJECT_PPTX_LOAD'); if(Number(manifest.slideCount)!==state.slides.length||!Array.isArray(manifest.slides)||manifest.slides.length!==state.slides.length) throw new Error('PROJECT_SLIDE_MISMATCH'); state.selectedSlideIndex=-1; state.localDefaultLanguage=manifest.settings?.localDefaultLanguage==='en'?'en':'ja'; manifest.slides.forEach((saved,index)=>restoreProjectSlide(state.slides[index],saved,file,payloadStart));
           if(manifest.bgm?.asset){ const blob=projectAssetBlob(file,payloadStart,manifest.bgm.asset), name=String(manifest.bgm.name||manifest.bgm.asset.name||'bgm'); state.bgmFile=new File([blob],name,{type:blob.type||manifest.bgm.asset.mime||'audio/*'}); state.bgmName=name; } else { state.bgmFile=null; state.bgmName=''; }
           const settings=manifest.settings||{}; $('#videoOutputName').value=String(settings.videoOutputName||`${projectBaseName()}-video`).slice(0,160); state.videoFilenameDirty=true; $('#videoResolution').value=['720','1080'].includes(String(settings.videoResolution))?String(settings.videoResolution):'1080'; state.videoTransition=['fade','cut'].includes(settings.videoTransition)?settings.videoTransition:'fade'; $('#videoTransition').value=state.videoTransition; state.videoSubtitles=Boolean(settings.videoSubtitles); $('#videoSubtitles').checked=state.videoSubtitles; state.bgmLoop=settings.bgmLoop!==false; $('#bgmLoop').checked=state.bgmLoop; const bgmPercent=Math.max(0,Math.min(30,Number(settings.bgmVolume)||15)); state.bgmVolume=bgmPercent/100; $('#bgmVolume').value=String(bgmPercent); $('#bgmVolumeValue').textContent=`${bgmPercent}%`; $('#bgmFileName').textContent=state.bgmName||t('bgmNone'); $('#clearBgmButton').hidden=!state.bgmFile;
           const selected=Math.max(0,Math.min(state.slides.length-1,Number(manifest.selectedSlideIndex)||0)); renderSlides(); selectSlide(selected); renderSceneRecordings(); updateRecordingPlan(); updateVideoExportState(); updateProjectButtons(); showToast(t('projectLoaded'));
@@ -1197,7 +1245,7 @@
           if(relXml && /relationships\/(?:audio|video)|\/audio|\/video/i.test(relXml)) limits.push('media');
           slides.push({
             index:i, slideNumber:i+1, slideText, notesText, script:notesText||slideText,
-            scriptSource:notesText?'notes':'draft', enabled:true, voiceURI:'', rate:1, audioSource:isSmartphoneMode()?'mic':'tts', recordingSource:'', recordingFileName:'', recordingStaleReason:'',
+            scriptSource:notesText?'notes':'draft', localLanguage:'inherit', localAsset:null, enabled:true, voiceURI:'', rate:1, audioSource:isSmartphoneMode()?'mic':'tts', recordingSource:'', recordingFileName:'', recordingStaleReason:'',
             narrationDuration:null, prePadding:0.4, postPadding:0.8, transition:'fade', subtitle:false,
             recordingStatus:'pending', recordingBlob:null, recordingUrl:'', recordingMime:'', recordingBytes:0, recordingMaxRms:0, recordingAttempts:0, recordingNarrationDuration:0, recordingSpeechStartOffset:0, recordingSpeechEndOffset:0,
             limits
@@ -1352,6 +1400,8 @@
       function stopMicStream(){ if(state.micStream){ for(const track of state.micStream.getTracks()) track.stop(); state.micStream=null; } }
       function cancelMicRecording(){ try{ if(state.micRecorder){ state.micRecorder.onstop=null; if(state.micRecorder.state!=='inactive') state.micRecorder.stop(); } }catch{} state.micRecorder=null; state.micRecordingIndex=-1; stopMicStream(); $('#stopMicRecordingButton')?.setAttribute('disabled',''); }
       function invalidateSource(){
+        state.localRun?.abort(); state.localRun=null; state.localMessage=null; state.localDefaultLanguage='ja';
+        window.LocalTTS?.dispose?.();
         state.sourceGeneration+=1; $('#sourceGenerationValue').textContent=String(state.sourceGeneration); cancelSpeech(); cancelMicRecording(); stopDisplayStream(); cleanupRecording(); clearVideoResult(); cancelVideo(); state.videoExportPhase='idle'; disposeRendererState();
         state.slides=[]; updateSubtitlePreview(); state.selectedSlideIndex=-1; state.sourceFile=null; state.sourceBuffer=null; $('#scriptInput').value=''; $('#slideList').textContent=''; $('#slidePreviewMount').innerHTML=`<div class="preview-empty">${t('previewPreparing')}</div>`;
         $('#workflow').classList.remove('editor-ready'); $('#sceneEditorContent').hidden=true; $('#sceneEditorEmpty').hidden=false; $('#slideCountLabel').textContent='0'; $('#deckSummary').textContent=''; $('#dropZone').hidden=false; $('#projectActions').hidden=true; setWorkflowNavCollapsed(false); updateWorkflowNavIndicators(); updateProjectButtons();
@@ -1404,8 +1454,8 @@
       function updateNarrationDuration(slide){
         const label=$('#narrationDurationLabel'); if(!label) return; label.textContent=slide?.narrationDuration?format('narrationMeasured',{seconds:Number(slide.narrationDuration).toFixed(1)}):t('narrationNotMeasured');
       }
-      function narrationSource(slide){ return ['tts','mic','file'].includes(slide?.audioSource)?slide.audioSource:'tts'; }
-      function sourceLabel(value){ return t({tts:'sourceTts',mic:'sourceMic',file:'sourceFile'}[['tts','mic','file'].includes(value)?value:'tts']); }
+      function narrationSource(slide){ return ['tts','local','mic','file'].includes(slide?.audioSource)?slide.audioSource:'tts'; }
+      function sourceLabel(value){ return t({tts:'sourceTts',local:'sourceLocal',mic:'sourceMic',file:'sourceFile'}[['tts','local','mic','file'].includes(value)?value:'tts']); }
       function narrationSourceLabel(slide){ return sourceLabel(narrationSource(slide)); }
       function recordingSourceLabel(slide){ return sourceLabel(slide?.recordingSource||narrationSource(slide)); }
       function updateNarrationSourceUI(slide){
@@ -1413,6 +1463,7 @@
         $('#ttsSourcePanel').hidden=source!=='tts'; $('#micSourcePanel').hidden=source!=='mic'; $('#fileSourcePanel').hidden=source!=='file';
         $('#narrationFileName').textContent=slide?.recordingSource==='file'&&slide?.recordingFileName?slide.recordingFileName:t('narrationFileNone'); $('#clearNarrationFileButton').hidden=!(slide?.recordingSource==='file'&&slide?.recordingBlob);
         if(source==='tts') setChip('#voiceStatusChip',state.voices.length?'statusVoiceReady':'statusVoiceMissing',state.voices.length?'success':'error'); else if(source==='mic') setChip('#voiceStatusChip','sourceMic','success'); else setChip('#voiceStatusChip',slide?.recordingSource==='file'&&slide?.recordingBlob?'statusReady':'statusNotLoaded',slide?.recordingSource==='file'&&slide?.recordingBlob?'success':'idle');
+        renderLocalControls(slide);
         if(source==='mic'&&state.micRecordingIndex!==state.selectedSlideIndex) $('#micRecordingStatus').textContent=slide?.recordingSource==='mic'&&slide?.recordingBlob?t('micRecorded'):t('micReady');
       }
       function syncNarrationControlsForScene(slide){
@@ -1432,35 +1483,286 @@
       }
       function saveCurrentScript(){
         const index=state.selectedSlideIndex; if(index<0||!state.slides[index]) return; const slide=state.slides[index]; const nextScript=$('#scriptInput').value; const nextVoiceURI=$('#voiceSelect')?.value||slide.voiceURI||state.selectedVoiceURI; const nextRate=state.rate; const nextEnabled=$('#sceneEnabledInput')?.checked!==false;
-        const voiceSettingsChanged=narrationSource(slide)==='tts'&&(slide.voiceURI!==nextVoiceURI||Number(slide.rate)!==Number(nextRate)); const narrationChanged=slide.script!==nextScript||voiceSettingsChanged||slide.enabled!==nextEnabled;
-        if(narrationChanged){ if(narrationSource(slide)==='tts'||slide.script!==nextScript) slide.narrationDuration=null; if(slide.recordingBlob) markSceneRecordingStale(slide); }
-        slide.script=nextScript; slide.prePadding=Math.max(0,Math.min(10,Number($('#prePaddingInput')?.value)||0)); slide.postPadding=Math.max(0,Math.min(10,Number($('#postPaddingInput')?.value)||0)); slide.enabled=nextEnabled; slide.voiceURI=nextVoiceURI; slide.rate=nextRate; $('#scriptCharCount').textContent=format('chars',{count:slide.script.length}); const voice=selectedVoice(), source=narrationSource(slide); $('#voiceCurrentLabel').textContent=voice?`${voice.name} (${voice.lang})`:'—'; $('#sceneVoiceSummary').textContent=source==='tts'?(voice?`${voice.name} · ${formatRate(state.rate)}`:`— · ${formatRate(state.rate)}`):source==='mic'?t('sourceMic'):(slide.recordingFileName||t('sourceFile')); updateNarrationDuration(slide); renderSceneRecordings(); updateRecordingPlan();
+        const source=narrationSource(slide);
+        const nextPrePadding=Math.max(0,Math.min(10,Number($('#prePaddingInput')?.value)||0));
+        const nextPostPadding=Math.max(0,Math.min(10,Number($('#postPaddingInput')?.value)||0));
+        const inclusionChanged=slide.enabled!==nextEnabled;
+        const paddingChanged=slide.prePadding!==nextPrePadding||slide.postPadding!==nextPostPadding;
+        const voiceSettingsChanged=source==='tts'&&(slide.voiceURI!==nextVoiceURI||Number(slide.rate)!==Number(nextRate));
+        const narrationChanged=slide.script!==nextScript||voiceSettingsChanged||(inclusionChanged&&source!=='local');
+        if(narrationChanged||inclusionChanged||paddingChanged) markVideoResultStale();
+        if(narrationChanged){
+          if(source==='tts'||slide.script!==nextScript) slide.narrationDuration=null;
+          if(slide.recordingBlob) markSceneRecordingStale(slide);
+        }
+        slide.script=nextScript; slide.prePadding=nextPrePadding; slide.postPadding=nextPostPadding; slide.enabled=nextEnabled; slide.voiceURI=nextVoiceURI; slide.rate=nextRate; $('#scriptCharCount').textContent=format('chars',{count:slide.script.length}); const voice=selectedVoice(); $('#voiceCurrentLabel').textContent=voice?`${voice.name} (${voice.lang})`:'—'; $('#sceneVoiceSummary').textContent=source==='tts'?(voice?`${voice.name} · ${formatRate(state.rate)}`:`— · ${formatRate(state.rate)}`):source==='mic'?t('sourceMic'):(slide.recordingFileName||t('sourceFile')); updateNarrationDuration(slide); renderSceneRecordings(); updateRecordingPlan();
       }
       function resetCurrentScript(){
-        const slide=state.slides[state.selectedSlideIndex]; if(!slide) return; const before=slide.script, beforeDuration=slide.narrationDuration, beforeStatus=slide.recordingStatus; const restored=sourceScript(slide); const changed=slide.script!==restored; slide.script=restored; slide.narrationDuration=null; if(changed&&slide.recordingBlob) markSceneRecordingStale(slide); $('#scriptInput').value=restored; $('#scriptCharCount').textContent=format('chars',{count:restored.length}); updateNarrationDuration(slide); renderSceneRecordings(); AppToast.show({message:t('resetScriptDone'),actionLabel:t('undo'),onAction:()=>{ slide.script=before; slide.narrationDuration=beforeDuration; slide.recordingStatus=beforeStatus; if(state.slides[state.selectedSlideIndex]===slide){ $('#scriptInput').value=before; $('#scriptCharCount').textContent=format('chars',{count:before.length}); updateNarrationDuration(slide); } renderSceneRecordings(); }});
+        const slide=state.slides[state.selectedSlideIndex];
+        if(!slide) return;
+        const restored=sourceScript(slide);
+        if(slide.script===restored) return;
+        const before={script:slide.script,duration:slide.narrationDuration,status:slide.recordingStatus,reason:slide.recordingStaleReason,
+          blob:slide.recordingBlob,source:narrationSource(slide),voice:slide.voiceURI,rate:slide.rate,language:localLanguage(slide)};
+        slide.script=restored;
+        slide.narrationDuration=null;
+        markSceneRecordingStale(slide);
+        markVideoResultStale();
+        $('#scriptInput').value=restored;
+        $('#scriptCharCount').textContent=format('chars',{count:restored.length});
+        updateNarrationDuration(slide);
+        renderSceneRecordings();
+        AppToast.show({message:t('resetScriptDone'),actionLabel:t('undo'),onAction:()=>{
+          if(!state.slides.includes(slide)||slide.script!==restored) return;
+          const source=narrationSource(slide);
+          const sameRecording=slide.recordingBlob===before.blob&&source===before.source&&
+            (source!=='tts'||slide.voiceURI===before.voice)&&(source!=='local'||localLanguage(slide)===before.language)&&
+            (!['tts','local'].includes(source)||slide.rate===before.rate);
+          slide.script=before.script;
+          slide.narrationDuration=sameRecording?before.duration:null;
+          if(sameRecording){
+            slide.recordingStatus=before.status;
+            slide.recordingStaleReason=before.reason;
+          } else {
+            markSceneRecordingStale(slide);
+          }
+          markVideoResultStale();
+          if(state.slides[state.selectedSlideIndex]===slide){
+            $('#scriptInput').value=slide.script;
+            $('#scriptCharCount').textContent=format('chars',{count:slide.script.length});
+            updateNarrationDuration(slide);
+          }
+          renderSceneRecordings();
+        }});
       }
       function applyNarrationToAll(){
-        const voice=selectedVoice(); if(!voice||!state.slides.length) return; saveCurrentScript(); const snapshot=state.slides.map(slide=>({voiceURI:slide.voiceURI,rate:slide.rate,narrationDuration:slide.narrationDuration,recordingStatus:slide.recordingStatus})); const rate=state.rate; state.slides.forEach(slide=>{ if(narrationSource(slide)!=='tts') return; const changed=slide.voiceURI!==voice.voiceURI||Number(slide.rate)!==Number(rate); slide.voiceURI=voice.voiceURI; slide.rate=rate; if(changed){ slide.narrationDuration=null; if(slide.recordingBlob) markSceneRecordingStale(slide); } }); syncNarrationControlsForScene(state.slides[state.selectedSlideIndex]); renderSceneRecordings(); AppToast.show({message:t('appliedNarrationAll'),actionLabel:t('undo'),onAction:()=>{ state.slides.forEach((slide,i)=>{ slide.voiceURI=snapshot[i].voiceURI; slide.rate=snapshot[i].rate; slide.narrationDuration=snapshot[i].narrationDuration; slide.recordingStatus=snapshot[i].recordingStatus; }); syncNarrationControlsForScene(state.slides[state.selectedSlideIndex]); renderSceneRecordings(); }});
+        const voice=selectedVoice();
+        if(!voice||!state.slides.length) return;
+        saveCurrentScript();
+        const rate=state.rate, snapshot=[];
+        for(const slide of state.slides){
+          if(narrationSource(slide)!=='tts'||(slide.voiceURI===voice.voiceURI&&Number(slide.rate)===Number(rate))) continue;
+          snapshot.push({slide,voiceURI:slide.voiceURI,rate:slide.rate,script:slide.script,blob:slide.recordingBlob,
+            duration:slide.narrationDuration,status:slide.recordingStatus,reason:slide.recordingStaleReason});
+          slide.voiceURI=voice.voiceURI;
+          slide.rate=rate;
+          slide.narrationDuration=null;
+          markSceneRecordingStale(slide);
+        }
+        if(!snapshot.length) return;
+        markVideoResultStale();
+        syncNarrationControlsForScene(state.slides[state.selectedSlideIndex]);
+        renderSceneRecordings();
+        AppToast.show({message:t('appliedNarrationAll'),actionLabel:t('undo'),onAction:()=>{
+          for(const before of snapshot){
+            const {slide}=before;
+            if(!state.slides.includes(slide)||narrationSource(slide)!=='tts'||slide.voiceURI!==voice.voiceURI||slide.rate!==rate) continue;
+            slide.voiceURI=before.voiceURI;
+            slide.rate=before.rate;
+            if(slide.recordingBlob===before.blob&&slide.script===before.script){
+              slide.narrationDuration=before.duration;
+              slide.recordingStatus=before.status;
+              slide.recordingStaleReason=before.reason;
+            } else {
+              slide.narrationDuration=null;
+              markSceneRecordingStale(slide);
+            }
+            markVideoResultStale();
+          }
+          syncNarrationControlsForScene(state.slides[state.selectedSlideIndex]);
+          renderSceneRecordings();
+        }});
       }
 
 
+      function localLanguage(slide) {
+        return ['ja','en'].includes(slide?.localLanguage) ? slide.localLanguage : state.localDefaultLanguage;
+      }
+      function localVoiceName(slide) {
+        return localLanguage(slide)==='en' ? 'af_heart.bin' : 'jf_alpha.bin';
+      }
+      function canApplyLocalSource(slide) {
+        return slide.enabled && narrationSource(slide)==='tts' && !slide.recordingBlob;
+      }
+      function applyLocalSource() {
+        if(projectOperationBusy()) return;
+        const eligible=state.slides.filter(canApplyLocalSource);
+        if(!eligible.length) return;
+        for(const slide of eligible) {
+          slide.audioSource='local';
+          slide.narrationDuration=null;
+          slide.recordingStatus='pending';
+        }
+        state.localMessage={key:'localApplied',values:{count:eligible.length}};
+        markVideoResultStale();
+        renderSceneRecordings();
+        refreshCaptureReady();
+      }
+      function localPending(slide) {
+        return slide.enabled && narrationSource(slide)==='local' && Boolean(slide.script.trim()) &&
+          (slide.localRetry || !(slide.recordingStatus==='success' && slide.recordingSource==='local' && slide.recordingBlob));
+      }
+      function missingLocalFiles(slide) {
+        return ['model_quantized.onnx',localVoiceName(slide)].filter(name=>!state.localFiles.has(name));
+      }
+      function localMessageText(message) {
+        return message ? format(message.key,message.values) : '';
+      }
+      function renderLocalControls(slide) {
+        const active=narrationSource(slide)==='local', run=state.localRun;
+        $('#localSourcePanel').hidden=!active;
+        $('#localTtsRun').hidden=!run && !(active && state.localMessage);
+        $('#localTtsCancel').hidden=!run;
+        $('#localTtsStatus').textContent=localMessageText(state.localMessage);
+        if(!active) return;
+        $('#localTtsDefaultLanguage').value=state.localDefaultLanguage;
+        $('#localTtsLanguage').value=slide.localLanguage || 'inherit';
+        $('#localTtsRate').value=String(slide.rate);
+        $('#localTtsRateValue').textContent=formatRate(slide.rate);
+        $('#sceneVoiceSummary').textContent=localVoiceName(slide).replace('.bin','')+' · '+formatRate(slide.rate);
+        const missing=missingLocalFiles(slide), loaded=Array.from(state.localFiles.keys());
+        const fileStatus=[localMessageText(state.localFileMessage)];
+        if(loaded.length) fileStatus.push(format('localLoaded',{files:loaded.join(', ')}));
+        fileStatus.push(missing.length ? format('localRequired',{files:missing.join(', ')}) : t('localFileReady'));
+        $('#localTtsFileStatus').textContent=fileStatus.filter(Boolean).join(' ');
+        const blocked=projectOperationBusy() || state.localChecking;
+        const eligible=state.slides.filter(canApplyLocalSource).length;
+        $('#localTtsApply').disabled=blocked || eligible===0;
+        $('#localTtsApply').textContent=format('localApply',{count:eligible});
+        $('#localTtsChoose').disabled=Boolean(run || state.localChecking);
+        $('#localTtsGenerate').disabled=blocked || !slide.script.trim();
+        $('#localTtsBatch').disabled=blocked || !state.slides.some(localPending);
+        $('#localTtsPreview').disabled=slide.recordingSource!=='local' || !slide.recordingUrl;
+        setChip('#voiceStatusChip',missing.length?'statusNotLoaded':'statusReady',missing.length?'idle':'success');
+      }
+      async function selectLocalFiles(files) {
+        if(!files.length || state.localChecking || state.localRun) return;
+        const failed=[];
+        state.localChecking=true;
+        state.localFileMessage={key:'localVerifying'};
+        renderLocalControls(state.slides[state.selectedSlideIndex]);
+        try {
+          if(!window.crypto?.subtle) {
+            state.localFileMessage={key:'localVerifyUnavailable'};
+            return;
+          }
+          for(const file of files) {
+            const name=file.name.toLowerCase(), expected=LOCAL_FILES[name];
+            if(!expected || file.size!==expected.size) { failed.push(file.name); continue; }
+            try {
+              const digest=await crypto.subtle.digest('SHA-256',await file.arrayBuffer());
+              const hash=Array.from(new Uint8Array(digest),byte=>byte.toString(16).padStart(2,'0')).join('');
+              if(hash===expected.sha256) state.localFiles.set(name,file);
+              else failed.push(file.name);
+            } catch { failed.push(file.name); }
+          }
+          state.localFileMessage=failed.length ? {key:'localInvalid',values:{files:failed.join(', ')}} : null;
+          if(!failed.length && state.localMessage?.key==='localNeedFiles') state.localMessage=null;
+        } finally {
+          state.localChecking=false;
+          renderLocalControls(state.slides[state.selectedSlideIndex]);
+        }
+      }
+      function changeLocalLanguage(value,deck) {
+        const selected=state.slides[state.selectedSlideIndex];
+        if(!selected) return;
+        const affected=deck ? state.slides : [selected];
+        const before=affected.map(localLanguage);
+        if(deck) state.localDefaultLanguage=value;
+        else selected.localLanguage=value;
+        affected.forEach((slide,index)=>{
+          if(before[index]===localLanguage(slide)) return;
+          if(slide.recordingSource==='local') {
+            slide.narrationDuration=null;
+            markSceneRecordingStale(slide);
+          }
+          if(narrationSource(slide)==='local') markVideoResultStale();
+        });
+        renderSceneRecordings();
+        updateNarrationDuration(selected);
+      }
+      async function generateLocalAudio(batch=false) {
+        if(projectOperationBusy() || state.localChecking) return;
+        saveCurrentScript();
+        const targets=batch ? state.slides.filter(localPending) : [state.slides[state.selectedSlideIndex]];
+        if(!targets.length || !targets[0]) return;
+        const controller=new AbortController(), signal=controller.signal;
+        state.localRun=controller;
+        let completed=0, currentSlide=targets[0].slideNumber;
+        try {
+          for(const [position,slide] of targets.entries()) {
+            if(signal.aborted) throw new DOMException('Cancelled','AbortError');
+            const index=state.slides.indexOf(slide);
+            if(index<0 || narrationSource(slide)!=='local' || !slide.script.trim() || (batch && !localPending(slide))) continue;
+            currentSlide=index+1;
+            const values={position:position+1,total:targets.length,slide:currentSlide};
+            const missing=missingLocalFiles(slide);
+            if(missing.length) {
+              state.localMessage={key:'localNeedFiles',values:{...values,files:missing.join(', ')}};
+              break;
+            }
+            state.localMessage={key:'localProgress',values};
+            renderSceneRecordings();
+            refreshCaptureReady();
+            const text=slide.script, language=localLanguage(slide), rate=slide.rate, voice=localVoiceName(slide);
+            const matches=()=>state.slides[index]===slide && narrationSource(slide)==='local' &&
+              slide.script===text && localLanguage(slide)===language && slide.rate===rate && (!batch || slide.enabled);
+            try {
+              const result=await window.LocalTTS.synthesize({
+                text,language,rate,model:state.localFiles.get('model_quantized.onnx'),voice:state.localFiles.get(voice),signal
+              });
+              if(signal.aborted) throw new DOMException('Cancelled','AbortError');
+              if(!result?.blob?.size) throw new Error('No audio');
+              const duration=await audioBlobDuration(result.blob);
+              if(signal.aborted) throw new DOMException('Cancelled','AbortError');
+              if(!matches()) { state.localMessage={key:'localChanged',values}; break; }
+              slide.localRetry=false;
+              slide.localAsset={model:LOCAL_FILES['model_quantized.onnx'].sha256,voice,language,rate};
+              commitSceneAudio(slide,result.blob,{source:'local',fileName:'slide-'+(index+1)+'.wav',duration});
+              completed++;
+            } catch(error) {
+              if(signal.aborted || error?.name==='AbortError') throw error;
+              if(!matches()) { state.localMessage={key:'localChanged',values}; break; }
+              slide.localRetry=true;
+              if(!slide.recordingBlob) slide.recordingStatus='error';
+              const errors={model:'localErrorModel',voice:'localErrorVoice',text:'localErrorText',reading:'localErrorReading'};
+              state.localMessage={key:errors[error?.code] || 'localErrorRuntime',values};
+              break;
+            }
+          }
+          if(state.localMessage?.key==='localProgress') state.localMessage={key:'localDone',values:{count:completed}};
+        } catch(error) {
+          if(state.localRun===controller) {
+            state.localMessage=signal.aborted || error?.name==='AbortError'
+              ? {key:'localStopped',values:{count:completed}}
+              : {key:'localErrorRuntime',values:{slide:currentSlide}};
+          }
+        } finally {
+          if(state.localRun===controller) {
+            state.localRun=null;
+            renderSceneRecordings();
+            refreshCaptureReady();
+          }
+        }
+      }
+
       function setNarrationSource(source){
-        const slide=state.slides[state.selectedSlideIndex]; if(!slide||!['tts','mic','file'].includes(source)||slide.audioSource===source) return; if(state.micRecorder){ showToast(t('micStopBeforeSwitch')); return; }
+        const slide=state.slides[state.selectedSlideIndex]; if(!slide||!['tts','local','mic','file'].includes(source)||slide.audioSource===source) return; if(state.micRecorder){ showToast(t('micStopBeforeSwitch')); return; }
         saveCurrentScript(); slide.audioSource=source; if(slide.recordingBlob){ if(slide.recordingSource===source){ if(slide.recordingStaleReason==='source'){ slide.recordingStatus='success'; slide.recordingStaleReason=''; } } else { slide.recordingStatus='stale'; if(slide.recordingStaleReason!=='settings') slide.recordingStaleReason='source'; } } updateNarrationSourceUI(slide); syncNarrationControlsForScene(slide); renderSceneRecordings(); refreshCaptureReady(); updateVideoExportState(); markVideoResultStale();
       }
       function audioBlobDuration(blob){
         return new Promise((resolve,reject)=>{ const url=URL.createObjectURL(blob), audio=new Audio(); const done=(fn,value)=>{try{URL.revokeObjectURL(url);}catch{} fn(value);}; const timer=setTimeout(()=>done(reject,new Error('AUDIO_DURATION_TIMEOUT')),10000); audio.preload='metadata'; audio.onloadedmetadata=()=>{clearTimeout(timer); const duration=Number(audio.duration); Number.isFinite(duration)&&duration>0?done(resolve,duration):done(reject,new Error('AUDIO_DURATION_INVALID'));}; audio.onerror=()=>{clearTimeout(timer);done(reject,new Error('AUDIO_DURATION_FAILED'));}; audio.src=url; });
       }
       function commitSceneAudio(slide,blob,{source,fileName='',duration=0,mime=''}={}){
-        if(slide.recordingUrl) try{URL.revokeObjectURL(slide.recordingUrl);}catch{} slide.audioSource=source; slide.recordingSource=source; slide.recordingBlob=blob; slide.recordingUrl=URL.createObjectURL(blob); slide.recordingMime=blob.type||mime||'audio/webm'; slide.recordingBytes=blob.size; slide.recordingMaxRms=0; slide.recordingNarrationDuration=Math.max(.05,Number(duration)||0); slide.narrationDuration=slide.recordingNarrationDuration; slide.recordingSpeechStartOffset=0; slide.recordingSpeechEndOffset=slide.recordingNarrationDuration; slide.recordingStatus='success'; slide.recordingFileName=fileName; slide.recordingStaleReason=''; markVideoResultStale(); renderSceneRecordings(); updateRecordingPlan(); updateVideoExportState(); updateSceneEditor();
+        if(slide.recordingUrl) try{URL.revokeObjectURL(slide.recordingUrl);}catch{} slide.audioSource=source; slide.recordingSource=source; slide.recordingBlob=blob; slide.recordingUrl=URL.createObjectURL(blob); slide.recordingMime=blob.type||mime||'audio/webm'; slide.recordingBytes=blob.size; slide.recordingMaxRms=0; slide.recordingNarrationDuration=Math.max(.05,Number(duration)||0); slide.narrationDuration=slide.recordingNarrationDuration; slide.recordingSpeechStartOffset=0; slide.recordingSpeechEndOffset=slide.recordingNarrationDuration; slide.recordingStatus='success'; slide.recordingFileName=fileName; slide.recordingStaleReason=''; markVideoResultStale(); renderSceneRecordings(); updateRecordingPlan(); updateVideoExportState(); if(state.slides[state.selectedSlideIndex]===slide) updateSceneEditor();
       }
       async function startMicRecording(){
-        const index=state.selectedSlideIndex, slide=state.slides[index]; if(!slide||state.micRecorder) return; saveCurrentScript();
+        const index=state.selectedSlideIndex, slide=state.slides[index]; if(!slide||state.micRecorder||state.localRun) return; saveCurrentScript();
         if(slide.recordingBlob&&!confirm(t('confirmReplaceSceneAudio'))) return;
         if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){ showToast(t('micUnsupported')); return; }
         state.micPreviousStatus=slide.recordingStatus||'pending';
         try{
-          const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false}); if(index!==state.selectedSlideIndex){ for(const track of stream.getTracks()) track.stop(); return; }
+          const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false}); if(state.slides[index]!==slide||index!==state.selectedSlideIndex||narrationSource(slide)!=='mic'||state.localRun){ for(const track of stream.getTracks()) track.stop(); return; }
           state.micStream=stream; const mime=chooseRecordingMime(), chunks=[]; const recorder=mime?new MediaRecorder(stream,{mimeType:mime}):new MediaRecorder(stream); state.micRecorder=recorder; state.micRecordingIndex=index; state.micRecordingStartedAt=performance.now(); updateProjectButtons(); slide.audioSource='mic'; slide.recordingStatus='recording'; updateNarrationSourceUI(slide); renderSceneRecordings(); $('#startMicRecordingButton').disabled=true; $('#stopMicRecordingButton').disabled=false; $('#micRecordingStatus').className='mic-live'; $('#micRecordingStatus').textContent=t('micRecordingNow');
           recorder.ondataavailable=event=>{ if(event.data?.size) chunks.push(event.data); };
           recorder.onerror=()=>{ showToast(t('micRecordingFailed')); };
@@ -1471,7 +1773,7 @@
       function stopMicRecording(){ try{ if(state.micRecorder&&state.micRecorder.state!=='inactive') state.micRecorder.stop(); }catch{} }
       async function importNarrationFile(file){
         const slide=state.slides[state.selectedSlideIndex]; if(!slide||!file) return; if(slide.recordingBlob&&!confirm(t('confirmReplaceSceneAudio'))) return; if(file.size>100*1024*1024){showToast(t('narrationFileTooLarge'));return;} const valid=/^audio\//i.test(file.type)||/\.(?:webm|wav|mp3|m4a|aac|ogg|opus)$/i.test(file.name); if(!valid){showToast(t('narrationFileInvalid'));return;}
-        try{ const duration=await audioBlobDuration(file); commitSceneAudio(slide,file,{source:'file',fileName:file.name,duration,mime:file.type}); showToast(t('narrationFileLoaded')); }catch(error){ console.warn(error); showToast(t('narrationFileInvalid')); }
+        try{ const duration=await audioBlobDuration(file); if(!state.slides.includes(slide)||narrationSource(slide)!=='file') return; commitSceneAudio(slide,file,{source:'file',fileName:file.name,duration,mime:file.type}); showToast(t('narrationFileLoaded')); }catch(error){ console.warn(error); showToast(t('narrationFileInvalid')); }
       }
       function clearNarrationFile(){ const slide=state.slides[state.selectedSlideIndex]; if(!slide||slide.recordingSource!=='file'||!slide.recordingBlob) return; if(!confirm(t('confirmClearNarrationFile'))) return; clearSceneRecording(slide); slide.audioSource='file'; updateNarrationSourceUI(slide); renderSceneRecordings(); updateVideoExportState(); markVideoResultStale(); }
 
@@ -1513,11 +1815,20 @@
       }
       function updateRecordingPlan(){
         const targets=recordableSceneIndexes(), done=targets.filter(index=>state.slides[index].recordingStatus==='success').length, seconds=targets.reduce((sum,index)=>sum+estimateSpeechSeconds(state.slides[index]),0);
+        const localOutput=!targets.length && state.slides.some(slide=>narrationSource(slide)==='local');
+        $('#testPage').classList.toggle('local-output',localOutput);
+        $('#navCaptureButton').dataset.workflowTarget=localOutput?'sceneRecordingsCard':'recordingPlan';
+        const generic=localOutput || isSmartphoneMode();
+        for(const [selector,key] of [['#outputPageHeading',generic?'mobileOutputTitle':'captureTitle'],['#outputPageDescription',generic?'mobileOutputDescription':'captureDescription']]) {
+          const element=$(selector);
+          element.dataset.i18n=key;
+          element.textContent=t(key);
+        }
         $('#recordingPlanCount').textContent=String(targets.length); $('#recordingPlanDuration').textContent=targets.length?`≈ ${seconds.toFixed(seconds>=60?0:1)}s`:'—'; $('#recordingPlanDone').textContent=`${done} / ${targets.length}`;
       }
-      function sceneRecordingVisualState(slide){ if(!slide?.enabled||(narrationSource(slide)==='tts'&&!String(slide.script||'').trim())) return 'skipped'; return slide.recordingStatus||'pending'; }
+      function sceneRecordingVisualState(slide){ if(!slide?.enabled||(['tts','local'].includes(narrationSource(slide))&&!String(slide.script||'').trim())) return 'skipped'; return slide.recordingStatus||'pending'; }
       function sceneRecordingStatusLabel(slide){ const status=sceneRecordingVisualState(slide); return t({pending:'sceneStatusPending',recording:'sceneStatusRecording',success:'sceneStatusSuccess',error:'sceneStatusError',stale:'sceneStatusStale',skipped:'sceneStatusSkipped'}[status]||'sceneStatusPending'); }
-      function sceneNeedsNarration(slide){ return Boolean(slide?.enabled&&(narrationSource(slide)!=='tts'||String(slide.script||'').trim())); }
+      function sceneNeedsNarration(slide){ return Boolean(slide?.enabled&&(!['tts','local'].includes(narrationSource(slide))||String(slide.script||'').trim())); }
       function sceneProgressStats(){ const included=state.slides.filter(slide=>slide?.enabled).length, scripts=state.slides.filter(slide=>slide?.enabled&&String(slide.script||'').trim()).length; let required=0,ready=0,pending=0,stale=0,error=0; for(const slide of state.slides){ if(!sceneNeedsNarration(slide)) continue; required+=1; const status=sceneRecordingVisualState(slide); if(status==='success'&&slide.recordingBlob) ready+=1; else if(status==='stale') stale+=1; else if(status==='error') error+=1; else pending+=1; } return {included,scripts,required,ready,pending,stale,error,attention:pending+stale+error}; }
       function updateSceneProgress(){ const stats=sceneProgressStats(); if($('#sceneProgressSummary')) $('#sceneProgressSummary').textContent=format('sceneProgressSummary',{scripts:stats.scripts,included:stats.included,ready:stats.ready,required:stats.required}); if($('#progressReadyCount')) $('#progressReadyCount').textContent=String(stats.ready); if($('#progressPendingCount')) $('#progressPendingCount').textContent=String(stats.pending); if($('#progressStaleCount')) $('#progressStaleCount').textContent=String(stats.stale); if($('#progressErrorCount')) $('#progressErrorCount').textContent=String(stats.error); if($('#nextAttentionButton')) $('#nextAttentionButton').disabled=!stats.attention; }
       function sceneNeedsAttention(slide){ if(!sceneNeedsNarration(slide)) return false; const status=sceneRecordingVisualState(slide); return status!=='success'||!slide.recordingBlob; }
@@ -1529,6 +1840,7 @@
       }
       function sceneListActionState(slide,index){
         const source=narrationSource(slide), captureBusy=captureIsBusy(), busy=projectOperationBusy();
+        if(source==='local') return {action:'generate-local',label:t('localListGenerate'),disabled:busy||!slide.enabled||!slide.script.trim(),aria:t('localGenerate')};
         if(source==='mic'&&state.micRecordingIndex===index) return {action:'stop-mic',label:t('stopSceneRecordingAction'),disabled:false,aria:t('stopMicRecording')};
         if(source==='file') return {action:'choose-file',label:t('chooseSceneAudioAction'),disabled:busy||captureBusy||state.micRecordingIndex>=0||!slide?.enabled,aria:t('chooseSceneAudioAria')};
         if(source==='tts'&&isSmartphoneMode()) return {action:'record-mic',label:t('recordWithMicAction'),disabled:busy||captureBusy||state.micRecordingIndex>=0||!slide?.enabled,aria:t('recordWithMicAria')};
@@ -1540,9 +1852,9 @@
         state.slides.forEach((slide,index)=>{
           const row=document.createElement('div'); row.className='scene-recording-row'; const status=sceneRecordingVisualState(slide); const source=narrationSource(slide); const voice=source==='tts'?voiceForScene(slide):null; const title=(slide.slideText.split(/\n+/).find(Boolean)||format('slideN',{n:index+1})).slice(0,120);
           const main=document.createElement('div'); main.className='scene-recording-main'; const titleEl=document.createElement('span'); titleEl.className='scene-recording-title'; titleEl.textContent=`${index+1}. ${title}`; const meta=document.createElement('span'); meta.className='scene-recording-meta';
-          let sourceDetail=source==='tts'?format('sceneVoiceRate',{voice:voice?.name||'—',rate:Number(slide.rate||1).toFixed(1)}):source==='mic'?t('sourceMic'):(slide.recordingFileName||t('sourceFile'));
+          let sourceDetail=source==='local'?(localVoiceName(slide).replace('.bin','')+' · '+formatRate(slide.rate)):source==='tts'?format('sceneVoiceRate',{voice:voice?.name||'—',rate:Number(slide.rate||1).toFixed(1)}):source==='mic'?t('sourceMic'):(slide.recordingFileName||t('sourceFile'));
           if(status==='success') meta.textContent=`${narrationSourceLabel(slide)} · ${format('sceneDurationSize',{seconds:Number(slide.recordingNarrationDuration||slide.narrationDuration||0).toFixed(1),size:bytesLabel(slide.recordingBytes||0)})} · ${sourceDetail}`;
-          else if(status==='stale'&&slide.recordingBlob) meta.textContent=`${t('sceneRecordingStale')} · ${recordingSourceLabel(slide)} · ${format('sceneDurationSize',{seconds:Number(slide.recordingNarrationDuration||slide.narrationDuration||0).toFixed(1),size:bytesLabel(slide.recordingBytes||0)})}`; else if(!slide.enabled) meta.textContent=t('sceneDisabled'); else if(source==='tts'&&!String(slide.script||'').trim()) meta.textContent=t('sceneNoScript'); else if(source==='tts'&&isSmartphoneMode()) meta.textContent=t('sceneTtsPreviewOnly'); else meta.textContent=`${narrationSourceLabel(slide)} · ${sourceDetail}`;
+          else if(status==='stale'&&slide.recordingBlob) meta.textContent=`${t('sceneRecordingStale')} · ${recordingSourceLabel(slide)} · ${format('sceneDurationSize',{seconds:Number(slide.recordingNarrationDuration||slide.narrationDuration||0).toFixed(1),size:bytesLabel(slide.recordingBytes||0)})}`; else if(!slide.enabled) meta.textContent=t('sceneDisabled'); else if(['tts','local'].includes(source)&&!String(slide.script||'').trim()) meta.textContent=t('sceneNoScript'); else if(source==='tts'&&isSmartphoneMode()) meta.textContent=t('sceneTtsPreviewOnly'); else meta.textContent=`${narrationSourceLabel(slide)} · ${sourceDetail}`;
           main.append(titleEl,meta); const badge=document.createElement('span'); badge.className='recording-state'; badge.dataset.state=status; badge.textContent=sceneRecordingStatusLabel(slide); row.append(main,badge);
           const actions=document.createElement('div'); actions.className='scene-recording-actions';
           const actionState=sceneListActionState(slide,index); const record=document.createElement('button'); record.type='button'; record.className='scene-record-button'; record.dataset.sceneAction=actionState.action; record.dataset.sceneActionIndex=String(index); record.dataset.action=actionState.action; record.disabled=actionState.disabled; record.setAttribute('aria-label',actionState.aria); record.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${actionState.action==='choose-file'?'<path d="M3 6h7l2 2h9v10H3z"/>':actionState.action==='stop-mic'?'<rect x="7" y="7" width="10" height="10" rx="1"/>':'<circle cx="12" cy="12" r="5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>'}</svg><span>${actionState.label}</span>`; actions.append(record);
@@ -1555,6 +1867,13 @@
         if(action==='stop-mic'){ stopMicRecording(); return; }
         if(projectOperationBusy()||captureIsBusy()) return;
         selectSlide(index);
+        if(action==='generate-local'){
+          if(innerWidth<=600) showMobilePage('script',{scroll:false});
+          const generation=generateLocalAudio();
+          $('#localTtsRun')?.scrollIntoView?.({block:'center'});
+          await generation;
+          return;
+        }
         if(action==='choose-file'){ $('#narrationFileInput').click(); return; }
         if(action==='record-mic'){ setNarrationSource('mic'); await startMicRecording(); return; }
         if(action==='record-tts'){
@@ -1566,8 +1885,8 @@
         const slide=state.slides[index]; if(!slide?.recordingUrl) return; try{ state.previewAudio?.pause?.(); }catch{} const audio=new Audio(slide.recordingUrl); state.previewAudio=audio; audio.addEventListener('ended',()=>{ if(state.previewAudio===audio) state.previewAudio=null; },{once:true}); audio.play().catch(error=>console.warn(error));
       }
       function refreshCaptureReady(){
-        const supported=Boolean(!isSmartphoneMode()&&navigator.mediaDevices?.getDisplayMedia&&window.MediaRecorder&&'speechSynthesis' in window); const targets=recordableSceneIndexes(); const voicesReady=targets.every(index=>Boolean(voiceForScene(state.slides[index]))); const busy=['requesting-share','preflight','recording','checking'].includes(state.capturePhase); const ready=supported&&targets.length>0&&voicesReady&&!busy;
-        $('#startCaptureButton').disabled=!ready; const current=state.slides[state.selectedSlideIndex], currentReady=Boolean(supported&&!busy&&sceneIsRecordable(current)&&voiceForScene(current)); if($('#recordCurrentTtsButton')) $('#recordCurrentTtsButton').disabled=!currentReady; $('#displayMediaSupport').textContent=navigator.mediaDevices?.getDisplayMedia?'Supported':'Unavailable'; $('#mediaRecorderSupport').textContent=window.MediaRecorder?'Supported':'Unavailable';
+        const supported=Boolean(!isSmartphoneMode()&&navigator.mediaDevices?.getDisplayMedia&&window.MediaRecorder&&'speechSynthesis' in window); const targets=recordableSceneIndexes(); const voicesReady=targets.every(index=>Boolean(voiceForScene(state.slides[index]))); const busy=['requesting-share','preflight','recording','checking'].includes(state.capturePhase); const ready=supported&&targets.length>0&&voicesReady&&!busy&&!state.localRun;
+        $('#startCaptureButton').disabled=!ready; const current=state.slides[state.selectedSlideIndex], currentReady=Boolean(supported&&!busy&&!state.localRun&&sceneIsRecordable(current)&&voiceForScene(current)); if($('#recordCurrentTtsButton')) $('#recordCurrentTtsButton').disabled=!currentReady; $('#displayMediaSupport').textContent=navigator.mediaDevices?.getDisplayMedia?'Supported':'Unavailable'; $('#mediaRecorderSupport').textContent=window.MediaRecorder?'Supported':'Unavailable';
         if(state.capturePhase==='idle') $('#captureStatusMessage').textContent=ready?t('captureReadyNowV4'):!targets.length&&state.slides.length?t('noTtsScenes'):t(supported?'captureReadyMessageV4':'noDisplayMedia'); updateRecordingPlan(); updateProjectButtons();
       }
       function setCaptureMetrics(track='—',signal='—',recording='—'){ $('#audioTrackMetric').textContent=track; $('#signalMetric').textContent=signal; $('#recordingMetric').textContent=recording; }
@@ -1606,6 +1925,7 @@
       }
       async function runPreflight(monitor,job){ setCapturePhase('preflight'); $('#captureStatusTitle').textContent=t('preflightTitle'); $('#captureStatusMessage').textContent=t('preflightMessage'); setCaptureProgress(12); monitor.reset(); await speakCaptureJob(job,t('preflightPhrase')); await wait(120); const rms=monitor.value(); $('#maxRmsValue').textContent=rms.toFixed(5); if(rms<=0.002) throw new Error('NO_SIGNAL'); setCaptureMetrics(t('metricYes'),t('metricDetected'),'0'); }
       async function runBatchCapture(targetIndexes=null,{singleScene=false}={}){
+        if(state.localRun) return;
         if(isSmartphoneMode()){ showToast(t('mobileTtsCaptureUnavailable')); return; }
         if(!navigator.mediaDevices?.getDisplayMedia){ failCapture(t('noDisplayMedia')); return; } saveCurrentScript(); const targets=targetIndexes?.length?targetIndexes.slice():recordableSceneIndexes(); if(!targets.length){ showToast(t('noScenesToRecord')); return; }
         const missing=targets.find(index=>!voiceForScene(state.slides[index])); if(missing!==undefined){ failCapture(format('missingSceneVoice',{slide:missing+1})); return; }
@@ -1670,10 +1990,14 @@
       function videoSceneIndexes(){ const indexes=[]; state.slides.forEach((slide,index)=>{ if(slide?.enabled) indexes.push(index); }); return indexes; }
       function sceneVideoDuration(slide){
         const pre=Math.max(0,Number(slide?.prePadding)||0), post=Math.max(0,Number(slide?.postPadding)||0), script=String(slide?.script||'').trim();
+        if(!script && ['tts','local'].includes(narrationSource(slide))) return Math.max(2.5,pre+post);
         if(slide?.recordingBlob&&Number(slide?.recordingNarrationDuration)>0) return pre+Math.max(.05,Number(slide.recordingNarrationDuration))+post;
         if(!script) return Math.max(2.5,pre+post);
         const narration=Math.max(.05,Number(slide?.narrationDuration)||estimateSpeechSeconds(slide));
         return pre+narration+post;
+      }
+      function sceneHasExportAudio(slide){
+        return slide.recordingStatus==='success' && Boolean(slide.recordingBlob) && sceneNeedsNarration(slide);
       }
       function videoTransitionSeconds(){ return ($('#videoTransition')?.value||state.videoTransition)==='fade' ? 0.35 : 0; }
       function videoEstimatedSeconds(){ const indexes=videoSceneIndexes(); return indexes.reduce((sum,index)=>sum+sceneVideoDuration(state.slides[index]),0)+Math.max(0,indexes.length-1)*videoTransitionSeconds(); }
@@ -1683,7 +2007,7 @@
       function videoValidation(){
         const indexes=videoSceneIndexes(); if(!indexes.length) return {ready:false,reason:'missing',indexes};
         let stale=false, missing=false;
-        for(const index of indexes){ const slide=state.slides[index], script=String(slide.script||'').trim(), needsAudio=narrationSource(slide)!=='tts'||Boolean(script); if(!needsAudio) continue; if(slide.recordingStatus==='stale') stale=true; else if(slide.recordingStatus!=='success'||!slide.recordingBlob||slide.recordingSource!==narrationSource(slide)) missing=true; }
+        for(const index of indexes){ const slide=state.slides[index], script=String(slide.script||'').trim(), needsAudio=!['tts','local'].includes(narrationSource(slide))||Boolean(script); if(!needsAudio) continue; if(slide.recordingStatus==='stale') stale=true; else if(slide.recordingStatus!=='success'||!slide.recordingBlob||slide.recordingSource!==narrationSource(slide)) missing=true; }
         return {ready:!stale&&!missing,reason:stale?'stale':missing?'missing':'ready',indexes};
       }
       function setVideoExportChip(textKey,stateName){ const chip=$('#videoExportStatusChip'); if(!chip) return; chip.dataset.i18n=textKey; chip.textContent=t(textKey); chip.dataset.state=stateName; }
@@ -1710,7 +2034,7 @@
         updateSubtitlePreview(); updateMobileResolutionWarning();
         const button=$('#createVideoButton'); if(!button) return; const validation=videoValidation(), busy=['preparing','composing','transcoding','finishing'].includes(state.videoExportPhase); const supported=Boolean(window.MediaRecorder&&HTMLCanvasElement.prototype.captureStream&&(window.AudioContext||window.webkitAudioContext)&&window.BrowserFFmpeg&&typeof DecompressionStream==='function');
         $('#videoSceneCount').textContent=String(validation.indexes.length||0); const seconds=videoEstimatedSeconds(); $('#videoEstimatedDuration').textContent=validation.indexes.length?`≈ ${formatClock(seconds)}`:'—'; renderVideoTimeline();
-        button.disabled=busy||!supported||!validation.ready; $('#cancelVideoButton').disabled=!busy;
+        button.disabled=busy||Boolean(state.localRun)||!supported||!validation.ready; $('#cancelVideoButton').disabled=!busy;
         const notice=$('#videoExportNoticeText'); if(!supported) notice.textContent=t('videoNoMediaRecorder'); else if(validation.reason==='stale') notice.textContent=t('videoStaleRecordings'); else if(validation.reason==='missing') notice.textContent=t('videoMissingRecordings'); else notice.textContent=t('videoReady');
         if(busy) setVideoExportChip('videoExportWorking','working'); else if(state.videoResultBlob&&state.videoResultStale) setVideoExportChip('videoExportStaleResult','working'); else if(state.videoExportPhase==='success') setVideoExportChip('videoExportDone','success'); else if(state.videoExportPhase==='error') setVideoExportChip('videoExportError','error'); else if(validation.ready&&supported) setVideoExportChip('videoExportReady','success'); else setVideoExportChip('videoExportIdle','idle'); updateMobileNavIndicators();
       }
@@ -1894,7 +2218,7 @@
           await exportWait(60,signal); requestFrame(); framePulse=setInterval(requestFrame,120);
           if(bgmBuffer){ bgmSource=audioContext.createBufferSource(); bgmGain=audioContext.createGain(); bgmSource.buffer=bgmBuffer; bgmSource.loop=Boolean($('#bgmLoop')?.checked); bgmGain.gain.value=Math.max(0,Math.min(.3,Number($('#bgmVolume')?.value||15)/100)); bgmSource.connect(bgmGain).connect(destination); bgmSource.start(); }
           const total=Math.max(1,indexes.length); for(let pos=0;pos<indexes.length;pos++){
-            assertExportActive(signal); const index=indexes[pos], slide=state.slides[index], base=await buildBaseCanvas(snapshots[pos],width,height,signal); paintBase(base,canvas,context); requestFrame(); setVideoProgress(12+Math.round((pos/total)*58),'videoStageComposing'); const pre=Math.max(0,Number(slide.prePadding)||0), post=Math.max(0,Number(slide.postPadding)||0), script=String(slide.script||'').trim(), hasAudio=slide.recordingStatus==='success'&&Boolean(slide.recordingBlob); if(hasAudio){ if(pre) await exportWait(pre*1000,signal); const subtitles=script&&$('#videoSubtitles')?.checked?splitSubtitleSegments(script):[]; await playSceneAudio(audioContext,destination,slide,signal,(elapsed,duration)=>{paintBase(base,canvas,context); if(subtitles.length)drawSubtitle(context,canvas,subtitleAtProgress(subtitles,duration?elapsed/duration:0)); requestFrame();}); paintBase(base,canvas,context); requestFrame(); if(post) await exportWait(post*1000,signal); } else await exportWait(sceneVideoDuration(slide)*1000,signal);
+            assertExportActive(signal); const index=indexes[pos], slide=state.slides[index], base=await buildBaseCanvas(snapshots[pos],width,height,signal); paintBase(base,canvas,context); requestFrame(); setVideoProgress(12+Math.round((pos/total)*58),'videoStageComposing'); const pre=Math.max(0,Number(slide.prePadding)||0), post=Math.max(0,Number(slide.postPadding)||0), script=String(slide.script||'').trim(), hasAudio=sceneHasExportAudio(slide); if(hasAudio){ if(pre) await exportWait(pre*1000,signal); const subtitles=script&&$('#videoSubtitles')?.checked?splitSubtitleSegments(script):[]; await playSceneAudio(audioContext,destination,slide,signal,(elapsed,duration)=>{paintBase(base,canvas,context); if(subtitles.length)drawSubtitle(context,canvas,subtitleAtProgress(subtitles,duration?elapsed/duration:0)); requestFrame();}); paintBase(base,canvas,context); requestFrame(); if(post) await exportWait(post*1000,signal); } else await exportWait(sceneVideoDuration(slide)*1000,signal);
             paintBase(base,canvas,context); requestFrame(); if(pos<indexes.length-1){ if(($('#videoTransition')?.value||'fade')==='fade'){ const next=await buildBaseCanvas(snapshots[pos+1],width,height,signal); await fadeBetween(base,next,canvas,context,signal,requestFrame); } else await exportWait(45,signal); }
           }
           if(snapshots.length){ const last=await buildBaseCanvas(snapshots[snapshots.length-1],width,height,signal); paintBase(last,canvas,context); requestFrame(); await exportWait(180,signal); requestFrame(); try{recorder.requestData?.();}catch{} await exportWait(70,signal); }
@@ -1925,7 +2249,7 @@
           for(let pos=0;pos<indexes.length;pos++){
             assertExportActive(signal); const index=indexes[pos], slide=state.slides[index], base=currentBase;
             paintBase(base,canvas,context); requestFrame(); setVideoProgress(12+Math.round((pos/total)*58),'videoStageComposing');
-            const pre=Math.max(0,Number(slide.prePadding)||0), post=Math.max(0,Number(slide.postPadding)||0), script=String(slide.script||'').trim(), hasAudio=slide.recordingStatus==='success'&&Boolean(slide.recordingBlob);
+            const pre=Math.max(0,Number(slide.prePadding)||0), post=Math.max(0,Number(slide.postPadding)||0), script=String(slide.script||'').trim(), hasAudio=sceneHasExportAudio(slide);
             if(hasAudio){
               if(pre) await exportWait(pre*1000,signal);
               const subtitles=script&&$('#videoSubtitles')?.checked?splitSubtitleSegments(script):[];
@@ -2001,33 +2325,56 @@
         const started=performanceStageStart(), {sampleRate,channels,audioConfig}=capability, packets=[]; let encoderError=null,decoderConfig=null;
         const encoder=new AudioEncoder({output:(chunk,metadata)=>{ const packet=captureEncodedPacket(chunk,metadata); if(packet.decoderConfig) decoderConfig=packet.decoderConfig; packets.push(packet); },error:error=>{encoderError=error;}}); encoder.configure(audioConfig);
         let bgmBuffer=null; if(state.bgmFile) bgmBuffer=await prepareBgm(audioContext); const bgmLoop=Boolean($('#bgmLoop')?.checked), bgmVolume=Math.max(0,Math.min(.3,Number($('#bgmVolume')?.value||15)/100));
-        let globalFrame=0; const blockSize=2048;
+        // AAC-LC encodes 1024 samples per frame. Keep incomplete input across
+        // timeline spans so the platform encoder cannot pad mid-narration.
+        const blockSize=1024;
+        let globalFrame=0, bufferedFrames=0, planar=new Float32Array(blockSize*channels);
+        const submitBlock=async()=>{
+          const timestamp=Math.round((globalFrame-bufferedFrames)/sampleRate*1e6);
+          const audioData=new AudioData({format:'f32-planar',sampleRate,numberOfFrames:blockSize,numberOfChannels:channels,timestamp,data:planar});
+          try{ encoder.encode(audioData); } finally { audioData.close(); }
+          bufferedFrames=0;
+          planar=new Float32Array(blockSize*channels);
+          // Flushing the Windows AAC encoder mid-stream can attenuate speech
+          // around every flush. Let the queue drain and flush only at the end.
+          while(encoder.encodeQueueSize>10){
+            if(encoderError) throw encoderError;
+            await exportWait(4,signal);
+          }
+        };
         const encodeSpan=async(durationSeconds,narrationBuffer=null,narrationOffset=0)=>{
           const totalFrames=Math.max(0,Math.round(durationSeconds*sampleRate)); let produced=0;
-          while(produced<totalFrames){ assertExportActive(signal); if(encoderError) throw encoderError; const frames=Math.min(blockSize,totalFrames-produced), planar=new Float32Array(frames*channels);
+          while(produced<totalFrames){
+            assertExportActive(signal);
+            if(encoderError) throw encoderError;
+            const frames=Math.min(blockSize-bufferedFrames,totalFrames-produced);
             for(let i=0;i<frames;i++){
               const globalTime=(globalFrame+i)/sampleRate, narrationTime=(produced+i)/sampleRate;
               for(let channel=0;channel<channels;channel++){
                 let value=narrationBuffer?sampleAudioBuffer(narrationBuffer,channel,narrationOffset+narrationTime):0;
                 if(bgmBuffer&&bgmVolume>0){ let bgmTime=globalTime; if(bgmLoop&&bgmBuffer.duration>0) bgmTime%=bgmBuffer.duration; if(bgmTime<bgmBuffer.duration) value+=sampleAudioBuffer(bgmBuffer,channel,bgmTime)*bgmVolume; }
-                planar[channel*frames+i]=Math.max(-1,Math.min(1,value));
+                planar[channel*blockSize+bufferedFrames+i]=Math.max(-1,Math.min(1,value));
               }
             }
-            const audioData=new AudioData({format:'f32-planar',sampleRate,numberOfFrames:frames,numberOfChannels:channels,timestamp:Math.round(globalFrame/sampleRate*1e6),data:planar});
-            try{ encoder.encode(audioData); } finally { audioData.close(); }
-            globalFrame+=frames; produced+=frames; await waitEncoderBackpressure(encoder,10);
+            globalFrame+=frames;
+            produced+=frames;
+            bufferedFrames+=frames;
+            if(bufferedFrames===blockSize) await submitBlock();
           }
         };
         try{
           for(let pos=0;pos<indexes.length;pos++){
             assertExportActive(signal); const slide=state.slides[indexes[pos]], pre=Math.max(0,Number(slide.prePadding)||0), post=Math.max(0,Number(slide.postPadding)||0);
             if(pre) await encodeSpan(pre);
-            if(slide.recordingBlob){ const buffer=await decodeSceneAudio(audioContext,slide); const trim=narrationTrim(slide,buffer); await encodeSpan(trim.duration,buffer,trim.offset); }
+            if(sceneHasExportAudio(slide)){ const buffer=await decodeSceneAudio(audioContext,slide); const trim=narrationTrim(slide,buffer); await encodeSpan(trim.duration,buffer,trim.offset); }
             else { const silent=Math.max(.05,sceneVideoDuration(slide)-pre-post); await encodeSpan(silent); }
             if(post) await encodeSpan(post);
             if(pos<indexes.length-1){ const transition=videoTransitionSeconds(); if(transition) await encodeSpan(transition); }
             setVideoProgress(62+Math.round(((pos+1)/Math.max(1,indexes.length))*14),'videoStageComposing');
           }
+          assertExportActive(signal);
+          if(encoderError) throw encoderError;
+          if(bufferedFrames) await submitBlock();
           await encoder.flush(); if(encoderError) throw encoderError;
         } finally { try{encoder.close();}catch{} }
         if(!packets.length||!decoderConfig?.description) throw new Error('FAST_AUDIO_CONFIG_MISSING');
@@ -2053,7 +2400,7 @@
         try{
           if(indexes.length) currentBase=await loadBase(0);
           for(let pos=0;pos<indexes.length;pos++){
-            assertExportActive(signal); const slide=state.slides[indexes[pos]], pre=Math.max(0,Number(slide.prePadding)||0), post=Math.max(0,Number(slide.postPadding)||0), narration=Math.max(.05,Number(slide.recordingNarrationDuration)||Math.max(.05,sceneVideoDuration(slide)-pre-post)), subtitlesEnabled=Boolean(String(slide.script||'').trim()&&$('#videoSubtitles')?.checked);
+            assertExportActive(signal); const slide=state.slides[indexes[pos]], pre=Math.max(0,Number(slide.prePadding)||0), post=Math.max(0,Number(slide.postPadding)||0), narration=Math.max(.05,sceneVideoDuration(slide)-pre-post), subtitlesEnabled=Boolean(String(slide.script||'').trim()&&$('#videoSubtitles')?.checked);
             const visualSpans=[]; if(pre) visualSpans.push({duration:pre,subtitle:''}); if(subtitlesEnabled) visualSpans.push(...fastSubtitleSpans(slide.script,narration)); else visualSpans.push({duration:narration,subtitle:''}); if(post) visualSpans.push({duration:post,subtitle:''});
             const mergedSpans=mergeFastVisualSpans(visualSpans); for(let spanIndex=0;spanIndex<mergedSpans.length;spanIndex++){ const span=mergedSpans[spanIndex]; /* Variable-duration VFR samples are explicit GOP anchors so decoder reordering cannot distort their display spans. */ await encodeVisual(currentBase,span.duration,{subtitle:span.subtitle,keyFrame:true}); }
             if(pos<indexes.length-1){
@@ -2126,6 +2473,7 @@
         setVideoProgress(72,'videoStageTranscoding'); const runner=await loadVideoFfmpeg(); assertExportActive(signal); const args=window.BrowserFFmpeg.videoCompressorArgs({input:'/workerfs/input.webm',output:'/output.mp4',codec:'h264',speed:'fast',maxWidth:width,maxHeight:height,fps:30,crf:23,audioBitrateKbps:128,allowUpscale:true}); const result=await runner.run({files:[{name:'/workerfs/input.webm',data:webm,workerfs:true}],outputs:['/output.mp4'],args,signal,onProgress:progress=>setVideoProgress(72+Math.round(Math.max(0,Math.min(1,progress))*25),'videoStageTranscoding'),onLog:entry=>{if(/error|failed/i.test(entry.message||'')) console.debug('FFmpeg',entry.message);}}); const output=result.files.find(file=>file.name==='/output.mp4'); if(!output?.data?.length) throw new Error('MP4_OUTPUT_MISSING'); return new Blob([output.data],{type:'video/mp4'});
       }
       async function createVideo(){
+        if(state.localRun) return;
         const validation=videoValidation(); if(!validation.ready){updateVideoExportState();return;} if(state.videoExportPhase!=='idle'&&state.videoExportPhase!=='success'&&state.videoExportPhase!=='error') return;
         const AudioContextClass=window.AudioContext||window.webkitAudioContext; if(!AudioContextClass){updateVideoExportState();return;}
         const audioContext=new AudioContextClass(); const audioResumePromise=audioContext.state==='suspended'?audioContext.resume():Promise.resolve();
@@ -2191,6 +2539,33 @@
       $('#rateRange').addEventListener('change',()=>{ setRateControl(Number($('#rateRange').value)||1); saveCurrentScript(); syncNarrationControlsForScene(state.slides[state.selectedSlideIndex]); renderSceneRecordings(); refreshCaptureReady(); });
       $('#recordCurrentTtsButton').addEventListener('click',()=>{ if(isSmartphoneMode()){showToast(t('mobileTtsCaptureUnavailable'));return;} saveCurrentScript(); const index=state.selectedSlideIndex, slide=state.slides[index]; if(index<0||!sceneIsRecordable(slide)||!voiceForScene(slide)){ showToast(t('singleTtsNotReady')); return; } if(slide.recordingBlob&&!confirm(t('confirmReplaceSceneAudio'))) return; runBatchCapture([index],{singleScene:true}); });
       $('#previewVoiceButton').addEventListener('click',()=>{ if(captureIsBusy()){ showToast(t('previewBlockedDuringCapture')); return; } const script=$('#scriptInput').value.trim(); if(!script){ showToast(t('scriptEmpty')); return; } saveCurrentScript(); const slideIndex=state.selectedSlideIndex, slide=state.slides[slideIndex], startedAt=performance.now(); if(speak(script,error=>{ if(!error&&slide){ slide.narrationDuration=(performance.now()-startedAt)/1000; updateSubtitlePreview(); if(state.selectedSlideIndex===slideIndex) updateNarrationDuration(slide); } })) showToast(t('previewStarted')); }); $('#stopVoiceButton').addEventListener('click',()=>{ if(!captureIsBusy()) cancelSpeech(); }); $('#resetScriptButton').addEventListener('click',resetCurrentScript); $('#applyNarrationAllButton').addEventListener('click',applyNarrationToAll);
+      $('#localTtsDefaultLanguage').addEventListener('change',event=>changeLocalLanguage(event.target.value,true));
+      $('#localTtsLanguage').addEventListener('change',event=>changeLocalLanguage(event.target.value,false));
+      $('#localTtsRate').addEventListener('input',event=>{
+        const slide=state.slides[state.selectedSlideIndex], rate=setRateControl(Number(event.target.value));
+        if(!slide || slide.rate===rate) return;
+        slide.rate=rate;
+        slide.narrationDuration=null;
+        if(slide.recordingBlob) markSceneRecordingStale(slide);
+        markVideoResultStale();
+        updateNarrationDuration(slide);
+        renderSceneRecordings();
+      });
+      $('#localTtsChoose').addEventListener('click',()=>$('#localTtsFiles').click());
+      $('#localTtsFiles').addEventListener('change',event=>{
+        const files=Array.from(event.target.files);
+        event.target.value='';
+        selectLocalFiles(files);
+      });
+      $('#localTtsNotices').addEventListener('click',()=>{
+        const notice=$('#local-tts-notices');
+        if(notice) downloadBlob(new Blob([notice.textContent],{type:'text/plain;charset=utf-8'}),'local-tts-licenses.txt');
+      });
+      $('#localTtsApply').addEventListener('click',applyLocalSource);
+      $('#localTtsGenerate').addEventListener('click',()=>generateLocalAudio());
+      $('#localTtsBatch').addEventListener('click',()=>generateLocalAudio(true));
+      $('#localTtsCancel').addEventListener('click',()=>state.localRun?.abort());
+      $('#localTtsPreview').addEventListener('click',()=>playSceneRecording(state.selectedSlideIndex));
       $('#narrationSourceTabs').addEventListener('click',event=>{ const button=event.target.closest('[data-narration-source]'); if(button) setNarrationSource(button.dataset.narrationSource); });
       $('#startMicRecordingButton').addEventListener('click',startMicRecording); $('#stopMicRecordingButton').addEventListener('click',stopMicRecording);
       $('#chooseNarrationFileButton').addEventListener('click',()=>$('#narrationFileInput').click()); $('#narrationFileInput').addEventListener('change',()=>{ const file=$('#narrationFileInput').files?.[0]||null; $('#narrationFileInput').value=''; if(file) importNarrationFile(file); }); $('#clearNarrationFileButton').addEventListener('click',clearNarrationFile);
@@ -2201,14 +2576,14 @@
       $('#subtitlePreview').addEventListener('toggle',updateSubtitlePreview); $('#subtitlePreviewFormat').addEventListener('change',updateSubtitlePreview);
       $('#exportScriptTxtButton').addEventListener('click',exportScriptTxt); $('#exportSrtButton').addEventListener('click',()=>exportSubtitles('SRT')); $('#exportVttButton').addEventListener('click',()=>exportSubtitles('VTT'));
       $('#chooseBgmButton').addEventListener('click',()=>$('#bgmInput').click()); $('#bgmInput').addEventListener('change',()=>{ const file=$('#bgmInput').files?.[0]||null; $('#bgmInput').value=''; if(!file)return; if(file.size>100*1024*1024){showToast(t('bgmTooLarge'));return;} state.bgmFile=file;state.bgmName=file.name;$('#bgmFileName').textContent=file.name;$('#clearBgmButton').hidden=false;markVideoResultStale(); }); $('#clearBgmButton').addEventListener('click',()=>{state.bgmFile=null;state.bgmName='';$('#bgmFileName').textContent=t('bgmNone');$('#clearBgmButton').hidden=true;markVideoResultStale();});
-      $('#jumpNarrationButton').addEventListener('click',()=>scrollOutputSection('#recordingPlan')); $('#jumpVideoButton').addEventListener('click',()=>scrollOutputSection('#videoExportCard'));
+      $('#jumpNarrationButton').addEventListener('click',()=>scrollOutputSection('#'+$('#navCaptureButton').dataset.workflowTarget)); $('#jumpVideoButton').addEventListener('click',()=>scrollOutputSection('#videoExportCard'));
       $('#createVideoButton').addEventListener('click',createVideo); $('#cancelVideoButton').addEventListener('click',cancelVideo); $('#saveVideoButton').addEventListener('click',saveVideo);
       $('#workflowNavToggle').addEventListener('click',()=>setWorkflowNavCollapsed(!$('#workflowNav').classList.contains('is-collapsed')));
       $('#workflowNav').addEventListener('click',event=>{ const button=event.target.closest('[data-workflow-target]'); if(button&&!button.disabled) jumpToWorkflow(button.dataset.workflowTarget,button.dataset.workflowKey); });
       $('#appMobileBottomBar').addEventListener('click',event=>{ const button=event.target.closest('[data-mobile-page-target]'); if(button) showMobilePage(button.dataset.mobileKey); });
       window.visualViewport?.addEventListener('resize',updateVirtualKeyboardState); window.visualViewport?.addEventListener('scroll',updateVirtualKeyboardState);
       if('speechSynthesis' in window){ speechSynthesis.addEventListener?.('voiceschanged',()=>refreshVoices(true)); setTimeout(()=>refreshVoices(false),0); setTimeout(()=>refreshVoices(true),250); setTimeout(()=>refreshVoices(true),1000); } else renderVoiceOptions('');
-      addEventListener('pagehide',()=>{ state.captureAbort=true; cancelSpeech(); cancelMicRecording(); stopDisplayStream(); cancelVideo(); releaseVideoWakeLock(); clearVideoResult(); cleanupRecording(); try{state.ffmpegRunner?.dispose?.();}catch{} state.ffmpegRunner=null; disposeRendererState(); if(state.rendererModuleUrl){ try{URL.revokeObjectURL(state.rendererModuleUrl);}catch{} state.rendererModuleUrl=''; } if(state.html2canvasModuleUrl){ try{URL.revokeObjectURL(state.html2canvasModuleUrl);}catch{} state.html2canvasModuleUrl=''; } });
+      addEventListener('pagehide',()=>{ state.localRun?.abort(); window.LocalTTS?.dispose?.(); state.captureAbort=true; cancelSpeech(); cancelMicRecording(); stopDisplayStream(); cancelVideo(); releaseVideoWakeLock(); clearVideoResult(); cleanupRecording(); try{state.ffmpegRunner?.dispose?.();}catch{} state.ffmpegRunner=null; disposeRendererState(); if(state.rendererModuleUrl){ try{URL.revokeObjectURL(state.rendererModuleUrl);}catch{} state.rendererModuleUrl=''; } if(state.html2canvasModuleUrl){ try{URL.revokeObjectURL(state.html2canvasModuleUrl);}catch{} state.html2canvasModuleUrl=''; } });
 
       $('#versionBadge').textContent=`v${APP_CONFIG.version}`; $('#buildVersion').textContent=APP_CONFIG.version; $('#builtAt').textContent=BUILD_MANIFEST.generatedAtUtc||'—'; $('#dependencyCount').textContent=String(BUILD_MANIFEST.dependencies?.length||0); if(isSmartphoneMode()) $('#videoResolution').value='720'; applyDeviceUi(); setCaptureMetrics(); setCaptureProgress(0); applyLanguage(); updateVideoExportState(); updateMobileNavIndicators(); updateWorkflowNavIndicators(); updateProjectButtons(); setWorkflowNavActive('slides'); showMobilePage('slides',{scroll:false});
     })();

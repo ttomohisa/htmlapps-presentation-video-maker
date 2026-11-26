@@ -27,13 +27,15 @@ for (const element of ['html', 'body']) {
   });
 }
 
-test('Help retains its grid header/body shell and viewport-bounded internal scrolling', () => {
+test('Help has a viewport-bounded grid with the body as its only scroll container', () => {
   assert.match(source, /<dialog\b[^>]*id="helpDialog"/);
-  const shell = declarationsFor('.help-shell');
+  const shell = declarationsFor('.help-dialog[open]');
+  const dialog = declarationsFor('.help-dialog');
   assert.equal(shell.display, 'grid');
   assert.equal(shell['grid-template-rows'], 'auto minmax(0,1fr)');
-  assert.ok(rules.some(rule => rule.selectors.includes('.help-shell') && rule.declarations['max-height'] === 'min(82vh,760px)'));
-  assert.equal(shell['max-height'], 'calc(100dvh - 18px)');
+  assert.equal(dialog.overflow, 'clip');
+  assert.ok(rules.some(rule => rule.selectors.includes('.help-dialog') && rule.declarations['max-height'] === 'min(82vh,760px)'));
+  assert.equal(dialog['max-height'], 'calc(100dvh - 18px)');
   assert.equal(declarationsFor('.help-body').overflow, 'auto');
   assert.match(source, /class="help-head"[\s\S]*?id="closeHelpButton"[\s\S]*?<div class="help-body">/);
   assert.match(source, /data-i18n="helpSubtitlePreviewText"[\s\S]*?<!-- APP:HELP:END -->/);
