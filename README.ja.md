@@ -65,7 +65,7 @@ v1.2.0で、スマートフォンだけでも次の流れを完結できるワ�
 
 ### 単一HTMLを使う
 
-1. GitHub Actions / Release成果物から `dist/index.html` を取得するか、下記手順でローカルビルドします。
+1. [GitHub Releases](https://github.com/ttomohisa/htmlapps-presentation-video-maker/releases) から単一HTMLをダウンロードするか、下記手順で `dist/index.html` をビルドします。
 2. PCでは現行のChrome / Edge、スマホでは現行のSafari / Chromeなど対応ブラウザで開きます。
 3. Windowsの端末内読み上げを録音する場合は、アプリの案内に従って **「画面全体」** を選び、**「システム音声も共有」** を有効にします。
 

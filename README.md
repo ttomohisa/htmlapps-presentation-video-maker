@@ -63,7 +63,7 @@ Open the [GitHub Pages demo](https://ttomohisa.github.io/htmlapps-presentation-v
 
 ### Use the single HTML file
 
-1. Download `dist/index.html` from a GitHub Actions / release artifact, or build it locally with the steps below.
+1. Download the standalone `.html` file from [GitHub Releases](https://github.com/ttomohisa/htmlapps-presentation-video-maker/releases), or build `dist/index.html` locally.
 2. Open it in a current Chromium-based browser.
 3. For the Windows Web Speech API recording workflow, follow the in-app instructions to share **Entire Screen** and enable **system audio** when requested.
 

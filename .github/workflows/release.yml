@@ -1,0 +1,106 @@
+name: Publish versioned release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - app.config.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: versioned-release-main
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: windows-latest
+    timeout-minutes: 20
+    outputs:
+      tag: ${{ steps.package.outputs.tag }}
+      title: ${{ steps.package.outputs.title }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Build and verify standalone HTML
+        shell: pwsh
+        run: ./scripts/check-repository.ps1
+      - name: Package release files
+        id: package
+        shell: pwsh
+        run: ./scripts/package-release.ps1 -OutputPath (Join-Path $env:RUNNER_TEMP 'release')
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-${{ github.sha }}
+          overwrite: true
+          path: |
+            ${{ runner.temp }}/release/*.html
+            ${{ runner.temp }}/release/*.zip
+            ${{ runner.temp }}/release/SHA256SUMS.txt
+            ${{ runner.temp }}/release/release-notes.md
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: release-${{ github.sha }}
+          path: release
+      - name: Publish the tag and release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ needs.build.outputs.tag }}
+          RELEASE_TITLE: ${{ needs.build.outputs.title }}
+        run: |
+          [[ "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
+          repo_api="repos/$GITHUB_REPOSITORY"
+          release_status=$(gh api --paginate "$repo_api/releases?per_page=100" \
+            --jq ".[] | select(.tag_name == \"$RELEASE_TAG\") | .draft")
+          case "$release_status" in
+            false) echo "$RELEASE_TAG is already published."; exit 0 ;;
+            true|'') ;;
+            *) echo "::error::Unexpected release state for $RELEASE_TAG."; exit 1 ;;
+          esac
+          (cd release && sha256sum --check --strict SHA256SUMS.txt)
+          tag_sha=$(gh api "$repo_api/git/matching-refs/tags/$RELEASE_TAG" \
+            --jq ".[] | select(.ref == \"refs/tags/$RELEASE_TAG\") | .object.sha")
+          if [[ -n "$tag_sha" ]]; then
+            # The commits endpoint peels annotated tags to their commit.
+            tag_commit=$(gh api "$repo_api/commits/$RELEASE_TAG" --jq .sha)
+            if [[ "$tag_commit" != "$GITHUB_SHA" ]]; then
+              echo "::error::$RELEASE_TAG points to $tag_commit, expected $GITHUB_SHA."
+              exit 1
+            fi
+          fi
+
+          if [[ "$release_status" == true ]]; then
+            marker="<!-- automated-release:$GITHUB_SHA -->"
+            draft_marker=$(gh api --paginate "$repo_api/releases?per_page=100" \
+              --jq ".[] | select(.tag_name == \"$RELEASE_TAG\" and .draft) | (.body // \"\") | split(\"\\n\")[0]")
+            if [[ "$draft_marker" != "$marker" ]]; then
+              echo "::error::An unrelated draft already uses $RELEASE_TAG."
+              exit 1
+            fi
+          fi
+
+          if [[ -z "$tag_sha" ]]; then
+            gh api --method POST "$repo_api/git/refs" \
+              -f "ref=refs/tags/$RELEASE_TAG" -f "sha=$GITHUB_SHA" --silent
+          fi
+          if [[ "$release_status" != true ]]; then
+            gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --verify-tag \
+              --draft --title "$RELEASE_TITLE" --notes-file release/release-notes.md
+          fi
+          gh release upload "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --clobber \
+            release/*.html release/*.zip release/SHA256SUMS.txt
+          gh release edit "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --draft=false

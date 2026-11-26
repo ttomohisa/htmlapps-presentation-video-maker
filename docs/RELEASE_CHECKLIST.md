@@ -97,5 +97,6 @@ Use this checklist for every Presentation Video Maker release. Version-specific 
 
 ## Final packaging
 
-- Exclude `.cache/`, transient regression outputs, and generated diagnostic files from the release ZIP.
-- Keep the release archive limited to source, build/verification tooling, required vendor assets, current documentation, screenshots, fixtures, and generated standalone artifacts.
+- When a stable `major.minor.patch` version change in `app.config.json` lands on `main`, **Publish versioned release** verifies the build and publishes both HTML variants, a ZIP, and `SHA256SUMS.txt`. It uses the matching section in `CHANGELOG.md` for the release notes. The workflow can also be started manually on `main`.
+- Confirm the published tag points to the commit built by the workflow. GitHub provides separate source archives from that tag.
+- If the workflow fails, rerun it for the same commit. A published release is left intact, and a draft from the same build can resume uploading.
