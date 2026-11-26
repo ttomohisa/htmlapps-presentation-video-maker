@@ -54,3 +54,25 @@ test('cancel releases the worker and a late reply cannot finish the next slide',
   assert.equal((await retry).duration, 2);
   engine.dispose();
 });
+
+test('worker progress is delivered before completion and ignored after cancellation', async () => {
+  const {workers,args,engine}=harness();
+  const updates=[];
+  const controller=new AbortController();
+  const first=engine.synthesize({...args,signal:controller.signal,onProgress:value=>updates.push(value)});
+  workers[0].onmessage({data:{progress:{phase:'model'}}});
+  workers[0].onmessage({data:{progress:{phase:'synthesis',chunksCompleted:1,totalChunks:3}}});
+  assert.deepEqual(updates,[{phase:'model'},{phase:'synthesis',chunksCompleted:1,totalChunks:3}]);
+  controller.abort();
+  await assert.rejects(first,{name:'AbortError'});
+  const next=engine.synthesize({...args,onProgress:value=>updates.push(value)});
+  workers[0].onmessage({data:{progress:{phase:'synthesis',chunksCompleted:3,totalChunks:3}}});
+  workers[1].onmessage({data:{progress:{phase:'script'}}});
+  const blob=new Blob(['sample']);
+  workers[1].onmessage({data:{blob,duration:1.5}});
+  workers[1].onmessage({data:{progress:{phase:'model'}}});
+  assert.equal((await next).blob,blob);
+  assert.equal(updates.length,3);
+  assert.deepEqual(updates.at(-1),{phase:'script'});
+  engine.dispose();
+});

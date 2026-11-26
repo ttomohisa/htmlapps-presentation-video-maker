@@ -142,6 +142,7 @@
 
   self.onmessage = async ({data}) => {
     try {
+      if (data.voice || data.model) self.postMessage({progress: {phase: "model"}});
       if (data.voice) {
         const bytes = await readVerified(data.voice, VOICES[data.language], "voice");
         voices.set(data.language, new Float32Array(bytes));
@@ -151,19 +152,28 @@
         self.kokoroCreateSpellingReader = () => createSpellingReader(spellingSource);
         await initialize(data.ortSource, data.wasmGzip, data.model);
       }
-      const pcmParts = [];
-      let byteLength = 0;
+      self.postMessage({progress: {phase: "script"}});
+      const inputChunks = [];
       for (const paragraph of data.text.split(/[\r\n]+/u)) {
         if (!paragraph.trim()) continue;
         const phones = await self.kokoroPhonemize(paragraph, data.language);
-        for (const ids of chunks(phones)) {
-          const pcm = await synthesizeChunk(ids, voices.get(data.language), data.rate);
-          byteLength += pcm.byteLength;
-          if (byteLength > 0xffffffff - 36) throw failure("text", "The narration exceeds the WAV size limit.");
-          pcmParts.push(pcm);
-        }
+        for (const ids of chunks(phones)) inputChunks.push(ids);
       }
-      if (!byteLength) throw failure("text", "The script contains no pronounceable text.");
+      const totalChunks = inputChunks.length;
+      if (!totalChunks) throw failure("text", "The script contains no pronounceable text.");
+      const reportSynthesis = chunksCompleted => {
+        self.postMessage({progress: {phase: "synthesis", chunksCompleted, totalChunks}});
+      };
+      const pcmParts = [];
+      let byteLength = 0;
+      reportSynthesis(0);
+      for (const [index, ids] of inputChunks.entries()) {
+        const pcm = await synthesizeChunk(ids, voices.get(data.language), data.rate);
+        byteLength += pcm.byteLength;
+        if (byteLength > 0xffffffff - 36) throw failure("text", "The narration exceeds the WAV size limit.");
+        pcmParts.push(pcm);
+        reportSynthesis(index + 1);
+      }
       const blob = new Blob([wavHeader(byteLength), ...pcmParts], {type: "audio/wav"});
       self.postMessage({blob, duration: byteLength / (2 * SAMPLE_RATE)});
     } catch (error) {

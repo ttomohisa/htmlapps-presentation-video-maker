@@ -11,7 +11,7 @@ The high-fidelity visual path uses pinned standalone browser builds of `@aiden0z
 Narration can come from four local sources:
 
 - **Local TTS model**: verifies the selected model and voice files against pinned hashes, then uses embedded text processing and inference in a browser worker to produce scene audio.
-- **On-device speech**: local `SpeechSynthesis` voices plus explicit `getDisplayMedia()` system-audio capture on supported desktop browsers. The same capture engine can target only the selected TTS scene or the full TTS batch. Smartphone TTS recording is intentionally unavailable; mobile users are directed to microphone or local audio-file narration.
+- **On-device speech**: local `SpeechSynthesis` voices plus explicit `getDisplayMedia()` system-audio capture on supported desktop browsers. The same capture engine can target only the selected TTS scene or the full TTS batch. Compatible phones can generate narration with Kokoro, record a microphone or import an audio file.
 - **Microphone**: `getUserMedia({audio:true})` after the user explicitly starts recording the selected slide.
 - **Local audio file**: a user-selected audio file read locally and used as the scene recording.
 
@@ -50,7 +50,7 @@ Local model synthesis processes explicitly selected, pinned model and voice file
 
 The application does not request microphone or display/system-audio capture on page load. The user must initiate the relevant action, and browser/operating-system permission dialogs remain authoritative.
 
-System-audio capture can include notification sounds or unrelated application audio. The UI asks the user to stop unrelated audio while recording on-device speech. On smartphones, the UI does not offer TTS/system-audio recording as a supported path and explicitly explains that TTS is preview-only there.
+System-audio capture can include notification sounds or unrelated application audio. The UI asks the user to stop unrelated audio while recording on-device speech. On smartphones, the browser voice is available for preview where supported. Kokoro generates audio for the MP4 without asking for capture permission.
 
 ## Reporting
 

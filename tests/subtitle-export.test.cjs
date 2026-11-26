@@ -42,14 +42,23 @@ function harness() {
     format:(key,values={})=>Object.entries(values).reduce((text,[k,v])=>text.replaceAll(`{${k}}`,String(v)),translations[ctx.language][key]||key)
   });
   for (const name of ['updateMobileResolutionWarning','updateMobileNavIndicators','updateWorkflowNavIndicators','updateProjectButtons','updateCurrentSceneAudioStatus','updateSceneProgress','updateRecordingPlan','renderSlides','selectSlide','updateSceneEditor','updateCompatibility','renderSelectedSlide','setRendererState','updateDeckSummary','refreshVoices','applyDeviceUi','refreshCaptureReady','cancelSpeech','cancelMicRecording','stopDisplayStream','cleanupRecording','clearVideoResult','cancelVideo','disposeRendererState','setWorkflowNavCollapsed','markVideoResultStale']) ctx[name]=()=>{};
-  const names=['formatSubtitleTime','subtitleTimelineEntries','exportSubtitles','textExportBase','safeOutputBase','videoSceneIndexes','sceneVideoDuration','estimateSpeechSeconds','splitSubtitleSegments','videoTransitionSeconds','videoEstimatedSeconds','formatClock','videoValidation','setVideoExportChip','renderVideoTimeline','updateVideoExportState','narrationSource','sourceLabel','narrationSourceLabel','recordingSourceLabel','renderSceneRecordings','saveCurrentScript','resetCurrentScript','applyNarrationToAll','updateNarrationDuration','markSceneRecordingStale','invalidateSource','commitSceneAudio','restoreProjectSlide','openProjectFile','applyLanguage'];
-  vm.runInContext(names.map(name=>extract(name)).join('\n')+'\n'+['serializeSubtitles','updateSubtitlePreview'].map(name=>extract(name,false)).join('\n'),ctx);
+  Object.assign(ctx, {renderGuidedVideo(){}, showGuidePage(){}, setImportError(){}, rememberProjectContents(){}, defaultDeckMethod:()=> 'file'});
+  const names=['formatSubtitleTime','subtitleTimelineEntries','exportSubtitles','textExportBase','safeOutputBase','videoSceneIndexes','sceneVideoDuration','estimateSpeechSeconds','splitSubtitleSegments','videoTransitionSeconds','videoEstimatedSeconds','formatClock','videoValidation','guidedAudioState','sceneNeedsAttention','validDeckMethod','setVideoExportChip','renderVideoTimeline','updateVideoExportState','narrationSource','sourceLabel','narrationSourceLabel','recordingSourceLabel','renderSceneRecordings','saveCurrentScript','resetCurrentScript','applyNarrationToAll','updateNarrationDuration','markSceneRecordingStale','invalidateSource','commitSceneAudio','restoreProjectSlide','openProjectFile','applyLanguage'];
+  vm.runInContext([...names,'formatVideoLength'].map(name=>extract(name)).join('\n')+'\n'+['serializeSubtitles','updateSubtitlePreview'].map(name=>extract(name,false)).join('\n'),ctx);
   const eventLines=source.split('\n').filter(line=>line.startsWith("      $('#")&&line.includes(".addEventListener(")&&['#subtitlePreview','#videoTransition','#previewVoiceButton','#rateRange'].some(id=>line.includes(`$('${id}')`)));
   vm.runInContext(eventLines.join('\n'),ctx);
   return {ctx,$,downloads,toasts,translations};
 }
 function open(h) {assert.equal(typeof h.ctx.updateSubtitlePreview,'function','Preview must be implemented'); h.$('#subtitlePreview').open=true; h.ctx.updateSubtitlePreview();}
 function preview(h){return h.$('#subtitlePreviewText').value;}
+
+test('video length rounds the estimate and uses localized hour, minute and second units',()=>{
+  const {ctx}=harness();
+  for(const [seconds,ja,en] of [[0,'約0秒','About 0 sec'],[37.8,'約38秒','About 38 sec'],[59.6,'約1分','About 1 min'],[65,'約1分5秒','About 1 min 5 sec'],[3599.6,'約1時間','About 1 hr'],[3723,'約1時間2分3秒','About 1 hr 2 min 3 sec']]){
+    ctx.language='ja'; assert.equal(ctx.formatVideoLength(seconds),ja);
+    ctx.language='en'; assert.equal(ctx.formatVideoLength(seconds),en);
+  }
+});
 function editControls(h,s) {h.ctx.state.selectedSlideIndex=0; h.$('#scriptInput').value=s.script;h.$('#prePaddingInput').value=String(s.prePadding);h.$('#postPaddingInput').value=String(s.postPadding);h.$('#sceneEnabledInput').checked=s.enabled;}
 
 for (const vtt of [false,true]) test(`${vtt?'VTT':'SRT'} timestamps carry rounded milliseconds and handle invalid inputs`,()=>{
@@ -120,7 +129,7 @@ test('source invalidation immediately clears the previous deck while open or col
 test('project opening replaces old preview with restored scripts, timings and output format settings',async()=>{
   const h=harness();h.ctx.state.slides=[scene({script:'Old deck.'})];open(h);
   const file=new File(['synthetic'],'fixture.pvm');h.ctx.readProjectManifest=async()=>({payloadStart:0,manifest:{slideCount:1,source:{name:'fixture.pptx',asset:{}},slides:[{script:'Restored 日本語.',enabled:true,narrationDuration:3,prePadding:2}],settings:{videoTransition:'cut'}}});
-  h.ctx.projectAssetBlob=()=>new Blob(['synthetic']);h.ctx.loadPptx=async()=>{h.ctx.invalidateSource();assert.equal(preview(h),'');h.ctx.state.slides=[scene()];};
+  h.ctx.projectAssetBlob=()=>new Blob(['synthetic']);h.ctx.loadPptx=async()=>{h.ctx.invalidateSource();assert.equal(preview(h),'');h.ctx.state.slides=[scene()];return true;};
   await h.ctx.openProjectFile(file);assert.ok(preview(h).includes('Restored 日本語.'));assert.ok(!preview(h).includes('Old deck.'));assert.match(preview(h),/00:00:02,000 --> 00:00:05,000/);
 });
 test('language changes refresh cue count and keep complete large content',()=>{

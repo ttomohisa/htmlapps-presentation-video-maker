@@ -48,18 +48,29 @@ test('Help continues using native showModal, Close and geometric backdrop dismis
   assert.doesNotMatch(source, /helpDialog\.addEventListener\(['"]cancel['"]/);
 });
 
-test('the existing local-processing badge keeps its decorative shield and labels', () => {
-  const badge = source.match(/<span class="local-badge">([\s\S]*?)<span data-i18n="localBadge">/)[1];
-  assert.match(badge, /aria-hidden="true"/);
-  assert.match(badge, /M12 3 5 6v5c0 4\.6 2\.8 8 7 10 4\.2-2 7-5\.4 7-10V6z/);
+test('one shield badge beside the introduction identifies on-device processing', () => {
+  const intro = source.match(/<div class="page-intro">([\s\S]*?)<\/div>/)[1];
+  assert.match(intro, /<\/p>\s*<span class="local-badge">\s*<svg[^>]*aria-hidden="true"[\s\S]*?<span data-i18n="localBadge">/);
+  assert.equal((source.match(/data-i18n="localBadge"/g) || []).length, 1);
+  const style = declarationsFor('.local-badge');
+  assert.equal(style.background, 'transparent');
+  assert.equal(style.border, '0');
+  assert.equal(style['font-weight'], '500');
+  assert.equal(style.padding, '7px 0');
+  assert.equal(declarationsFor('.local-badge svg').width, '14px');
   assert.equal(translations.ja.localBadge, '完全ローカル処理');
   assert.equal(translations.en.localBadge, 'Fully local processing');
 });
 
-test('Help omits implementation commentary and retains user instructions', () => {
-  assert.match(source, /<!-- APP:HELP:BEGIN -->[\s\S]*?data-i18n="helpDialogText"[\s\S]*?<!-- APP:HELP:END -->/);
-  assert.doesNotMatch(translations.ja.helpDialogText || '', /背景ページ.*スクロールしません/);
-  assert.match(translations.ja.helpDialogText || '', /閉じるボタン.*Esc.*枠外/);
-  assert.doesNotMatch(translations.en.helpDialogText || '', /background page does not scroll/);
-  assert.match(translations.en.helpDialogText || '', /Close button.*Esc.*outside/);
+test('Help opens with three steps and has Japanese and English copy for every topic', () => {
+  const body = source.split('<!-- APP:HELP:BEGIN -->')[1].split('<!-- APP:HELP:END -->')[0];
+  const steps = body.match(/<ol\b[^>]*>([\s\S]*?)<\/ol>/);
+  assert.ok(steps);
+  assert.equal((steps[1].match(/<li>/g) || []).length, 3);
+  for (const match of body.matchAll(/data-i18n="([^"]+)">([^<]+)</g)) {
+    const key = match[1];
+    assert.equal(match[2], translations.ja[key], key);
+    assert.ok(translations.en[key], key);
+  }
+  assert.doesNotMatch(source, /helpDialogText/);
 });

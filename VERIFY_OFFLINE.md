@@ -11,9 +11,9 @@
 
 ## Local model narration
 
-For the local TTS path, save the pinned `model_quantized.onnx`, `jf_alpha.bin` and `af_heart.bin` from the in-app download links. With the browser offline, generate a Japanese slide and an English slide, save the project, close the tab, and reopen the project. Export MP4 before selecting any model files again.
+The in-app download links open Hugging Face and require a connection. Before going offline, save the pinned `model_quantized.onnx`, `jf_alpha.bin` and `af_heart.bin` files. With the browser offline, load the model and each voice from its own row, then generate and listen to a Japanese slide before generating the remaining English slide from the deck action, save the project, close the tab, and reopen the project. Export MP4 before selecting any model files again.
 
-The repeatable desktop test uses Playwright with Google Chrome and the checked-in three-slide deck. With Playwright available to Node, set the environment variable `PVM_KOKORO_DIR` to the directory with the three downloaded files and run `node scripts/local-tts.browser.cjs` from the repository root. Set `PVM_TEST_HTML` to exercise another standalone build. The test saves its project, video and subtitles in a temporary directory and prints the path.
+The repeatable desktop test uses Playwright with Google Chrome and the checked-in three-slide deck. With Playwright available to Node, set the environment variable `PVM_KOKORO_DIR` to the directory with the three downloaded files and run `node scripts/local-tts.browser.cjs` from the repository root. Set `PVM_TEST_HTML` to exercise another standalone build. The test also runs a Pixel phone profile. It reopens a deck with one missing voice, checks that audio already generated on desktop remains identical, generates the remaining narration and exports an MP4. The script saves its projects, videos and subtitles in a temporary directory and prints the path.
 
 ## Permission-dependent narration
 
@@ -23,4 +23,4 @@ For local SpeechSynthesis capture on Windows, start recording from the app, choo
 
 ## Smartphone verification
 
-On a smartphone browser, verify PPTX loading, Script & audio editing, microphone/local-audio narration, `.pvm` save/open, and 720p MP4 export. The app must visibly state that on-device speech/TTS cannot be recorded on smartphones; the desktop system-audio batch controls must not be presented as a mobile recording path. 1080p may remain selectable but must show the mobile memory warning.
+On a smartphone browser, verify PPTX loading, Narration editing, Japanese and English Kokoro generation, microphone or audio-file narration, `.pvm` save/open, and 720p MP4 export. Check that browser voice preview is separate from Kokoro narration and the desktop system-audio controls are hidden. 1080p may remain selectable but must show the mobile memory warning.

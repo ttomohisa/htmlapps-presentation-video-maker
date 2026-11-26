@@ -39,8 +39,13 @@ $buildFiles = @('index.html', 'index.self-extract.html', 'dependency-manifest.js
 foreach ($file in $buildFiles) {
   Copy-Item -LiteralPath (Join-Path $dist $file) -Destination $bundle.FullName
 }
-foreach ($file in @('README.md', 'README.ja.md', 'CHANGELOG.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'dependencies.json')) {
+foreach ($file in @('README.md', 'README.ja.md', 'CHANGELOG.md', 'CONTRIBUTING.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'dependencies.json')) {
   Copy-Item -LiteralPath (Join-Path $root $file) -Destination $bundle.FullName
+}
+
+$screenshots = New-Item -ItemType Directory -Path (Join-Path $bundle.FullName 'assets')
+foreach ($nameInReadme in @('screenshot.png', 'screenshot-en.png')) {
+  Copy-Item -LiteralPath (Join-Path $root "assets/$nameInReadme") -Destination $screenshots.FullName
 }
 
 # Include the license notices linked by the release documentation.

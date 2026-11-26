@@ -3,7 +3,7 @@
   "name": "Presentation Video Maker",
   "nameJa": "Presentation Video Maker",
   "slug": "presentation-video-maker",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Turn PowerPoint slides into a narrated MP4 locally. Generate Japanese and English narration with a downloaded Kokoro model, capture a voice, or use existing audio.",
   "descriptionJa": "PowerPointからナレーション付きMP4を端末内で作成します。ダウンロードしたモデルで日本語・英語の原稿を読み上げるほか、録音や音声ファイルも使えます。",
   "defaultLanguage": "auto",

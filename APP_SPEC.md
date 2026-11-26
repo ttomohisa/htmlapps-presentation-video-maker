@@ -4,13 +4,15 @@
 
 Presentation Video Maker is a Browser Kitty app for turning a local PowerPoint deck into a narrated video without uploading the deck, scripts, or narration audio.
 
+Version `2.1.0` introduces the Open file, Narration and Video workflow. Compatible phones can generate Kokoro narration from speaker notes. Users can prepare one slide, generate the rest as a batch, then save an editable project or export the MP4. [Workflow design](docs/superpowers/specs/2026-11-26-guided-narration-design.md)
+
 Version `2.0.0` adds local Japanese and US English model narration. Slides can inherit the presentation language or use an explicit language. The application loads a user-selected Kokoro model and voice, generates scene audio locally, and saves that audio in the project. [Local TTS design](docs/superpowers/specs/2026-11-25-local-tts-design.md)
 
 Version `1.3.0` keeps the tested v1.2.0 smartphone/project/narration behavior and adds an accelerated local video-export path. On browsers that can encode H.264 and AAC with WebCodecs, the app avoids real-time MediaRecorder composition and writes encoded tracks directly into MP4 with a built-in ISO BMFF muxer; FFmpeg WASM is not started on this path. The v1.2.0 MediaRecorder + FFmpeg pipeline remains the compatibility fallback. Native PowerPoint animations/transitions remain out of scope.
 
 ## 2. Current release
 
-- Version: `2.0.0`
+- Version: `2.1.0`
 - Readable one-file build: `dist/index.html`
 - Self-extracting one-file build: `dist/index.self-extract.html`
 - Japanese and English in the same HTML. The header language switch shows `EN` in Japanese and `JA` in English, with a localized target-language accessible name and tooltip. Help retains its localized title and tooltip.
@@ -19,33 +21,11 @@ Version `1.3.0` keeps the tested v1.2.0 smartphone/project/narration behavior an
 
 ## 3. Primary flow
 
-1. Open the app.
-2. Drop or choose one `.pptx` file, up to 150 MB.
-3. Parse the PPTX package locally and extract slide text and speaker notes.
-4. Build the high-fidelity presentation model with pinned `@aiden0z/pptx-renderer@1.2.4` when the dependency is embedded.
-5. Treat each slide as one scene.
-6. Use speaker notes as the narration script when present; otherwise create a plain draft from slide text.
-7. Edit per-scene script, inclusion, and padding. Choose local model synthesis, on-device speech, microphone, or a local audio file.
-8. For local model synthesis, select the downloaded model and the voice file for the chosen language. Generate the selected scene or generate included scenes with missing, outdated, or failed local-model audio.
-9. For on-device speech scenes, choose voice/rate and either record the selected slide with **Record this slide** or use **Record all scenes** for the TTS subset. For microphone scenes, record the selected slide directly. For file scenes, choose a local audio file.
-10. For every TTS capture run, request display capture once for that run, require `displaySurface === "monitor"` plus an audio track, and run the measurable-signal preflight before replacing scene audio.
-11. In an all-scene run, reuse the same system-audio stream across all target TTS scenes. In a selected-scene run, pass only that scene to the same capture engine. Each target scene receives its own MediaRecorder Blob; an empty/no-signal scene is retried once automatically.
-12. For microphone scenes, request microphone access only after the user presses the selected-slide record action, and keep the previous scene audio until the replacement succeeds.
-13. For file scenes, accept a local audio file up to 100 MB, read its duration locally, and keep the File/Blob in memory without upload.
-14. Keep all successful per-scene audio Blobs locally and expose playback. Different narration sources may coexist in the same presentation.
-15. If the active narration source or its script/voice/rate changes, preserve the old Blob but mark it stale until a matching replacement exists.
-16. Show ready/unrecorded/stale/failed counts and allow the user to jump to the next scene that needs attention.
-17. Allow explicit `.pvm` project save/open. A project contains the source PPTX, scene scripts/settings, local narration assets, optional BGM, and output settings; generated MP4 is intentionally excluded.
-18. Keep the PowerPoint picker and `.pvm` project picker visually and technically separate; the project picker accepts `.pvm` files only.
-19. In the per-scene narration asset list, provide a direct action appropriate to the source and an explicit playback control.
-20. Allow local TXT script export and SRT/VTT subtitle export from the current app timeline.
-21. Verify that every included scene that requires narration has a fresh successful recording from its currently selected source before video creation.
-22. Render each included slide to a 720p or 1080p snapshot using the high-fidelity renderer plus origin-clean html2canvas rasterization when available; keep the simple preview only as an editing fallback.
-23. Choose Cut or Fade transitions, optional burned-in subtitles, and optional local BGM with volume/loop settings.
-24. Probe local H.264/AAC WebCodecs encoder support. When both codecs are available, encode the visual timeline and mixed narration/BGM as fast as the device allows without real-time waiting.
-25. On the accelerated path, write AVC samples and AAC access units directly into an ISO BMFF/MP4 container with the built-in muxer. No intermediate WebM, FFmpeg startup, or second video/audio encode is performed.
-26. If the accelerated path is unavailable or cannot complete, automatically use the v1.2.0 Canvas + Web Audio + MediaRecorder intermediate-WebM path and FFmpeg H.264/AAC transcode.
-27. Preview the resulting MP4, edit the output filename, and save it through an explicit user action.
+1. **Open file.** Open a .pptx up to 150 MB. Import notes and use slide text as the draft when notes are absent. A .pvm opens in Narration or Video after restoration, depending on whether the audio is ready.
+2. **Narration.** Prepare the deck’s audio. Compatible desktop and phone browsers default to local model narration with Japanese selected. Otherwise, the app defaults to microphone recording if supported, then to audio files. Model setup lists the shared model and voices needed for the batch with separate downloads and single-file pickers. Creating and listening to a sample produces the actual WAV for that slide.
+3. **Edit individual slides.** Choose a slide to edit its script or settings. Batch synthesis and batch computer-speech capture skip audio that is already usable for the selected method. An included reading slide with an empty script can appear without narration. Audio recorded through the microphone or selected from a file can be used with an empty script.
+4. **Video.** Show the output duration, included slide count and resolution. Link unmet audio requirements to the affected slide. Show progress, cancellation, preview and saving at the same location. Provide transition, BGM, subtitle and timeline controls under Subtitles, music and transitions, and text exports under a separate disclosure.
+5. **Save work.** Store deck and individual audio methods as optional fields in the v2 manifest, alongside the existing actual method. Older projects restore their saved methods as explicit choices. Preserve source and model compatibility across reopening.
 
 ## 4. Local-processing boundary
 
@@ -57,7 +37,7 @@ Runtime network requirements:
 - No external font.
 - No analytics or telemetry.
 - No AI API.
-- No cloud TTS API.
+- No cloud TTS API. The download links for the model and voices open Hugging Face. Once saved, the files can be selected offline.
 - CSP keeps `connect-src 'none'`.
 - Third-party JavaScript needed at runtime is downloaded only during the build and embedded into the standalone HTML.
 
@@ -79,6 +59,8 @@ Changing the input file is a hard state boundary:
 - ignore stale parse/render results.
 
 Presentation content is not persisted automatically in LocalStorage or IndexedDB. Language preference is the only current LocalStorage preference. Explicit `.pvm` project save/open remains the persistence path: the user chooses when to create or reopen a local project file containing the PPTX, scene settings, narration assets, BGM, and output settings.
+
+“Unsaved” appears beside “Save work” when project content differs from the imported or last saved state. Switching steps, selecting slides, changing the UI language and exporting an MP4 do not count as edits. On the Video screen, “Video length” estimates playback duration, rounded to whole seconds and displayed in the UI language.
 
 ## 6. PPTX parser and renderer
 
@@ -150,7 +132,7 @@ Defaults:
 - `postPadding`: 0.8 seconds;
 - `recordingStatus`: `pending`;
 - recording fields are empty/zero until capture succeeds;
-- new PPTX scenes default to `mic` on detected smartphones and `tts` on desktop. Loading an existing `.pvm` preserves its saved narration source.
+- new PPTX scenes default to `local` on supported phones and desktop browsers, then fall back to `mic` or `file`. Loading an existing `.pvm` preserves its saved narration source.
 
 The recorded Blob intentionally contains only a small technical lead/tail around speech. `recordingSpeechStartOffset` and `recordingSpeechEndOffset` identify the spoken region for video composition. User-configured pre/post padding is **not waited out during capture**; it remains timeline metadata.
 
@@ -166,7 +148,7 @@ Applying voice/rate to all scenes and restoring source scripts preserve Undo beh
 
 Each scene has `audioSource` with one of `local`, `tts`, `mic`, or `file`. A successful audio asset records its provenance in `recordingSource`. Switching sources preserves the previous Blob and makes an unmatched recording stale.
 
-- `local`: synthesizes WAV audio from the selected Kokoro model and Japanese or US English voice, entirely inside a browser worker. A scene inherits the project language or overrides it, and can set its own speed. The worker uses the English lexicon and spelling rules when Japanese scripts contain English words. Typical abbreviations retain letter-by-letter readings. Model synthesis is validated on desktop Chromium.
+- `local`: synthesizes WAV audio from the selected Kokoro model and Japanese or US English voice, entirely inside a browser worker. A scene inherits the project language or overrides it, and can set its own speed. The worker uses the English lexicon and spelling rules when Japanese scripts contain English words. Typical abbreviations retain letter-by-letter readings. Compatible phones and desktop Chrome or Edge can generate local model audio. A phone releases the Kokoro worker before generating video so its runtime memory can be reclaimed.
 - `tts`: uses SpeechSynthesis and Windows system-audio capture on supported desktop browsers. The selected scene or all eligible scenes can be captured. Smartphones can preview browser speech where available and use microphone or file narration for the supported recording workflow.
 - `mic`: uses `getUserMedia({audio:true})` and MediaRecorder to record the selected slide directly from the microphone. Existing audio is not destroyed until a new recording succeeds.
 - `file`: accepts a local audio file up to 100 MB, reads duration locally, and stores the File directly as the scene audio Blob.
@@ -187,11 +169,11 @@ The app:
 
 The user already confirmed on a real Windows environment that Web Speech API narration is recordable through **Entire Screen + system audio**.
 
-Smartphone rule for v1.2.0:
+System audio on smartphones:
 
 - SpeechSynthesis may still be used for preview when the browser exposes local voices.
 - TTS capture buttons and all-scene system-audio controls are unavailable on detected smartphones.
-- The UI must state that smartphone TTS audio cannot be recorded and direct the user to microphone or local audio-file narration.
+- The UI describes the browser voice as a sample and identifies Kokoro as the route for generating narration audio on compatible phones.
 - Do not emulate a mobile TTS recording path with cloud APIs or network services.
 
 ## 11. System-audio preflight
@@ -238,7 +220,7 @@ A no-signal/empty-data scene is automatically tried one additional time before b
 
 ## 13. Project save/resume and text export
 
-Project persistence is explicit and file-based. The app does not autosave presentation content.
+Project persistence is explicit and file-based. Unsaved appears beside Save work when the content differs from the last import or save. Navigation and interface language do not change that status.
 
 The `.pvm` container uses a small local binary format with no additional runtime dependency:
 
@@ -249,7 +231,7 @@ N bytes   UTF-8 JSON manifest
 remaining raw payload blobs (PPTX / scene audio / BGM)
 ```
 
-The manifest identifies `presentation-video-maker-project`. v2.0.0 writes schema version `2` and reads versions `1` and `2`. It stores source metadata, one record per slide, optional BGM, output settings, and byte ranges for embedded assets. Active model generation, browser speech capture, microphone recording, and video export block project operations. Opening a project with current work loaded requires confirmation.
+The manifest identifies `presentation-video-maker-project`. The app writes schema version `2` and reads versions `1` and `2`. It stores source metadata, one record per slide, optional BGM, output settings, and byte ranges for embedded assets. Active model generation, browser speech capture, microphone recording, and video export block project operations. Opening a project with current work loaded requires confirmation.
 
 The project includes:
 
@@ -347,63 +329,16 @@ The application repository is distributed under GPL-3.0 in v1.3.0. See `THIRD_PA
 
 Help uses a viewport-bounded native dialog with one scrollable body and a fixed header. Closing it restores ordinary page scrolling and preserves the page position. The final build metadata remains readable in both languages at narrow, short viewport sizes.
 
-The introduction uses a single sentence describing the PowerPoint-to-narrated-MP4 workflow. The shield-marked local-processing badge and informational footer appear above 600 px. At 600 px and below, both are hidden while navigation and controls remain available.
+On the initial import screen, a single sentence describes the PowerPoint-to-narrated-MP4 workflow. Above 600 px, the green shield and local-processing label sit to its right, above the file drop zone, as in Video Contact Sheet. Opening a PowerPoint or a saved project hides the introduction and badge, including when returning to the import step. The informational footer appears above 600 px. At 600 px and below, the badge and footer are hidden while navigation and controls remain available.
 
-### Desktop
+### Shared navigation
 
-Use a four-step quick-navigation model while keeping the existing editor panels:
-
-1. PowerPoint / slide preview
-2. Script & voice
-3. Narration assets / all-scene capture
-4. Video creation
-
-The quick navigation is shown near the top, can be collapsed, and auto-compacts after a successful PowerPoint load. The PowerPoint drop area is hidden after loading while the loaded-file summary and Replace action remain visible. On desktop, Step 3 / 4 starts directly below the slide workspace in the left column while Script & voice remains in the right column, so the next workflow step is visible sooner without nested right-pane scrolling.
-
-The output area contains:
-
-- Entire Screen + system audio guidance;
-- recording target count;
-- estimated narration duration;
-- recorded count;
-- one primary all-scene recording action;
-- cancel action while busy;
-- failed or stale scenes are corrected individually from the per-scene narration list;
-- progress/status/current scene/current voice;
-- audio track / signal / recorded-scene metrics;
-- per-scene list with status, duration, size, voice/rate, and playback;
-- selected-scene TTS capture in the Script & voice panel;
-- project save/open controls once a presentation is loaded;
-- ready / unrecorded / stale / failed narration counts with next-attention navigation;
-- TXT / SRT / VTT export in the video-output area.
-
-### Smartphone
-
-Use fixed bottom tabs in the narrow smartphone layout:
-
-- `スライド / Slides`
-- `台本・音声 / Script & audio`
-- `動画 / Video`
-
-Smartphone requirements:
-
-- hide the desktop four-step quick-navigation card in the narrow mobile layout;
-- keep Previous / Next scene actions side-by-side with explicit labels and at least 44 px tap targets;
-- keep text inputs/selects at a mobile-safe font size to avoid browser zoom during editing;
-- keep selected-slide context near the top of the Script & audio view while editing long scripts;
-- keep narration-source controls usable at narrow widths;
-- new PPTX scenes default to microphone narration on detected smartphones; project restore must preserve the source saved in `.pvm`;
-- show an explicit warning in the TTS panel that on-device speech is preview-only on smartphones and cannot be recorded as a video narration asset;
-- hide desktop Entire Screen / system-audio batch-capture controls on detected smartphones while leaving the per-scene narration list available;
-- direct mobile users to per-scene microphone recording or local audio selection from both the editor and per-scene recording rows;
-- keep scene playback and recording controls visibly tappable and keyboard-focusable;
-- show ready / unrecorded / stale / failed status and next-attention navigation;
-- default video output to 720p and warn when 1080p is selected;
-- use progressive snapshot composition to lower peak memory and request Wake Lock during video export when available;
-- preserve project save/open, TXT/SRT/VTT export, BGM, subtitles, Cut/Fade, and MP4 save on mobile;
-- bound long recording lists and wrap filenames/status text so there is no horizontal page overflow.
-
-No horizontal page overflow at 360–390 px. Smartphone TTS capture is intentionally unsupported in v1.2.0; this limitation must be stated in the in-app UI, Help, README, and release notes.
+- Show Open file, Narration and Video once a deck is loaded. Each screen is independently accessible and maintains the current slide and edits.
+- The Narration screen puts the next action above the slide editor. Use the slide list to jump to a slide or filter for slides that need audio.
+- Use one stacked layout with collapsible slide list and preview on narrow screens. Screen width controls layout. Device capability determines available narration methods.
+- Offer Kokoro on compatible phones and provide recording or file selection where the saved method is unavailable. Play and export valid audio that was already stored in a project.
+- Use 720p by default on phones and 1080p on desktop. Preserve the resolution and finishing settings of a reopened project.
+- Check explicit state labels, visible focus and no horizontal overflow at 320 px and common desktop widths.
 
 ## 17. Application phases
 
@@ -452,16 +387,16 @@ Required for the current stable line:
 - TTS can be captured for the selected scene alone or as an all-scene TTS batch through the same validated system-audio path;
 - all four narration sources can coexist, and local model synthesis works offline for Japanese and US English;
 - `.pvm` save/open round-trips PPTX, scene settings, narration assets, BGM, and output settings without network access;
-- ready/unrecorded/stale/failed narration counts and next-attention navigation work on large decks;
+- the audio status filter and video issue link work on large decks;
 - TXT, SRT, and VTT export work locally from current script/timeline data;
 - changing script, source, voice, or rate preserves mismatched old audio as stale instead of silently deleting it;
 - TTS batch capture requests sharing once, targets only TTS scenes, validates Entire Screen + system audio, verifies measurable signal, retries an empty/no-signal scene once, and keeps successful scenes when another scene fails;
 - microphone permission is requested only after an explicit user action;
 - local narration/BGM files remain local and are limited to 100 MB each;
 - Japanese/English UI works without horizontal page overflow at 360–390 px;
-- smartphone UI shows Slides / Script & audio / Video tabs without horizontal overflow at 360–390 px;
-- new PPTX scenes default to microphone narration on detected smartphones while `.pvm` restore preserves saved sources;
-- smartphone UI explicitly states that TTS/on-device speech can be previewed but cannot be captured as narration; desktop system-audio capture controls are hidden on smartphones;
+- smartphone UI shows Open file / Narration / Video without horizontal overflow at 320–390 px;
+- new PPTX scenes default to Kokoro on compatible smartphones while `.pvm` restore preserves saved sources;
+- compatible phones can generate Japanese and English Kokoro audio and include it in MP4, while browser voice preview and desktop system-audio capture are presented separately;
 - smartphone video output defaults to 720p, shows a 1080p memory warning, uses progressive snapshot composition, and releases the FFmpeg runner after export;
 - smartphone video creation requests Wake Lock when available without making Wake Lock a hard requirement;
 - the PPTX drop area closes after a successful load while the loaded-file summary and Replace action remain available;

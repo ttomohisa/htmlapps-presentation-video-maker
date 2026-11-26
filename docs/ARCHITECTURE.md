@@ -34,7 +34,7 @@ The canonical repository check runs the application regressions against the sour
    - Japanese or US English Kokoro synthesis using the selected local model and voice files. The browser worker performs text normalization, phonemization and ONNX inference, then returns a WAV and its duration;
    - microphone recording through `getUserMedia()`;
    - a local audio file.
-5. The app tracks ready / unrecorded / stale / failed narration and can jump to the next scene needing attention.
+5. The shared Open file, Narration and Video navigation switches between three views of the same deck state. Narration derives its next action and audio checklist from the same readiness rules as export.
 6. The user may explicitly save/open a local `.pvm` project containing the source PPTX, scene settings, narration assets, optional BGM, and output settings.
 7. TXT scripts and SRT/VTT subtitle cues can be generated locally from the current scene/timeline data.
 8. Slide visuals are rasterized to an origin-clean Canvas with `html2canvas` and `foreignObjectRendering: false`.
@@ -46,7 +46,7 @@ No presentation, `.pvm` project, narration, BGM, intermediate video, or generate
 
 ## Project container
 
-The `.pvm` project format is a local binary container. v2.0.0 writes manifest version 2 and reads versions 1 and 2:
+The `.pvm` project format is a local binary container. The app writes manifest version 2 and reads versions 1 and 2:
 
 ```text
 PVMPRJ1\n                       # 8-byte magic
@@ -55,7 +55,7 @@ PVMPRJ1\n                       # 8-byte magic
 <raw payload blobs>              # PPTX, scene audio, optional BGM
 ```
 
-The manifest stores per-scene editable state, model/voice identifiers, the project narration language, output settings, and byte ranges into the raw payload. Generated WAVs are scene audio assets, so playback and export can resume without the model files. Model files, voice files, and the generated MP4 stay separate. Saving is explicit.
+The manifest stores per-scene editable state, model/voice identifiers, the deck narration method and language, output settings, and byte ranges into the raw payload. An optional flag records whether each slide follows the deck method. A project without this flag treats its saved per-slide methods as explicit. Generated WAVs are scene audio assets, so playback and export can resume without the model files. Model files, voice files, and the generated MP4 stay separate. Saving is explicit.
 
 Opening a project reconstructs the source PPTX locally, runs the normal PPTX parser/renderer, then restores saved scene/audio/BGM/output state. Model synthesis, browser speech capture, microphone recording, and video export block project save/open.
 
@@ -79,8 +79,9 @@ No accelerated-export stage performs network access.
 The smartphone workflow keeps the same local-only project and media pipeline but changes resource handling and capability presentation:
 
 - Smartphone mode is selected from device/capability signals rather than changing the desktop workflow globally.
-- On-device `SpeechSynthesis` remains available for preview, but smartphone system-audio capture is not supported by this app. The UI hides desktop TTS recording controls and directs users to microphone or local-audio narration.
-- Newly loaded smartphone PPTX scenes default to microphone narration and video output defaults to 720p. Selecting 1080p remains possible but displays a memory-use warning.
+- On-device `SpeechSynthesis` remains available for preview, but smartphone system-audio capture is not supported by this app. Compatible phones offer Kokoro synthesis alongside microphone and local-audio narration. The browser voice remains available as a sample where supported.
+- New smartphone PPTX scenes default to Kokoro where supported, with microphone recording or audio files as fallbacks. Model and voice files have separate pickers and are verified for the selected slot. Video output defaults to 720p. Selecting 1080p remains possible but displays a memory-use warning.
+- Before smartphone video composition, the app terminates the Kokoro worker to release its model and WASM memory. The generated WAVs and selected file handles remain usable.
 - During smartphone video composition, slide snapshots are rasterized progressively and temporary Canvas backing stores are released as soon as they are no longer needed, reducing peak memory versus keeping all slide snapshots at once.
 - After smartphone MP4 export the FFmpeg WASM runner is disposed so its memory can be reclaimed.
 - The app requests Screen Wake Lock during smartphone export when supported and releases it on completion, failure, cancellation, or page exit.

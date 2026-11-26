@@ -24,23 +24,23 @@ Use this checklist for every Presentation Video Maker release. Version-specific 
 - Test Japanese and English desktop UI.
 - Open Help on a scrollable desktop page and at a narrow, short viewport such as 393 × 252 px, in both languages. Scroll to the final paragraph; confirm the header and Close button remain reachable.
 - Wheel at the Help body edge and outside the dialog; the background page must stay still. Close by button, Escape, and backdrop, checking normal page scrolling and opener focus after each route. Repeat opening and forward/reverse keyboard navigation. A resized viewport is not a physical-device or software-keyboard test.
-- Confirm the local-processing badge shows its shield above 600 px and is hidden at 600 px and below.
+- Above 600 px, confirm the shield appears beside the introduction before opening a file. Open a PowerPoint or saved project and revisit the import step to confirm the badge stays hidden. At 600 px and below, it should also be hidden before import.
 - Test at least 390 px and 360 px widths with no horizontal page overflow.
 - Confirm the PPTX drop area closes after a successful load.
-- Confirm Quick navigation can be collapsed and reopened.
+- Switch between Open file, Narration and Video. On a narrow screen, expand the slide list and choose a slide to edit.
 - Confirm Previous / Next scene controls remain usable.
 - Test long file names, long scripts, and a many-slide fixture.
 
-## Smartphone v1.2 workflow
+## Smartphone workflow
 
 - Test 360 px, 390 px, and 430 px widths with no horizontal page overflow or overlapping fixed controls.
-- On a fresh smartphone PPTX load, confirm narration defaults to microphone and video resolution defaults to 720p.
-- Select on-device speech on smartphone and confirm the UI explicitly states that TTS can be previewed but cannot be captured as narration.
+- On a compatible phone, open a new PPTX and confirm that Generate narration from notes and 720p are selected. Check the microphone or file fallback when Kokoro is unavailable.
+- Load the shared model and one voice, generate narration and play it. Switch to a slide in the other language and confirm it asks for that voice.
 - Confirm desktop-only TTS capture controls are hidden on smartphone while TTS preview remains usable where SpeechSynthesis is available.
 - Test microphone recording and local-audio narration on smartphone.
 - Save and reopen a `.pvm` project on smartphone and confirm scripts, narration assets, BGM, and output settings survive the round trip.
 - Select 1080p on smartphone and confirm the mobile memory warning is visible; returning to 720p removes the warning.
-- Open an editable field with the software keyboard and confirm the fixed bottom navigation does not cover the field.
+- Open the software keyboard in the script field and confirm that the field and slide controls remain reachable.
 - Generate and save a 720p MP4 using the progressive smartphone composition path; test a longer/many-slide deck for memory pressure.
 - Where supported, confirm Screen Wake Lock is requested during smartphone video generation and released afterward.
 - After smartphone export, confirm a second export can initialize FFmpeg again after the previous runner was disposed.
@@ -57,22 +57,22 @@ Use this checklist for every Presentation Video Maker release. Version-specific 
 - Confirm cancelling/failing selected-scene TTS preserves the previous scene audio.
 - Test preview start/stop, including rapidly pressing Preview twice.
 - Confirm the rate slider changes the SpeechSynthesis rate.
-- While **Record all scenes** is running, move to other slides from both the slide list and Script & voice Previous/Next controls; capture must continue without cancelling the current TTS utterance.
+- While **Record all scenes** is running, move to other slides from both the slide list and the Narration screen’s Previous/Next controls; capture must continue without cancelling the current TTS utterance.
 - Confirm manual speech preview and PowerPoint replacement are unavailable while all-scene capture is active.
-- Confirm script/voice/rate/source changes mark old recordings stale without deleting them immediately.
+- Confirm script/voice/rate/source changes mark old recordings stale without deleting them immediately. Exclude and restore a slide using each narration method and confirm its previous audio remains usable.
 
 ## Project save / resume and text export
 
 - Load a PPTX, edit at least one script, import/record scene audio, set BGM and output options, then save a `.pvm` project.
 - Reload the app, open the `.pvm`, and confirm source PPTX, slide count, scripts, narration source/status/audio, BGM, selected slide, and output settings are restored.
-- Confirm generated MP4 is not embedded in `.pvm`.
+- Confirm generated MP4 is not embedded in `.pvm`. Change an inherited narration method to the same explicit method and check that Unsaved appears. Restore inheritance or save and check that the indicator clears.
 - Confirm project save/open is blocked during model synthesis, browser speech capture, microphone recording, and video export.
 - Open a v1.x project and a v2 project with generated model narration. Confirm playback and MP4 export before selecting model files.
 - Confirm opening a project over current work asks for confirmation.
 - Confirm the initial `.pvm` project picker is visually separate from the PPTX drop zone and its file input accepts `.pvm` only.
 - Confirm each scene row exposes the appropriate action for its narration source. For model generation on a narrow viewport, check that the row action reveals the progress and cancel controls.
 - Confirm scene playback shows a pointer cursor plus hover feedback and remains keyboard-focusable.
-- Test narration progress counts for ready / unrecorded / stale / failed and **Next item to fix** navigation.
+- Filter to slides that need audio. From Video, follow the action for missing narration and confirm it opens the relevant slide or voice setup.
 - Confirm failed or stale narration can be replaced from each scene row. Check that the model batch retries applicable scenes and preserves audio from completed scenes.
 - Save TXT, SRT, and VTT; verify UTF-8 text, cue ordering, timestamps, and filenames.
 
@@ -85,7 +85,7 @@ Use this checklist for every Presentation Video Maker release. Version-specific 
 - Confirm cancelling or failing a replacement export does not delete the previous successful MP4.
 - Confirm the output filename is editable and the saved file opens normally.
 
-## Accelerated export v1.3
+## Accelerated export
 
 - On a browser with H.264/AAC WebCodecs support, confirm auto mode selects `webcodecs-fast` in `PVMPerformance.getLastReport()`.
 - Generate the same fixture with `PVMPerformance.setMode("fast")` and `setMode("legacy")`; record total time and stage timing for both.
@@ -98,5 +98,6 @@ Use this checklist for every Presentation Video Maker release. Version-specific 
 ## Final packaging
 
 - When a stable `major.minor.patch` version change in `app.config.json` lands on `main`, **Publish versioned release** verifies the build and publishes both HTML variants, a ZIP, and `SHA256SUMS.txt`. It uses the matching section in `CHANGELOG.md` for the release notes. The workflow can also be started manually on `main`.
+- Run `scripts/package-release.ps1 -OutputPath <new-directory>` on the verified build. Verify the three SHA-256 entries, open both HTML versions, and check the README images and links inside the ZIP.
 - Confirm the published tag points to the commit built by the workflow. GitHub provides separate source archives from that tag.
 - If the workflow fails, rerun it for the same commit. A published release is left intact, and a draft from the same build can resume uploading.

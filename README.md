@@ -6,11 +6,11 @@
 
 [日本語版 README](README.ja.md)
 
-A privacy-focused, single-HTML app for turning a PowerPoint (PPTX) deck into a narrated MP4 in the browser. Use on-device speech, your own microphone recording, or local audio files, save/resume the work as a local `.pvm` project, and export scripts/subtitles without uploading the presentation, narration, BGM, project, or generated video to the app.
+Turn PowerPoint speaker notes into a narrated MP4 in Japanese or US English. On supported computers and phones, everything from opening the slides to saving the video runs on your device. You can also record your voice or use an audio file for individual slides.
 
-## Local model narration (v2.0.0)
+## Generate Japanese and English narration from speaker notes
 
-In desktop Chrome or Edge, open a PowerPoint file and choose **Local TTS model** for a slide. Use the download links in the app, then select the saved files together. The model is shared across languages. Load one or both voices.
+Open a PowerPoint in a supported browser. **Generate narration from notes** is selected for new decks on supported phones and desktop browsers. Download the shared model and the required voices from Hugging Face (external site), then select **Choose saved file** in each row. Audio is generated on your device.
 
 | File | Used for |
 | --- | --- |
@@ -18,13 +18,13 @@ In desktop Chrome or Edge, open a PowerPoint file and choose **Local TTS model**
 | `jf_alpha.bin` (522 kB) | Japanese narration |
 | `af_heart.bin` (522 kB) | US English narration |
 
-Set the presentation language, or override it on a slide. You can switch all unrecorded browser-speech slides to local TTS from the model panel. Generate one slide to hear its narration, then batch-generate the rest. Audio goes directly into the video without screen sharing. Save a `.pvm` to keep the generated audio. Reopening it for playback or MP4 export only needs the project. Select the model and voice again to synthesize new audio. Offline use requires a saved copy of the app and the files for your chosen voices. [Model license and credits](https://huggingface.co/hexgrad/Kokoro-82M) · [Pinned downloads](https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/tree/1939ad2a8e416c0acfeecc08a694d14ef25f2231)
+Choose the deck’s narration language or set a different language for one slide. Create the batch in one go, or create and listen to one slide first. The sample becomes part of the video and the batch skips it. A saved .pvm includes generated audio, so you can reopen it and export an MP4 before selecting the model files again. [Model license and credits](https://huggingface.co/hexgrad/Kokoro-82M) · [Pinned downloads](https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/tree/1939ad2a8e416c0acfeecc08a694d14ef25f2231)
 
 ## 🚀 Live demo
 
 ### [Open Presentation Video Maker on GitHub Pages](https://ttomohisa.github.io/htmlapps-presentation-video-maker/)
 
-GitHub Pages delivers the initial HTML. After it loads, PPTX parsing, speaker-note extraction, slide rendering, narration editing, audio handling, video composition, and MP4 conversion are processed locally on your device. Files selected in the app are not uploaded by the app.
+GitHub Pages delivers the initial HTML. The optional model and voice downloads are hosted on Hugging Face. After it loads, PPTX parsing, speaker-note extraction, slide rendering, narration editing, audio handling, video composition, and MP4 conversion are processed locally on your device. Files selected in the app are not uploaded by the app.
 
 [![Presentation Video Maker screenshot](assets/screenshot-en.png)](https://ttomohisa.github.io/htmlapps-presentation-video-maker/)
 
@@ -33,25 +33,25 @@ GitHub Pages delivers the initial HTML. After it loads, PPTX parsing, speaker-no
 - **Turn speaker notes into narration** — Each PowerPoint slide becomes one scene, with speaker notes used as the initial script and slide text used as a fallback draft when notes are missing.
 - **Choose narration per slide** — Mix local model synthesis, on-device browser speech, microphone recordings, and existing audio files. The local model reads Japanese and US English and can infer the pronunciation of unfamiliar English words in Japanese scripts.
 - **Resume work later** — Save the source PowerPoint, scripts, narration recordings, BGM, and output settings into a local `.pvm` project and open it later. Project data is not uploaded and generated MP4 is not duplicated inside the project.
-- **Find unfinished narration quickly** — See ready/unrecorded/stale/failed counts and jump directly to the next scene that needs attention.
+- **Find unfinished narration quickly** — Filter the slide list to show only slides that need audio. On the Video screen, **Prepare audio from notes** takes you back to the missing files or the batch generation button.
 - **Export scripts and subtitles** — Save the current scripts as TXT or export the current video timeline as SRT / VTT for use outside the app.
 - **Keep narration work editable** — Adjust scripts, include/exclude slides, before/after padding, voice, and speech rate, with stale-audio tracking when narration settings change.
 - **Preview PowerPoint with higher fidelity** — Use pinned `@aiden0z/pptx-renderer@1.2.4` for the main slide preview and `html2canvas@1.4.1` for origin-clean video snapshots.
 - **Create a finished MP4 locally** — Choose 720p or 1080p, Cut or Fade, burned-in subtitles, and optional local BGM. Supported browsers use accelerated WebCodecs export; other environments automatically keep the established MediaRecorder + FFmpeg WASM compatibility path.
-- **Smartphone workflow** — Smartphones use bottom tabs for Slides / Script & audio / Video, default new PPTX scenes to My voice, start video output at 720p, and stream slide snapshots during export to reduce peak memory.
+- **Smartphone workflow** — Smartphones use the Open file / Narration / Video workflow, default new slides to Kokoro where supported, start video output at 720p, and stream slide snapshots during export to reduce peak memory.
 - **Private, single-HTML operation** — Runtime libraries are embedded, the UI is Japanese/English, and the app keeps `connect-src 'none'` with no runtime CDN, analytics, telemetry, or cloud TTS API.
 
 ## Smartphone use
 
-v1.2.0 introduced the smartphone workflow for:
+In a supported smartphone browser, you can complete the whole workflow:
 
 1. opening PPTX or `.pvm`;
 2. editing scripts;
-3. recording **My voice** or assigning a local **Audio file** per scene;
+3. generating Kokoro audio from notes, recording your voice, or assigning an audio file per slide;
 4. configuring subtitles / BGM / transitions;
 5. creating and saving MP4, with 720p recommended.
 
-> **TTS/on-device speech cannot be recorded on smartphones.** Speech preview can still work, but the app cannot capture that synthesized voice as a narration asset on mobile. Use **My voice** or **Audio file** for smartphone video narration. TTS capture remains a desktop Chrome / Edge workflow using Entire Screen + system audio.
+**Generate narration from notes** creates audio for the video with Kokoro on the device. **Hear a voice sample** uses the browser voice where available. Recording that browser voice uses Entire Screen and system audio on desktop Chrome or Edge.
 
 720p is the smartphone default. 1080p remains selectable but has much higher memory pressure. During smartphone export, slide snapshots are created and released progressively instead of retaining the entire deck in rasterized form, and Wake Lock is requested where available.
 
@@ -64,7 +64,7 @@ Open the [GitHub Pages demo](https://ttomohisa.github.io/htmlapps-presentation-v
 ### Use the single HTML file
 
 1. Download the standalone `.html` file from [GitHub Releases](https://github.com/ttomohisa/htmlapps-presentation-video-maker/releases), or build `dist/index.html` locally.
-2. Open it in a current Chromium-based browser.
+2. Open it in desktop Chrome or Edge, or a supported smartphone browser.
 3. For the Windows Web Speech API recording workflow, follow the in-app instructions to share **Entire Screen** and enable **system audio** when requested.
 
 ### Build a fully embedded file yourself
@@ -79,28 +79,17 @@ Node.js, Python, and a local web server are not required for the normal Windows 
 
 ## Usage
 
-Close Help with the Close button, Esc, or a click outside the dialog.
-
-1. Start a new video by dropping one `.pptx` file or choosing it with the PowerPoint picker. To continue previous work, use the separate **Resume saved work** card and choose a `.pvm` project. The two file pickers are intentionally separate. The current PPTX limit is 150 MB.
-2. Select a slide and review the high-fidelity preview and narration script.
-3. Edit the script, before/after padding, and whether the slide is included in the video.
-4. Choose **On-device speech**, **Local TTS model**, **My voice**, or **Audio file** for each slide.
-   To use the model, select the downloaded files and choose a narration language. Generate one slide to check its pronunciation, then generate the other included model slides.
-5. For on-device speech, choose a local OS voice and adjust the 0.8x–1.5x rate slider. Capture only the selected slide with **Record this slide**, or use **Record all scenes** for the TTS scenes in the deck. Both workflows require **Entire Screen + system audio** on the tested Windows path.
-6. For microphone narration, record the selected slide directly. For local audio, choose an audio file from your device.
-   The **Narration assets** scene list also provides a row-level action, so each scene can be recorded, stopped, or have its local audio replaced directly from the list.
-7. Use the narration progress summary and **Next item to fix** to move through missing, stale, or failed scenes. Missing, failed, or stale narration blocks video creation.
-8. Use **Save project** whenever you want a local `.pvm` snapshot that can be opened later. The app does not autosave.
-9. Choose 720p/1080p, Cut/Fade, subtitles, and optional BGM with volume/loop settings. TXT, SRT, and VTT can also be saved locally from the output area.
-10. Create the video, preview the generated MP4, set the output filename, and save it.
-
-A three-slide test deck and additional regression fixtures are included under `test-data/`.
+1. **Open file** — Open or drop a .pptx file (up to 150 MB). To resume, use **Open saved work (.pvm)**.
+2. **Narration** — Choose a language and prepare the voice files, then create audio for all remaining slides. The progress bar tracks the whole batch, including completed portions of the current slide. When a slide has no notes, **Check script** opens the draft made from the slide text.
+3. **Edit a slide** — Pick a slide from the list. **Settings for this slide** includes its narration method, language, speed, timing and inclusion. You can record your voice or select a local audio file. While listening, pause or seek with the player below the script. After editing a script with generated narration, select **Update audio for this slide** to hear the revision.
+4. **Record computer speech on Windows** — Choose a local system voice, then select **Entire Screen** and **Share system audio** when prompted. Other sounds from your computer may also be recorded.
+5. **Video** — Create the MP4, preview it and select **Save MP4**. Open **Subtitles, music and transitions** to adjust them before export. Select **Save work** to keep a separate .pvm for future edits.
 
 ## Project files and text exports
 
-`.pvm` holds the source PPTX, scene scripts and settings, generated or recorded narration, optional BGM, and output settings. v2.0.0 opens v1.x projects. Model files and the exported MP4 stay separate from the project.
+`.pvm` holds the source PPTX, scene scripts and settings, generated or recorded narration, optional BGM, and output settings. v2.1.0 opens projects saved in v1.x and v2.0.0. Model files and the exported MP4 stay separate from the project.
 
-The project container is written and read locally by the app; no project data is sent to a server. It is not an autosave format, so save a new `.pvm` file when you want a resumable checkpoint.
+The project container is written and read locally by the app; no project data is sent to a server. Changing scripts, audio or settings shows **Unsaved** beside **Save work**. Select **Save work** before closing the page.
 
 The output area can also save:
 
@@ -114,7 +103,7 @@ The preview shares the download serializer (the invisible UTF-8 BOM is omitted f
 
 ## Video creation pipeline
 
-Video creation is fully local and uses two stages:
+Supported browsers encode H.264 video and AAC audio directly into an MP4 with WebCodecs. When accelerated export is unavailable, the app uses two stages:
 
 1. The browser renders the included slides, plays scene narration on a Canvas/Web Audio timeline, mixes optional BGM, burns subtitles, and records an intermediate WebM with MediaRecorder. This composition stage runs approximately in real time because the timeline is captured while it plays.
 2. The embedded FFmpeg WASM Builder v1.6.0 `video-compressor` runtime converts the intermediate WebM to H.264/AAC MP4.
@@ -164,7 +153,8 @@ Each deployment rebuilds the generated HTML from pinned dependencies and validat
 └─ .github/workflows/
    ├─ build-standalone.yml                 # Pull-request validation
    ├─ dependency-updates.yml               # Scheduled dependency checks
-   └─ deploy-pages.yml                     # GitHub Pages deployment
+   ├─ deploy-pages.yml                     # GitHub Pages deployment
+   └─ release.yml                          # Tag and publish when the version changes on main
 ```
 
 ### Update dependencies
@@ -202,7 +192,7 @@ The GitHub Pages version still requires the initial HTML request. To use the app
 
 ### Accelerated video export
 
-On supported browsers, H.264 and AAC are encoded locally with WebCodecs and written directly into MP4 by the app’s built-in ISO BMFF muxer. The accelerated path does not create an intermediate WebM and does not start FFmpeg WASM. Unchanged slide intervals use variable-duration video samples instead of encoding the same image 30 times per second; new frames are emitted for subtitle changes and during fades. If the browser cannot provide the required codecs or the accelerated path cannot complete, the app automatically falls back to the v1.2.0 compatibility exporter. Neither path uploads presentation or audio data.
+On supported browsers, H.264 and AAC are encoded locally with WebCodecs and written directly into MP4 by the app’s built-in ISO BMFF muxer. The accelerated path does not create an intermediate WebM and does not start FFmpeg WASM. Unchanged slide intervals use variable-duration video samples instead of encoding the same image 30 times per second; new frames are emitted for subtitle changes and during fades. If the browser cannot provide the required codecs or the accelerated path cannot complete, the app automatically falls back to the compatibility exporter. Neither path uploads presentation or audio data.
 
 ## Limitations
 
@@ -236,7 +226,7 @@ Bug reports and feature proposals are welcome through GitHub Issues. See [CONTRI
 
 ### Application regression checks
 
-Run `node --test tests/*.test.cjs` with Node.js 20 or later. The canonical `scripts/check-repository.ps1` check runs all application suites against the source and again against the generated readable HTML. The build verifies that the self-extracting payload restores the same readable bytes. `PVM_TEST_HTML` selects another readable HTML for a focused artifact check. These dependency-free tests cover actual source functions and event handlers using DOM/media doubles, plus static Help-layout guards; they do not replace native desktop/mobile wheel, focus, viewport, or real-media testing.
+Run `node --test tests/*.test.cjs` with Node.js 20 or later. The canonical `scripts/check-repository.ps1` check checks the text and audio engines and runs the workflow, subtitle, language, Help layout and video regressions against both the source and the generated readable HTML. The build verifies that the self-extracting payload restores the same readable bytes. `PVM_TEST_HTML` selects another readable HTML for a focused artifact check. These dependency-free tests cover actual source functions and event handlers using DOM/media doubles, plus static Help-layout guards; they do not replace native desktop/mobile wheel, focus, viewport, or real-media testing.
 
 ## License
 

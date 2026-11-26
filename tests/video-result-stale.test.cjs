@@ -36,7 +36,7 @@ function harness() {
       createElement() { return {click() { downloads.push({href: this.href, filename: this.download}); }, remove() {}}; }
     },
     formatClock: String, bytesLabel: String, t: key => key,
-    updateMobileResolutionWarning() {}, updateVideoExportState() {}, showToast() {}, setTimeout() {}
+    updateMobileResolutionWarning() {}, updateVideoExportState() {}, scheduleProjectStatus() {}, showToast() {}, setTimeout() {}
   });
   vm.runInContext(['updateVideoResultStaleNotice', 'markVideoResultStale', 'clearVideoResult', 'replaceVideoResult', 'safeOutputBase', 'saveVideo'].map(extract).join('\n'), ctx);
   const eventLines = source.split('\n').filter(line =>
@@ -83,6 +83,37 @@ test('excluding local narration or editing its padding makes the old MP4 stale w
     h.ctx.saveCurrentScript();
     assert.equal(h.ctx.state.videoResultStale, true);
     assert.equal(slide.recordingStatus, 'success');
+  }
+});
+
+test('passive edits keep the stored browser voice when this device shows a fallback voice', () => {
+  const h = harness(), slide = localScene(h);
+  Object.assign(slide, {
+    audioSource: 'tts', recordingSource: 'tts', voiceURI: 'saved-desktop-voice',
+    prePadding: 0, postPadding: 0,
+  });
+  h.$('#voiceSelect').value = 'different-device-voice';
+  h.ctx.saveCurrentScript();
+  assert.equal(slide.voiceURI, 'saved-desktop-voice');
+  assert.equal(slide.recordingStatus, 'success');
+  h.ctx.saveCurrentScript({voiceChanged:true});
+  assert.equal(slide.voiceURI, 'different-device-voice');
+  assert.equal(slide.recordingStatus, 'stale');
+});
+
+test('excluding and restoring a slide keeps usable recordings for every narration method', () => {
+  for (const method of ['local', 'mic', 'file', 'tts']) {
+    const h = harness(), slide = localScene(h);
+    Object.assign(slide, {audioSource: method, recordingSource: method, voiceURI: '', prePadding: 0, postPadding: 0});
+    const recording = slide.recordingBlob;
+    for (const included of [false, true]) {
+      complete(h);
+      h.$('#sceneEnabledInput').checked = included;
+      h.ctx.saveCurrentScript();
+      assert.equal(h.ctx.state.videoResultStale, true, method);
+      assert.equal(slide.recordingStatus, 'success', method);
+      assert.equal(slide.recordingBlob, recording);
+    }
   }
 });
 
