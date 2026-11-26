@@ -48,9 +48,9 @@ test('Help continues using native showModal, Close and geometric backdrop dismis
   assert.doesNotMatch(source, /helpDialog\.addEventListener\(['"]cancel['"]/);
 });
 
-test('one shield badge in the shared header identifies on-device processing', () => {
-  const header = source.match(/<header class="app-header">([\s\S]*?)<\/header>/)[1];
-  assert.match(header, /<span class="local-badge">\s*<svg[^>]*aria-hidden="true"[\s\S]*?<span data-i18n="localBadge">/);
+test('one shield badge beside the introduction identifies on-device processing', () => {
+  const intro = source.match(/<div class="page-intro">([\s\S]*?)<\/div>/)[1];
+  assert.match(intro, /<\/p>\s*<span class="local-badge">\s*<svg[^>]*aria-hidden="true"[\s\S]*?<span data-i18n="localBadge">/);
   assert.equal((source.match(/data-i18n="localBadge"/g) || []).length, 1);
   const style = declarationsFor('.local-badge');
   assert.equal(style.background, 'transparent');

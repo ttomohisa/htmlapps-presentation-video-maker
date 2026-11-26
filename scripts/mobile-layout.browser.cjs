@@ -41,7 +41,7 @@ page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()
 try{await page.goto(pathToFileURL(path.resolve(file)).href);await page.locator('#helpButton').waitFor();
 await page.waitForFunction(()=>/^\d+\.\d+\.\d+$/.test(document.querySelector('#buildVersion').textContent));
 if(await page.locator('html').getAttribute('lang')!==language)await page.locator('#languageButton').click();
-const intro=page.locator('.page-intro'),badge=page.getByRole('banner').locator('.local-badge');
+const intro=page.locator('.page-intro'),badge=intro.locator('.local-badge');
 assert.equal(await intro.getByRole('heading').count(),0,label+': introduction has no heading');
 assert.equal(await intro.locator('p').textContent(),language==='ja'?'PowerPointからナレーション付きMP4を作れます。':'Turn PowerPoint slides into a narrated MP4.');
 await bounds(intro.locator('p'),width,height,label,false);
@@ -49,8 +49,9 @@ assert.equal((await badge.locator('[data-i18n="localBadge"]').textContent()).tri
 assert.equal(await badge.isVisible(),width>cfg.bp,label+': local processing badge visibility');
 if(await badge.isVisible()){
   await bounds(badge,width,height,label);
-  const [brand,mark,languageButton]=await Promise.all([page.locator('.brand').boundingBox(),badge.boundingBox(),page.locator('#languageButton').boundingBox()]);
-  assert.ok(brand.x+brand.width<=mark.x&&mark.x+mark.width<=languageButton.x,label+': header items fit beside the badge');
+  const [description,mark,drop]=await Promise.all([intro.locator('p').boundingBox(),badge.boundingBox(),page.locator('#dropZone').boundingBox()]);
+  assert.ok(description.x+description.width<=mark.x&&Math.abs(description.y+description.height/2-mark.y-mark.height/2)<2,label+': badge beside description');
+  assert.ok(mark.y+mark.height<=drop.y&&Math.abs(mark.x+mark.width-drop.x-drop.width)<=3,label+': badge above right edge of drop zone');
 }
 assert.equal(await page.locator('main > footer.footer').isVisible(),width>cfg.bp,label+': informational footer');
 
@@ -71,7 +72,7 @@ await page.keyboard.press('Escape');assert.equal(await page.locator('#helpDialog
 if(file==='dist/index.html'){
 await page.locator('#pptxInput').setInputFiles(path.resolve('test-data/presentation-video-maker-30-slides-long-content.pptx'));
 await page.locator('#guideNarrationHeading').waitFor({timeout:30000});
-assert.equal(await badge.isVisible(),width>cfg.bp,label+': badge after loading a deck');
+assert.equal(await badge.isVisible(),false,label+': badge hidden after loading a deck');
 assert.equal(await page.locator('[aria-current="step"]').getAttribute('data-guide-step'),'script');
 assert.equal(await page.locator('[data-guide-page]:visible').count(),1);
 assert.equal(await page.locator('#slideList button').count(),30);
@@ -100,11 +101,25 @@ assert.match(await page.locator('#selectedSlideLabel').innerText(),/1$/);
 await bounds(page.locator('#workflowNav'),width,height,label,false);
 assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),label+': loaded page width');
 await page.locator('[data-guide-step="output"]').click();
+assert.equal(await badge.isVisible(),false,label+': badge hidden during export');
 assert.equal(await page.locator('summary[data-i18n="guideFinishing"]').innerText(),language==='ja'?'字幕・BGM・切り替え':'Subtitles, music and transitions');
 assert.equal(await page.locator('[data-guide-page]:visible').count(),1);
 await page.locator('#guideVideoIssue').click();
 assert.equal(await page.locator('[aria-current="step"]').getAttribute('data-guide-step'),'script');
 assert.equal(await page.locator('[data-model-file="model_quantized.onnx"] [data-load-local-file]').evaluate(el=>el===document.activeElement),true);
+await page.locator('[data-guide-step="slides"]').click();
+assert.equal(await badge.isVisible(),false,label+': badge stays hidden on returning to the loaded deck');
+if(language==='ja'&&width===1360){
+  const saved=page.waitForEvent('download');
+  await page.locator('#saveProjectButton').click();
+  const project=await saved;
+  await page.reload();
+  await badge.waitFor({state:'visible'});
+  await page.locator('#projectInput').setInputFiles({name:project.suggestedFilename(),mimeType:'application/octet-stream',buffer:fs.readFileSync(await project.path())});
+  await page.locator('#guideNarrationHeading').waitFor();
+  await page.locator('[data-guide-step="slides"]').click();
+  assert.equal(await badge.isVisible(),false,label+': badge stays hidden for a restored project');
+}
 }
 assert.deepEqual(errors,[],label+': console errors');assert.deepEqual(requests,[],label+': runtime requests');console.log('PASS '+label);
 }catch(e){await page.screenshot({path:path.join(evidence,'failure.png')}).catch(()=>{});throw new Error(label+': '+e.message,{cause:e});}finally{await context.close();}}

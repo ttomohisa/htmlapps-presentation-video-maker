@@ -87,7 +87,7 @@
     .language-button:hover,.header-icon-button:hover { color:var(--text); background:transparent; }
     .header-icon-button svg { width:20px; height:20px; }
     .main { width:min(1220px,100%); margin:0 auto; padding:18px clamp(14px,2.8vw,30px) 64px; }
-    .page-intro { width:min(760px,100%); margin:6px auto 0; }
+    .page-intro { display:flex; align-items:center; justify-content:space-between; gap:18px; width:min(760px,100%); margin:6px auto 0; padding-inline:2px; }
     .page-intro p { margin:0; color:var(--muted); font-size:14px; line-height:1.5; text-wrap:pretty; }
     .local-badge { display:inline-flex; align-items:center; gap:7px; flex:0 0 auto; padding:7px 0; border:0; border-radius:0; background:transparent; color:var(--accent); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP","Yu Gothic UI",Meiryo,sans-serif; font-size:12px; font-weight:500; white-space:nowrap; }
     .local-badge svg { width:14px; height:14px; }
@@ -679,10 +679,6 @@
         </div>
       </div>
       <div class="header-actions">
-        <span class="local-badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 2.8 8 7 10 4.2-2 7-5.4 7-10V6z"/><path d="m9 12 2 2 4-5"/></svg>
-          <span data-i18n="localBadge">完全ローカル処理</span>
-        </span>
         <button class="language-button" id="languageButton" type="button" aria-label="英語に切り替え" title="英語に切り替え">EN</button>
         <button class="header-icon-button" id="helpButton" type="button" data-i18n-aria-label="help" data-i18n-title="help" aria-label="使い方と注意事項" title="使い方と注意事項">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.3 2.3 0 0 1 4.4 1c0 1.7-2.2 2-2.2 3.6M12 17h.01"/></svg>
@@ -694,6 +690,10 @@
   <main class="main">
     <div class="page-intro">
       <p data-i18n="introText">PowerPointからナレーション付きMP4を作れます。</p>
+      <span class="local-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 2.8 8 7 10 4.2-2 7-5.4 7-10V6z"/><path d="m9 12 2 2 4-5"/></svg>
+        <span data-i18n="localBadge">完全ローカル処理</span>
+      </span>
     </div>
 
     <div class="guide-document" id="projectActions" hidden>
