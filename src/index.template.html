@@ -297,10 +297,10 @@
     .tech-body dt { font-weight:750; color:var(--text); }
     .tech-body dd { margin:0; }
     .footer { margin-top:28px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; display:flex; justify-content:flex-start; gap:12px; flex-wrap:wrap; }
-    .help-dialog { width:min(660px,calc(100vw - 28px)); max-height:min(82vh,760px); padding:0; border:1px solid var(--line); border-radius:16px; background:var(--surface); box-shadow:var(--shadow-md); }
+    .help-dialog { width:min(660px,calc(100vw - 28px)); max-height:min(82vh,760px); overflow:clip; padding:0; border:1px solid var(--line); border-radius:16px; background:var(--surface); box-shadow:var(--shadow-md); }
+    .help-dialog[open] { display:grid; grid-template-rows:auto minmax(0,1fr); }
     .help-dialog::backdrop { background:rgba(18,22,20,.35); backdrop-filter:blur(2px); }
-    .help-shell { display:grid; grid-template-rows:auto minmax(0,1fr); max-height:min(82vh,760px); }
-    .help-head { position:sticky; top:0; z-index:1; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:15px 17px; border-bottom:1px solid var(--line); background:var(--surface); }
+    .help-head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:15px 17px; border-bottom:1px solid var(--line); background:var(--surface); }
     .help-head h2 { margin:0; font-size:17px; }
     .help-body { overflow:auto; padding:16px 18px calc(20px + env(safe-area-inset-bottom)); }
     .help-body h3 { margin:18px 0 6px; font-size:14px; }
@@ -365,7 +365,6 @@
       .app-mobile-bottom-item.is-active,.app-mobile-bottom-item:focus-visible { color:var(--accent); background:var(--accent-soft); }
       .toast { bottom:calc(var(--mobile-bottom-height) + env(safe-area-inset-bottom) + 10px); }
       .help-dialog { width:calc(100vw - 18px); max-height:calc(100dvh - 18px); }
-      .help-shell { max-height:calc(100dvh - 18px); }
     }
 
     /* Scene editor */
@@ -991,22 +990,20 @@
   </nav>
 
   <dialog class="help-dialog" id="helpDialog">
-    <div class="help-shell">
-      <div class="help-head"><h2 data-i18n="helpTitle">使い方と注意事項</h2><button class="dialog-close" id="closeHelpButton" type="button" data-i18n-aria-label="close" aria-label="閉じる"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12"/><path d="M18 6 6 18"/></svg></button></div>
-      <div class="help-body">
-        <!-- APP:HELP:BEGIN -->
-        <h3 data-i18n="helpWhatTitle">この版でできること</h3><p data-i18n="helpWhatText">PowerPointの各スライドに台本と音声を設定し、ナレーション付きMP4をブラウザ内で作成できます。</p>
-        <p data-i18n="helpDialogText">閉じるボタン、Escキー、または枠外のクリックで閉じます。</p>
-        <h3 data-i18n="helpUseTitle">基本操作</h3><ul><li data-i18n="helpUseOne">PPTXを読み込み、スライドと発表者ノートを確認します。</li><li data-i18n="helpUseTwo">端末内の音声を選び、試聴します。</li><li data-i18n="helpUseThree">「全シーンを録音」を開始し、共有画面で「画面全体」と「システム音声を共有」を選びます。</li><li data-i18n="helpUseFour">録音完了後、「動画を作成」でMP4を書き出して保存します。</li></ul>
-        <h3 data-i18n="helpPrivacyTitle">プライバシー</h3><p data-i18n="helpPrivacyText">PPTX、発表者ノート、台本、録音は外部サーバーへ送信しません。オンラインTTSは使用せず、端末内として報告された音声だけを候補にします。</p>
-        <h3 data-i18n="helpCaptureTitle">システム音声について</h3><p data-i18n="helpCaptureText">システム音声を取得できるかはブラウザ・OS・共有対象に依存します。失敗したシーンがあってもPPTXの読込結果や他の録音済みシーンは失われません。Chrome / EdgeのPC版を主な確認対象としています。</p><h3 data-i18n="helpSmartphoneTitle">スマートフォンで使う場合</h3><p data-i18n="helpSmartphoneText">スマホでは端末内読み上げの試聴はできますが、TTS音声を録音素材として取り込めません。自分の声または音声ファイルを使用し、動画は720pを推奨します。</p>
-        <h3 data-i18n="helpLocalTitle">ローカルTTSモデルで音声を作る</h3><p data-i18n="helpLocalText">PC版Chrome・Edge向けの機能です。「ローカルTTSモデル」の入手案内からモデルと使う言語の声を保存し、アプリで選びます。資料の既定言語とスライドの言語を設定し、音声を生成して試聴できます。.pvmには生成音声を保存します。再度開いたとき、モデルと声の選び直しが必要なのは再生成するときだけです。</p>
-        <h3 data-i18n="helpFileTitle">対応ファイル</h3><p data-i18n="helpFileText">.pptx、最大150 MB。古い .ppt は対象外です。PowerPointのアニメーションや切り替え効果は静的なスライドとして扱います。</p>
-        <h3 data-i18n="helpPersistenceTitle">作業内容</h3><p data-i18n="helpPersistenceText">PPTXや台本、録音は自動保存しません。ページを再読み込みすると消えます。</p>
-        <h3 data-i18n="helpSubtitlePreviewTitle">字幕を保存する前に確認</h3><p data-i18n="helpSubtitlePreviewText">出力画面の「字幕プレビュー」を開き、SRT / VTTを選ぶと、保存する字幕の全文と件数を確認できます。内容は読み取り専用で、編集は台本欄で行います。未計測の音声は推定時間を使い、焼き込み字幕とタイミングが異なる場合があります。プレビューを開いてもファイルは保存されません。</p>
-        <!-- APP:HELP:END -->
-        <p class="help-build">v<span id="buildVersion">2.0.0</span> · <span id="builtAt">—</span> · deps <span id="dependencyCount">0</span></p>
-      </div>
+    <div class="help-head"><h2 data-i18n="helpTitle">使い方と注意事項</h2><button class="dialog-close" id="closeHelpButton" type="button" data-i18n-aria-label="close" aria-label="閉じる"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12"/><path d="M18 6 6 18"/></svg></button></div>
+    <div class="help-body">
+      <!-- APP:HELP:BEGIN -->
+      <h3 data-i18n="helpWhatTitle">この版でできること</h3><p data-i18n="helpWhatText">PowerPointの各スライドに台本と音声を設定し、ナレーション付きMP4をブラウザ内で作成できます。</p>
+      <p data-i18n="helpDialogText">閉じるボタン、Escキー、または枠外のクリックで閉じます。</p>
+      <h3 data-i18n="helpUseTitle">基本操作</h3><ul><li data-i18n="helpUseOne">PPTXを読み込み、スライドと発表者ノートを確認します。</li><li data-i18n="helpUseTwo">端末内の音声を選び、試聴します。</li><li data-i18n="helpUseThree">「全シーンを録音」を開始し、共有画面で「画面全体」と「システム音声を共有」を選びます。</li><li data-i18n="helpUseFour">録音完了後、「動画を作成」でMP4を書き出して保存します。</li></ul>
+      <h3 data-i18n="helpPrivacyTitle">プライバシー</h3><p data-i18n="helpPrivacyText">PPTX、発表者ノート、台本、録音は外部サーバーへ送信しません。オンラインTTSは使用せず、端末内として報告された音声だけを候補にします。</p>
+      <h3 data-i18n="helpCaptureTitle">システム音声について</h3><p data-i18n="helpCaptureText">システム音声を取得できるかはブラウザ・OS・共有対象に依存します。失敗したシーンがあってもPPTXの読込結果や他の録音済みシーンは失われません。Chrome / EdgeのPC版を主な確認対象としています。</p><h3 data-i18n="helpSmartphoneTitle">スマートフォンで使う場合</h3><p data-i18n="helpSmartphoneText">スマホでは端末内読み上げの試聴はできますが、TTS音声を録音素材として取り込めません。自分の声または音声ファイルを使用し、動画は720pを推奨します。</p>
+      <h3 data-i18n="helpLocalTitle">ローカルTTSモデルで音声を作る</h3><p data-i18n="helpLocalText">PC版Chrome・Edge向けの機能です。「ローカルTTSモデル」の入手案内からモデルと使う言語の声を保存し、アプリで選びます。資料の既定言語とスライドの言語を設定し、音声を生成して試聴できます。.pvmには生成音声を保存します。再度開いたとき、モデルと声の選び直しが必要なのは再生成するときだけです。</p>
+      <h3 data-i18n="helpFileTitle">対応ファイル</h3><p data-i18n="helpFileText">.pptx、最大150 MB。古い .ppt は対象外です。PowerPointのアニメーションや切り替え効果は静的なスライドとして扱います。</p>
+      <h3 data-i18n="helpPersistenceTitle">作業内容</h3><p data-i18n="helpPersistenceText">PPTXや台本、録音は自動保存しません。ページを再読み込みすると消えます。</p>
+      <h3 data-i18n="helpSubtitlePreviewTitle">字幕を保存する前に確認</h3><p data-i18n="helpSubtitlePreviewText">出力画面の「字幕プレビュー」を開き、SRT / VTTを選ぶと、保存する字幕の全文と件数を確認できます。内容は読み取り専用で、編集は台本欄で行います。未計測の音声は推定時間を使い、焼き込み字幕とタイミングが異なる場合があります。プレビューを開いてもファイルは保存されません。</p>
+      <!-- APP:HELP:END -->
+      <p class="help-build">v<span id="buildVersion">2.0.0</span> · <span id="builtAt">—</span> · deps <span id="dependencyCount">0</span></p>
     </div>
   </dialog>
 
