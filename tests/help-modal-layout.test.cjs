@@ -56,10 +56,15 @@ test('the existing local-processing badge keeps its decorative shield and labels
   assert.equal(translations.en.localBadge, 'Fully local processing');
 });
 
-test('Help omits implementation commentary and retains user instructions', () => {
-  assert.match(source, /<!-- APP:HELP:BEGIN -->[\s\S]*?data-i18n="helpDialogText"[\s\S]*?<!-- APP:HELP:END -->/);
-  assert.doesNotMatch(translations.ja.helpDialogText || '', /背景ページ.*スクロールしません/);
-  assert.match(translations.ja.helpDialogText || '', /閉じるボタン.*Esc.*枠外/);
-  assert.doesNotMatch(translations.en.helpDialogText || '', /background page does not scroll/);
-  assert.match(translations.en.helpDialogText || '', /Close button.*Esc.*outside/);
+test('Help opens with three steps and has Japanese and English copy for every topic', () => {
+  const body = source.split('<!-- APP:HELP:BEGIN -->')[1].split('<!-- APP:HELP:END -->')[0];
+  const steps = body.match(/<ol\b[^>]*>([\s\S]*?)<\/ol>/);
+  assert.ok(steps);
+  assert.equal((steps[1].match(/<li>/g) || []).length, 3);
+  for (const match of body.matchAll(/data-i18n="([^"]+)">([^<]+)</g)) {
+    const key = match[1];
+    assert.equal(match[2], translations.ja[key], key);
+    assert.ok(translations.en[key], key);
+  }
+  assert.doesNotMatch(source, /helpDialogText/);
 });

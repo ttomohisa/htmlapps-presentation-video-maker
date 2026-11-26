@@ -4,6 +4,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const removed = [
+  "閉じるボタン、Escキー、または枠外のクリックで閉じます。",
+  "Use the Close button, Esc, or a click outside the dialog to close it.",
   "ヘルプ内をスクロールして最後まで読めます。開いている間は背景ページがスクロールしません。",
   "Scroll inside Help to read to the end. The background page does not scroll while Help is open. "
 ];
