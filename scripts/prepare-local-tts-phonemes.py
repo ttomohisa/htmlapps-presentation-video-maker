@@ -119,8 +119,26 @@ def english_factory(data):
     return "self.makeOfflineMisaki = function (data, options) {\nconst nlp = self.nlp;\n" + s + "\nreturn misakiEnglish(options);\n};\n"
 
 
+def english_spelling_rules(cache):
+    archive = fetch("ephone-1.0.2.tgz", "https://registry.npmjs.org/ephone/-/ephone-1.0.2.tgz",
+                    "20f654d6b92b9ef2e96244c19640d9def4457bbdd7e3132fcc1129921e727cbb", cache)
+    with tarfile.open(fileobj=io.BytesIO(archive)) as package:
+        engine = package.extractfile("package/ephone.js").read().decode()
+        language = package.extractfile("package/lang/en-us.js").read().decode()
+        license_text = package.extractfile("package/COPYING").read()
+    engine, separator, _ = engine.partition("export default createEphone;")
+    assert separator and language.count("export function loadData(") == 1
+    # Link only the default English data into the engine. The package ships
+    # both its Wasm and language bytes inside JavaScript string literals.
+    language = language.replace("export function loadData(", "function en_us(")
+    bundle = language + "\n" + engine + separator + "\n"
+    (OUT / "espeak-en-us.mjs").write_text(bundle, encoding="utf-8", newline="\n")
+    (OUT / "ephone-COPYING").write_bytes(license_text)
+
+
 def main(cache):
     OUT.mkdir(parents=True, exist_ok=True)
+    english_spelling_rules(cache)
     packages = package_files(cache)
     cutlet = fetch("cutlet.py", MISAKI + "misaki/cutlet.py",
                    "7695fc7d853ae4e99679dff4ca0c8404d4804a6fb1059a9d6ad02baeabc4d4de", cache)

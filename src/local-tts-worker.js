@@ -30,6 +30,18 @@
     return Object.assign(new Error(message), {code});
   }
 
+  async function createSpellingReader(base64) {
+    const binary = atob(base64);
+    const moduleBytes = Uint8Array.from(binary, character => character.charCodeAt(0));
+    const url = URL.createObjectURL(new Blob([moduleBytes], {type: "text/javascript"}));
+    try {
+      const {default: createEphone} = await import(url);
+      return await createEphone();
+    } finally {
+      URL.revokeObjectURL(url);
+    }
+  }
+
   async function readVerified(file, expected, code) {
     if (file.size === expected.size) {
       const bytes = await file.arrayBuffer();
@@ -134,7 +146,11 @@
         const bytes = await readVerified(data.voice, VOICES[data.language], "voice");
         voices.set(data.language, new Float32Array(bytes));
       }
-      if (data.model) await initialize(data.ortSource, data.wasmGzip, data.model);
+      if (data.model) {
+        const spellingSource = data.spellingSource;
+        self.kokoroCreateSpellingReader = () => createSpellingReader(spellingSource);
+        await initialize(data.ortSource, data.wasmGzip, data.model);
+      }
       const pcmParts = [];
       let byteLength = 0;
       for (const paragraph of data.text.split(/[\r\n]+/u)) {

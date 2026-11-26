@@ -4,12 +4,18 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const {pathToFileURL} = require('node:url');
 const vm = require('node:vm');
 
 // Mirror the order and APIs of the classic embedded worker. No fetch, XHR,
 // imports, filesystem or other network loaders are available in this context.
 const context = vm.createContext({atob, Blob, DecompressionStream, Response});
 context.self = context;
+context.kokoroCreateSpellingReader = async () => {
+  const url = pathToFileURL(path.resolve(__dirname, '../vendor/local-tts-phonemes/espeak-en-us.mjs'));
+  const {default: createEphone} = await import(url.href);
+  return createEphone();
+};
 for (const file of ['vendor/local-tts-phonemes/runtime.js', 'src/local-tts-phonemes.js']) {
   const source = fs.readFileSync(path.resolve(__dirname, '..', file), 'utf8');
   assert.doesNotMatch(source, /<\/script/i);
@@ -44,7 +50,7 @@ test('Japanese reads familiar English terms as words and keeps Japanese letter n
   assert.match(reading, /eːpʲiːai.*pʲiːdʲiːeɸɯ/);
   assert.equal(await phones('ＰＲＥＳＥＮＴＡＴＩＯＮ', 'ja'), await phones('プレゼンテーション', 'ja'));
   assert.equal(await phones('API PDF', 'ja'), 'eːpʲiːai pʲiːdʲiːeɸɯ');
-  assert.equal(await phones('qzx', 'ja'), await phones('QZX', 'ja'));
+  assert.equal(await phones('QZX', 'ja'), await phones('Q Z X', 'ja').then(reading => reading.replaceAll(' ', '')));
 });
 
 test('Japanese uses the English pronunciation lexicon for other English words', async () => {
@@ -52,6 +58,13 @@ test('Japanese uses the English pronunciation lexicon for other English words', 
   const mixed = await phones('今日はCollaborationについて説明します。', 'ja');
   assert.ok(mixed.includes(english));
   assert.match(mixed, /seːmeː|seʦɨmeː|seʦɨmei/);
+});
+
+test('Japanese infers the pronunciation of unfamiliar English spellings', async () => {
+  assert.equal(await phones('Lumivexa', 'ja'), 'lˈumɪvˌɛksə');
+  assert.equal(await phones('Blorvinate', 'ja'), 'blˈɔɹvᵻnˌAt');
+  assert.match(await phones('新しいLumivexaを紹介します。', 'ja'), /lˈumɪvˌɛksə o ɕoːkai/);
+  assert.equal(await phones('SORA', 'ja'), await phones('sora', 'ja'));
 });
 
 test('empty narration and unsupported languages are explicit', async () => {

@@ -17,6 +17,7 @@ $phonemeDir = 'vendor/local-tts-phonemes'
 $tags = @(
   Get-ScriptTag 'local-tts-ort' 'text/plain' (Read-Utf8 "$engineDir/ort.wasm.bundle.min.mjs")
   Get-ScriptTag 'local-tts-wasm' 'text/plain' ([Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $Root "$engineDir/ort-wasm.wasm.gz"))))
+  Get-ScriptTag 'local-tts-espeak' 'text/plain' ([Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $Root "$phonemeDir/espeak-en-us.mjs"))))
   Get-ScriptTag 'local-tts-phonemes' 'text/plain' ((Read-Utf8 "$phonemeDir/runtime.js") + "`n" + (Read-Utf8 'src/local-tts-phonemes.js'))
   Get-ScriptTag 'local-tts-worker' 'text/plain' (Read-Utf8 'src/local-tts-worker.js')
   Get-ScriptTag 'local-tts-engine' 'text/javascript' (Read-Utf8 'src/local-tts-engine.js')

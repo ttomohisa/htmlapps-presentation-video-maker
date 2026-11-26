@@ -6,6 +6,8 @@ Presentation Video Maker v2.0.0 includes the following components.
 
 The app imports the user's copy of Kokoro-82M v1.0 (Apache-2.0) and the selected speaker file. The build embeds the inference runtime and the text-processing resources. The distribution includes their license texts, notices and source references under `vendor/local-tts-engine/` and `vendor/local-tts-phonemes/`. The local model panel makes the notices available offline. [Kokoro model card and attribution](https://huggingface.co/hexgrad/Kokoro-82M) · [Speaker credits](https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md) · [Pinned ONNX and speaker files](https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/tree/1939ad2a8e416c0acfeecc08a694d14ef25f2231)
 
+For unfamiliar English spellings in Japanese narration, the browser worker uses eSpeak NG through ephone 1.0.2 (GPL-3.0-or-later). The standalone contains the American English data only. The pinned source tree contains the engine, dictionaries, Emscripten build scripts, and wrapper. The repository's `scripts/prepare-local-tts-phonemes.py` verifies the npm archive and links the bundled module. [Corresponding source](https://github.com/sjmik/ephone-js/tree/4f6d246c1d3acf67a4d814e20da02fa3967bc92d) · [Packaged license](vendor/local-tts-phonemes/ephone-COPYING)
+
 ## PowerPoint renderer
 
 - Package: `@aiden0z/pptx-renderer`

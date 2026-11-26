@@ -6,6 +6,7 @@
   const kana = self.kokoroKana;
   let japanese;
   let english;
+  let spellingReader;
 
   async function unpack(encoded) {
     const bytes = Uint8Array.from(atob(encoded), char => char.charCodeAt(0));
@@ -179,6 +180,26 @@
     ["microsoft", "マイクロソフト"], ["windows", "ウィンドウズ"], ["excel", "エクセル"],
     ["google", "グーグル"], ["github", "ギットハブ"], ["chatgpt", "チャットジーピーティー"]
   ]);
+  const japaneseInitialisms = new Set(
+    "AI API CD CPU DVD GPU HTML ID IO LAN OS PDF QR RAM UI URL USB UX VPN XML".split(" ")
+  );
+  // eSpeak IPA to Kokoro's English symbols. Longer sequences precede their parts.
+  const englishIpa = new Map([
+    ["aɪ", "I"], ["aʊ", "W"], ["eɪ", "A"], ["oʊ", "O"], ["əʊ", "O"], ["ɔɪ", "Y"],
+    ["dʒ", "ʤ"], ["tʃ", "ʧ"], ["ɚ", "əɹ"], ["ɝ", "ɜɹ"], ["r", "ɹ"],
+    ["ɾ", "T"], ["ʔ", "t"], ["x", "k"], ["ç", "k"], ["ɐ", "ə"]
+  ]);
+  const englishIpaPattern = new RegExp([...englishIpa.keys()].join("|"), "g");
+
+  async function inferEnglishPronunciation(word) {
+    spellingReader ??= self.kokoroCreateSpellingReader();
+    const reader = await spellingReader;
+    return reader.textToIpa(word).normalize("NFD")
+      .replace(/([lmnŋ])\u0329/gu, "ᵊ$1")
+      .replace(/[\p{Mark}ːˑ]/gu, "")
+      .replace(englishIpaPattern, symbol => englishIpa.get(symbol))
+      .trim().replace(/[.!?]+$/, "");
+  }
 
   function japaneseInitials(word) {
     const katakana = [...word.toUpperCase()].map(c => letters[c.charCodeAt(0) - 65]).join("");
@@ -188,11 +209,14 @@
   async function latinWordInJapanese(word) {
     const loanword = japaneseLoanwords.get(word.toLowerCase());
     if (loanword) return kanaPhones(loanword);
-    if (/^[A-Z]{1,4}$/.test(word) || word === "HTTPS") return japaneseInitials(word);
-    const {phonemes, tokens} = (await englishReader()).phonemize(word.toLowerCase());
+    if (/^[A-Z]$|^[B-DF-HJ-NP-TV-XZ]{2,5}$/.test(word) || japaneseInitialisms.has(word)) {
+      return japaneseInitials(word);
+    }
+    const lowercase = word.toLowerCase();
+    const {phonemes, tokens} = (await englishReader()).phonemize(lowercase);
     // Misaki assigns rating 2 when it used the letter-name fallback.
     if (phonemes && tokens.every(token => token.rating !== 2)) return phonemes;
-    return japaneseInitials(word);
+    return (await inferEnglishPronunciation(lowercase)) || japaneseInitials(word);
   }
 
   // At each boundary keep the best path per previous context ID. Two paths

@@ -74,6 +74,7 @@
           startWorker();
           message.ortSource = assetText("local-tts-ort");
           message.wasmGzip = assetText("local-tts-wasm");
+          message.spellingSource = assetText("local-tts-espeak");
           message.model = model;
           currentModel = model;
         }
