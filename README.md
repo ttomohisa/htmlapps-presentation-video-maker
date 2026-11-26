@@ -10,7 +10,7 @@ A privacy-focused, single-HTML app for turning a PowerPoint (PPTX) deck into a n
 
 ## Generate Japanese and English narration from speaker notes
 
-Open a PowerPoint in a supported browser. **Generate narration from notes** is selected for new decks on supported phones and desktop browsers. Download the shared model and the required voices from Hugging Face (external site), then load each file from its own row. Audio is generated on your device.
+Open a PowerPoint in a supported browser. **Generate narration from notes** is selected for new decks on supported phones and desktop browsers. Download the shared model and the required voices from Hugging Face (external site), then select **Choose saved file** in each row. Audio is generated on your device.
 
 | File | Used for |
 | --- | --- |
@@ -81,9 +81,9 @@ Node.js, Python, and a local web server are not required for the normal Windows 
 
 1. **Open file** — Open or drop a .pptx file (up to 150 MB). To resume, use **Open saved work (.pvm)**.
 2. **Narration** — Choose a language and prepare the voice files, then create audio for all remaining slides. The progress bar tracks the whole batch, including completed portions of the current slide. When a slide has no notes, **Check script** opens the draft made from the slide text.
-3. **Edit a slide** — Pick a slide from the list. **Settings for this slide** includes its narration method, language, speed, timing and inclusion. You can record your voice or select a local audio file.
+3. **Edit a slide** — Pick a slide from the list. **Settings for this slide** includes its narration method, language, speed, timing and inclusion. You can record your voice or select a local audio file. While listening, pause or seek with the player below the script. After editing a script with generated narration, select **Update audio for this slide** to hear the revision.
 4. **Record computer speech on Windows** — Choose a local system voice, then select **Entire Screen** and **Share system audio** when prompted. Other sounds from your computer may also be recorded.
-5. **Video** — Create the MP4, preview it and select **Save MP4**. Find subtitles, background music and transitions under **Finishing settings**. Select **Save work** to keep a separate .pvm for future edits.
+5. **Video** — Create the MP4, preview it and select **Save MP4**. Open **Subtitles, music and transitions** to adjust them before export. Select **Save work** to keep a separate .pvm for future edits.
 
 ## Project files and text exports
 

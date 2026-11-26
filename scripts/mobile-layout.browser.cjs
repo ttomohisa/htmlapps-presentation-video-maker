@@ -60,6 +60,7 @@ await page.waitForFunction(()=>{
   return mount?.clientWidth>=54 && mount.querySelector('.pptx-render-frame,.fallback-slide')?.getBoundingClientRect().width>=50;
 });
 assert.match(await page.locator('#guideModelSetup').innerText(),language==='ja'?/Hugging Face\(外部サイト\)/:/Hugging Face \(external site\)/);
+assert.equal(await page.locator('[data-model-file="model_quantized.onnx"] button').innerText(),language==='ja'?'保存したファイルを選ぶ':'Choose saved file');
 await page.waitForFunction(()=>{
   const frame=document.querySelector('#slidePreviewMount .pptx-render-frame,#slidePreviewMount .fallback-slide');
   return frame?.getBoundingClientRect().width>70;
@@ -75,6 +76,7 @@ assert.match(await page.locator('#selectedSlideLabel').innerText(),/1$/);
 await bounds(page.locator('#workflowNav'),width,height,label,false);
 assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),label+': loaded page width');
 await page.locator('[data-guide-step="output"]').click();
+assert.equal(await page.locator('summary[data-i18n="guideFinishing"]').innerText(),language==='ja'?'字幕・BGM・切り替え':'Subtitles, music and transitions');
 assert.equal(await page.locator('[data-guide-page]:visible').count(),1);
 await page.locator('#guideVideoIssue').click();
 assert.equal(await page.locator('[aria-current="step"]').getAttribute('data-guide-step'),'script');

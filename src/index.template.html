@@ -607,7 +607,9 @@
     .guide-preview .renderer-badge[data-state="primary"] { display:none; }
     .guide-slide .narration-section-head { margin-top:12px; }
     .guide-slide textarea { min-height:190px; }
-    .guide-listen-slide { margin-top:10px; }
+    .guide-slide-audio { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+    .guide-slide-audio:has(> :not([hidden])) { margin-top:10px; }
+    #guideAudioPlayer { width:100%; min-width:0; max-width:34rem; }
     .guide-slide #sceneEditorContent { min-width:0; }
     .guide-disclosure { border-top:1px solid var(--line); margin-top:12px; }
     .guide-capture,.guide-recordings { padding-inline:12px; }
@@ -650,6 +652,8 @@
       .guide-import .guide-drop-label { display:none; }
     }
     @media (max-width:420px) {
+      .guide-model li { grid-template-columns:minmax(0,1fr); gap:4px; }
+      .guide-model-actions { display:flex; gap:4px 12px; }
       .guide-main-actions { display:grid; grid-template-columns:minmax(0,1fr); }
       :lang(en) .guide-method { grid-template-columns:minmax(0,1fr); }
     }
@@ -760,7 +764,7 @@
                 <div class="guide-model-name"><strong data-i18n="guideModel">共通モデル</strong><small>model_quantized.onnx · 92 MB</small></div>
                 <div class="guide-model-actions">
                   <a href="https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/1939ad2a8e416c0acfeecc08a694d14ef25f2231/onnx/model_quantized.onnx?download=true" target="_blank" rel="noopener noreferrer" data-i18n="guideDownload" data-i18n-aria-label="guideDownloadModel" aria-label="共通モデルをダウンロード">ダウンロード</a>
-                  <button class="button" type="button" data-load-local-file data-i18n="guideLoadFile" data-i18n-aria-label="guideReadModel" aria-label="モデルを読み込む">読み込む</button>
+                  <button class="button" type="button" data-load-local-file data-i18n="guideLoadFile" data-i18n-aria-label="guideReadModel" aria-label="保存したファイルを選ぶ（共通モデル）">保存したファイルを選ぶ</button>
                   <strong class="guide-file-ready" data-local-ready data-i18n="guideFileReady" hidden>読み込み済み</strong>
                 </div>
                 <input type="file" data-local-file="model_quantized.onnx" accept=".onnx" hidden>
@@ -769,7 +773,7 @@
                 <div class="guide-model-name"><strong data-i18n="guideJaVoice">日本語の声</strong><small>jf_alpha.bin · 522 kB</small></div>
                 <div class="guide-model-actions">
                   <a href="https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/1939ad2a8e416c0acfeecc08a694d14ef25f2231/voices/jf_alpha.bin?download=true" target="_blank" rel="noopener noreferrer" data-i18n="guideDownload" data-i18n-aria-label="guideDownloadJaVoice" aria-label="日本語の声をダウンロード">ダウンロード</a>
-                  <button class="button" type="button" data-load-local-file data-i18n="guideLoadFile" data-i18n-aria-label="guideReadJaVoice" aria-label="日本語の声を読み込む">読み込む</button>
+                  <button class="button" type="button" data-load-local-file data-i18n="guideLoadFile" data-i18n-aria-label="guideReadJaVoice" aria-label="保存したファイルを選ぶ（日本語の声）">保存したファイルを選ぶ</button>
                   <strong class="guide-file-ready" data-local-ready data-i18n="guideFileReady" hidden>読み込み済み</strong>
                 </div>
                 <input type="file" data-local-file="jf_alpha.bin" accept=".bin" hidden>
@@ -778,7 +782,7 @@
                 <div class="guide-model-name"><strong data-i18n="guideEnVoice">英語の声</strong><small>af_heart.bin · 522 kB</small></div>
                 <div class="guide-model-actions">
                   <a href="https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/1939ad2a8e416c0acfeecc08a694d14ef25f2231/voices/af_heart.bin?download=true" target="_blank" rel="noopener noreferrer" data-i18n="guideDownload" data-i18n-aria-label="guideDownloadEnVoice" aria-label="英語の声をダウンロード">ダウンロード</a>
-                  <button class="button" type="button" data-load-local-file data-i18n="guideLoadFile" data-i18n-aria-label="guideReadEnVoice" aria-label="英語の声を読み込む">読み込む</button>
+                  <button class="button" type="button" data-load-local-file data-i18n="guideLoadFile" data-i18n-aria-label="guideReadEnVoice" aria-label="保存したファイルを選ぶ（英語の声）">保存したファイルを選ぶ</button>
                   <strong class="guide-file-ready" data-local-ready data-i18n="guideFileReady" hidden>読み込み済み</strong>
                 </div>
                 <input type="file" data-local-file="af_heart.bin" accept=".bin" hidden>
@@ -838,7 +842,12 @@
               <textarea id="scriptInput" maxlength="12000" data-i18n-placeholder="scriptPlaceholder" placeholder="発表者ノートがここに入ります。"></textarea>
               <span class="helper" id="scriptSourceHint" data-i18n="scriptHint">発表者ノートがある場合は自動で使用します。</span>
             </label>
-            <button type="button" class="button guide-listen-slide" id="guidePlaySlide" hidden data-i18n="guidePlayAudio">音声を聞く</button>
+            <div class="guide-slide-audio" id="guideSlideAudio">
+              <button type="button" class="button" id="guideUpdateSlide" data-i18n="guideUpdateAudio" hidden>このスライドの音声を更新</button>
+              <button type="button" class="button" id="guidePlaySlide" data-i18n="guidePlayAudio" hidden>音声を聞く</button>
+              <span class="helper" id="guidePreviousAudio" data-i18n="guidePreviousAudio" hidden>変更前の音声</span>
+              <audio id="guideAudioPlayer" controls preload="none" tabindex="0" aria-label="ナレーションの試聴" data-i18n-aria-label="guidePlayerLabel" hidden></audio>
+            </div>
             <details class="guide-disclosure" id="guideSlideSettings"><summary data-i18n="guideSlideSettings">このスライドの設定</summary>
             <div class="script-actions"><button class="text-button" id="resetScriptButton" type="button" data-i18n="resetScript">元の原稿に戻す</button></div>
             <div class="scene-options-row">
@@ -1026,7 +1035,7 @@
                 <video id="videoResultPreview" controls playsinline></video>
                 <div class="button-row" style="margin-top:10px"><button class="button primary" id="saveVideoButton" type="button" data-i18n="saveVideo">MP4を保存</button></div>
               </div>
-              <details class="guide-disclosure"><summary data-i18n="guideFinishing">仕上げの設定</summary>
+              <details class="guide-disclosure"><summary data-i18n="guideFinishing">字幕・BGM・切り替え</summary>
               <div class="video-polish-settings">
                 <label class="field" for="videoTransition"><span class="field-label" data-i18n="transitionLabel">切り替え</span><select id="videoTransition"><option value="fade" data-i18n="transitionFade">フェード</option><option value="cut" data-i18n="transitionCut">カット</option></select></label>
                 <div class="field"><span class="field-label" data-i18n="subtitleLabel">字幕</span><label class="toggle-line"><input id="videoSubtitles" type="checkbox"><span data-i18n="subtitleBurnIn">原稿から字幕を入れる</span></label></div>
@@ -1171,7 +1180,7 @@
         guideModelTitle:['声の準備','Set up the voice'],
         guideModelSteps:['ダウンロード時のみHugging Face(外部サイト)に接続します。音声は端末内で生成します。','Only downloads connect to Hugging Face (external site). Audio is generated on your device.'],
         guideModelCount:['読み込み済み {ready} / {total}','{ready} of {total} loaded'],
-        guideLoadFile:['読み込む','Load'],
+        guideLoadFile:['保存したファイルを選ぶ','Choose saved file'],
         guideModel:['共通モデル','Shared model'],
         guideJaVoice:['日本語の声','Japanese voice'],
         guideEnVoice:['英語の声','English voice'],
@@ -1180,9 +1189,9 @@
         guideDownloadModel:['共通モデルをダウンロード','Download shared model'],
         guideDownloadJaVoice:['日本語の声をダウンロード','Download Japanese voice'],
         guideDownloadEnVoice:['英語の声をダウンロード','Download English voice'],
-        guideReadModel:['モデルを読み込む','Load model'],
-        guideReadJaVoice:['日本語の声を読み込む','Load Japanese voice'],
-        guideReadEnVoice:['英語の声を読み込む','Load English voice'],
+        guideReadModel:['保存したファイルを選ぶ（共通モデル）','Choose saved file (shared model)'],
+        guideReadJaVoice:['保存したファイルを選ぶ（日本語の声）','Choose saved file (Japanese voice)'],
+        guideReadEnVoice:['保存したファイルを選ぶ（英語の声）','Choose saved file (English voice)'],
         guideWrongFile:['{file}はこの行のファイルと一致しません。{expected}を読み込んでください。','{file} does not match this row. Load {expected}.'],
         guideSpeechProgress:['音声生成全体の進捗','Overall audio generation progress'],
         guideSpeechSlides:['{total}枚中{completed}枚完了','{completed} of {total} complete'],
@@ -1201,7 +1210,7 @@
         guideCreate:['MP4を作る','Create MP4'],
         guideExportVideo:['動画を書き出す','Export video'],
         guidePrepareNotes:['ノートの音声を準備する','Prepare audio from notes'],
-        guideFinishing:['仕上げの設定','Finishing settings'],
+        guideFinishing:['字幕・BGM・切り替え','Subtitles, music and transitions'],
         guideNotes:['発表者ノートを{count}枚分取り込みました','Imported speaker notes from {count} {unit}'],
         guideDrafts:['発表者ノートのない{count}枚は、スライド本文を台本に使います。','The script uses slide text for {count} {unit} without speaker notes.'],
         guideCoverage:['音声を準備できたスライド {ready} / {total}','Slides with audio ready: {ready} / {total}'],
@@ -1229,10 +1238,14 @@
         guideInclude:['動画に含めるスライドを選ぶ','Choose slides to include'],
         guideAudioLimit:['このスライド用の音声ファイルを選びます。100 MBまで。','Choose an audio file for this slide, up to 100 MB.'],
         guidePlayAudio:['音声を聞く','Listen to audio'],
+        guidePlayerLabel:['ナレーションの試聴','Narration preview'],
+        guidePreviousAudio:['変更前の音声','Audio from before your edits'],
+        guidePlaybackFailed:['この音声を再生できませんでした。','This audio could not be played.'],
+        guideUpdateAudio:['このスライドの音声を更新','Update audio for this slide'],
         guidePlayPrevious:['変更前の音声を聞く','Listen to previous audio'],
         guideRecreate:['このスライドの音声を作り直す','Recreate audio for this slide'],
         guideFirstSave:['保存しました。次回はこの.pvmを開くと続きを編集できます。','Work saved. Open this .pvm next time to continue editing.'],
-        guideSampleBlocked:['音声を作りました。再生するには「音声を聞く」を押してください。','Audio is ready. Select Listen to play it.'],
+        guideSampleBlocked:['音声を作りました。プレーヤーの再生ボタンで聞けます。','Audio is ready. Press Play in the player to listen.'],
         guideOldVideo:['変更前の動画です。新しい設定を反映するにはMP4を作り直してください。','This video is from before your changes. Create a new MP4 to use the current settings.'],
         guideStopMic:['録音を止める','Stop recording'],
         helpUseOne:['「PowerPointを開く」で発表者ノートを取り込みます。保存済みの.pvmから再開することもできます。','Open PowerPoint to import its speaker notes. You can also reopen a saved .pvm.'],
@@ -1295,7 +1308,7 @@
         'af_heart.bin':{size:522240,sha256:'d583ccff3cdca2f7fae535cb998ac07e9fcb90f09737b9a41fa2734ec44a8f0b'}
       });
       const state = {
-        guidePage:'slides', deckMethod:'file', fileLoading:false, importError:'', micStarting:false, audioFileLoading:false, previewRequest:0,
+        guidePage:'slides', guideSetupIndex:-1, localInlineSlide:null, deckMethod:'file', fileLoading:false, importError:'', micStarting:false, audioFileLoading:false, previewRequest:0,
         localDefaultLanguage:'ja',localFiles:new Map(),localRun:null,localProgress:null,localChecking:false,localMessage:null,localFileMessage:null,
         sourceGeneration: 0, sourceFile: null, sourceBuffer: null, slides: [], selectedSlideIndex: -1,
         voices: [], selectedVoiceURI: '', rate: 1, speechRunId: 0,
@@ -1303,7 +1316,7 @@
         presentation: null, mediaUrlCache: new Map(), mainSlideHandle: null, thumbHandles: new Map(), thumbObserver: null,
         renderQueue: [], renderBusy: false, renderSequence: 0,
         capturePhase: 'idle', captureAbort: false, displayStream: null, recorder: null,
-        recordingMime: '', maxRms: 0, captureRunId: 0, activeRecordingIndex: -1, previewAudio: null,
+        recordingMime: '', maxRms: 0, captureRunId: 0, activeRecordingIndex: -1,
         micStream: null, micRecorder: null, micRecordingIndex: -1, micRecordingStartedAt: 0, micPreviousStatus: 'pending',
         slideAspectRatio: 16/9, videoExportPhase: 'idle', videoAbortController: null, videoRecorder: null, videoResultBlob: null, videoResultUrl: '', videoResultDuration: 0, videoResultStale: false, ffmpegRunner: null, ffmpegLoadPromise: null, videoFilenameDirty: false,
         videoTransition: 'fade', videoSubtitles: false, bgmFile: null, bgmName: '', bgmVolume: 0.15, bgmLoop: true, projectBusy: false, videoWakeLock: null
@@ -1630,9 +1643,15 @@
         if(slide.recordingUrl){ try{ URL.revokeObjectURL(slide.recordingUrl); }catch{} }
         slide.recordingStatus='pending'; slide.recordingBlob=null; slide.recordingUrl=''; slide.recordingMime=''; slide.recordingBytes=0; slide.recordingMaxRms=0; slide.recordingAttempts=0; slide.recordingNarrationDuration=0; slide.recordingSpeechStartOffset=0; slide.recordingSpeechEndOffset=0; slide.recordingSource=''; slide.recordingFileName=''; slide.recordingStaleReason='';
       }
-      function markSceneRecordingStale(slide,reason='settings'){ if(slide?.recordingBlob){ slide.recordingStatus='stale'; if(slide.recordingStaleReason!=='settings') slide.recordingStaleReason=reason; } }
+      function markSceneRecordingStale(slide,reason='settings'){
+        if(!slide?.recordingBlob) return;
+        slide.recordingStatus='stale';
+        if(slide.recordingStaleReason==='script') return;
+        if(reason==='source'&&slide.recordingStaleReason==='settings') return;
+        slide.recordingStaleReason=reason;
+      }
       function cleanupRecording(){
-        try{ state.previewAudio?.pause?.(); }catch{} state.previewAudio=null;
+        closeGuideAudioPlayer();
         for(const slide of state.slides) clearSceneRecording(slide);
         renderSceneRecordings(); updateRecordingPlan();
       }
@@ -1641,6 +1660,7 @@
       function stopMicStream(){ if(state.micStream){ for(const track of state.micStream.getTracks()) track.stop(); state.micStream=null; } }
       function cancelMicRecording(){ try{ if(state.micRecorder){ state.micRecorder.onstop=null; if(state.micRecorder.state!=='inactive') state.micRecorder.stop(); } }catch{} state.micRecorder=null; state.micRecordingIndex=-1; stopMicStream(); $('#stopMicRecordingButton')?.setAttribute('disabled',''); }
       function invalidateSource(){
+        state.localInlineSlide=null;
         state.localRun?.abort(); state.localRun=null; state.localProgress=null; state.localMessage=null; state.localDefaultLanguage='ja'; state.deckMethod=defaultDeckMethod();
         window.LocalTTS?.dispose?.();
         state.sourceGeneration+=1; $('#sourceGenerationValue').textContent=String(state.sourceGeneration); cancelSpeech(); cancelMicRecording(); stopDisplayStream(); cleanupRecording(); clearVideoResult(); cancelVideo(); state.videoExportPhase='idle'; disposeRendererState();
@@ -1817,7 +1837,7 @@
         if(narrationChanged||inclusionChanged||paddingChanged) markVideoResultStale();
         if(narrationChanged){
           if(source==='tts'||slide.script!==nextScript) slide.narrationDuration=null;
-          if(slide.recordingBlob) markSceneRecordingStale(slide);
+          if(slide.recordingBlob) markSceneRecordingStale(slide,slide.script!==nextScript?'script':'settings');
         }
         slide.script=nextScript; slide.prePadding=nextPrePadding; slide.postPadding=nextPostPadding; slide.enabled=nextEnabled; slide.voiceURI=nextVoiceURI; slide.rate=nextRate; $('#scriptCharCount').textContent=format('chars',{count:slide.script.length}); const voice=selectedVoice(); $('#voiceCurrentLabel').textContent=voice?`${voice.name} (${voice.lang})`:'—'; $('#sceneVoiceSummary').textContent=source==='tts'?(voice?`${voice.name} · ${formatRate(state.rate)}`:`— · ${formatRate(state.rate)}`):source==='mic'?t('sourceMic'):(slide.recordingFileName||t('sourceFile')); updateNarrationDuration(slide); renderSceneRecordings(); updateRecordingPlan();
       }
@@ -1830,7 +1850,7 @@
           blob:slide.recordingBlob,source:narrationSource(slide),voice:slide.voiceURI,rate:slide.rate,language:localLanguage(slide)};
         slide.script=restored;
         slide.narrationDuration=null;
-        markSceneRecordingStale(slide);
+        markSceneRecordingStale(slide,'script');
         markVideoResultStale();
         $('#scriptInput').value=restored;
         $('#scriptCharCount').textContent=format('chars',{count:restored.length});
@@ -1848,7 +1868,7 @@
             slide.recordingStatus=before.status;
             slide.recordingStaleReason=before.reason;
           } else {
-            markSceneRecordingStale(slide);
+            markSceneRecordingStale(slide,'script');
           }
           markVideoResultStale();
           if(state.slides[state.selectedSlideIndex]===slide){
@@ -1999,13 +2019,14 @@
         updateNarrationDuration(selected);
         refreshCaptureReady();
       }
-      async function generateLocalAudio(batch=false, index=state.selectedSlideIndex) {
+      async function generateLocalAudio(batch=false, index=state.selectedSlideIndex, inline=false) {
         if(projectOperationBusy()||state.micStarting||state.localChecking||!canUseMethod('local')) return;
         saveCurrentScript();
         const targets=batch ? state.slides.filter(localPending) : [state.slides[index]];
         if(!targets.length || !targets[0]) return;
         const controller=new AbortController(), signal=controller.signal;
         state.localRun=controller;
+        state.localInlineSlide=inline?targets[0]:null;
         state.localMessage=null;
         let completed=0, currentSlide=targets[0].slideNumber;
         try {
@@ -2067,6 +2088,9 @@
             state.localProgress=null;
             renderSceneRecordings();
             refreshCaptureReady();
+            if(inline&&state.guidePage==='script'&&state.slides[state.selectedSlideIndex]===targets[0]&&document.activeElement===$('#localTtsStatus')){
+              focusGuideControl(completed?'#guidePlaySlide':'#guideUpdateSlide');
+            }
           }
         }
       }
@@ -2075,7 +2099,11 @@
         const slide=state.slides[state.selectedSlideIndex]; if(!slide||!validDeckMethod(source)) return; if(state.micRecorder||state.micStarting){ showToast(t('micStopBeforeSwitch')); return; }
         slide.followsDeckMethod=inherit;
         if(slide.audioSource===source){ renderGuidedNarration(); return; }
-        saveCurrentScript(); slide.audioSource=source; if(slide.recordingBlob){ if(slide.recordingSource===source){ if(slide.recordingStaleReason==='source'){ slide.recordingStatus='success'; slide.recordingStaleReason=''; } } else { slide.recordingStatus='stale'; if(slide.recordingStaleReason!=='settings') slide.recordingStaleReason='source'; } } updateNarrationSourceUI(slide); syncNarrationControlsForScene(slide); renderSceneRecordings(); refreshCaptureReady(); updateVideoExportState(); markVideoResultStale();
+        saveCurrentScript();
+        slide.audioSource=source;
+        if(slide.recordingBlob&&slide.recordingSource!==source) markSceneRecordingStale(slide,'source');
+        else if(slide.recordingStaleReason==='source'){ slide.recordingStatus='success'; slide.recordingStaleReason=''; }
+        updateNarrationSourceUI(slide); syncNarrationControlsForScene(slide); renderSceneRecordings(); refreshCaptureReady(); updateVideoExportState(); markVideoResultStale();
       }
       function audioBlobDuration(blob){
         return new Promise((resolve,reject)=>{ const url=URL.createObjectURL(blob), audio=new Audio(); const done=(fn,value)=>{try{URL.revokeObjectURL(url);}catch{} fn(value);}; const timer=setTimeout(()=>done(reject,new Error('AUDIO_DURATION_TIMEOUT')),10000); audio.preload='metadata'; audio.onloadedmetadata=()=>{clearTimeout(timer); const duration=Number(audio.duration); Number.isFinite(duration)&&duration>0?done(resolve,duration):done(reject,new Error('AUDIO_DURATION_INVALID'));}; audio.onerror=()=>{clearTimeout(timer);done(reject,new Error('AUDIO_DURATION_FAILED'));}; audio.src=url; });
@@ -2239,16 +2267,34 @@
           setNarrationSource('tts'); saveCurrentScript(); const current=state.slides[index]; if(!sceneIsRecordable(current)||!voiceForScene(current)){ showToast(t('singleTtsNotReady')); return; } if(current.recordingBlob&&!confirm(t('confirmReplaceSceneAudio'))) return; await runBatchCapture([index],{singleScene:true});
         }
       }
+      function closeGuideAudioPlayer(){
+        const audio=$('#guideAudioPlayer');
+        if(!audio.hasAttribute('src')) return;
+        audio.pause();
+        audio.removeAttribute('src');
+        audio.load();
+        audio.hidden=true;
+      }
       function playSceneRecording(index,{created=false}={}){
         const slide=state.slides[index];
-        if(!slide?.recordingUrl) return;
-        state.previewAudio?.pause();
-        const audio=new Audio(slide.recordingUrl);
-        state.previewAudio=audio;
-        audio.addEventListener('ended',()=>{ if(state.previewAudio===audio) state.previewAudio=null; },{once:true});
+        if(!slide?.recordingUrl||state.guidePage!=='script'||projectOperationBusy()||state.micStarting) return;
+        if(index!==state.selectedSlideIndex) selectSlide(index);
+        const audio=$('#guideAudioPlayer'), url=slide.recordingUrl;
+        if(audio.getAttribute('src')!==url) audio.src=url;
+        audio.hidden=false;
+        renderGuidedNarration();
+        focusGuideControl('#guideAudioPlayer');
         audio.play().catch(error=>{
-          if(error?.name==='NotAllowedError'&&created) showToast(t('guideSampleBlocked'));
-          else console.warn(error);
+          if(audio.getAttribute('src')!==url||error.name==='AbortError') return;
+          if(error.name==='NotAllowedError'){
+            if(created) showToast(t('guideSampleBlocked'));
+          }else{
+            const focused=document.activeElement===audio;
+            closeGuideAudioPlayer();
+            renderGuidedNarration();
+            if(focused) $('#guidePlaySlide').focus({preventScroll:true});
+            showToast(t('guidePlaybackFailed'));
+          }
         });
       }
       function refreshCaptureReady(){
@@ -2423,6 +2469,7 @@
       }
       function showGuidePage(page,{focus=true}={}){
         if(page!=='slides'&&!state.slides.length) return;
+        if(page!=='script') closeGuideAudioPlayer();
         state.guidePage=page;
         for(const section of $$('[data-guide-page]')) section.hidden=section.dataset.guidePage!==page;
         for(const button of $$('[data-guide-step]')){
@@ -2430,6 +2477,7 @@
           else button.removeAttribute('aria-current');
         }
         $('.page-intro').hidden=page!=='slides'||Boolean(state.slides.length);
+        if(page==='script') renderGuidedNarration();
         if(focus){
           window.scrollTo(0,0);
           const selector={slides:state.slides.length?'#guideReturn':'#chooseFileButton',script:'#guideNarrationHeading',output:'#guideVideoHeading'}[page];
@@ -2487,8 +2535,20 @@
         $('#guideInherit').hidden=slides[selected]?.followsDeckMethod===true&&narrationSource(slides[selected])===state.deckMethod;
         $('#guideInherit').disabled=busy||!canUseMethod(state.deckMethod);
         const play=$('#guidePlaySlide'), activeSlide=slides[selected];
-        play.hidden=!activeSlide?.recordingUrl;
-        play.textContent=t(guidedAudioState(activeSlide,narrationSource(activeSlide))==='ready'?'guidePlayAudio':'guidePlayPrevious');
+        const player=$('#guideAudioPlayer');
+        if(player.getAttribute('src')!==activeSlide?.recordingUrl||state.localRun||state.micStarting||state.micRecorder||captureIsBusy()) closeGuideAudioPlayer();
+        play.hidden=!activeSlide?.recordingUrl||!player.hidden;
+        play.disabled=busy;
+        const audioState=guidedAudioState(activeSlide,narrationSource(activeSlide));
+        play.textContent=t(audioState==='ready'?'guidePlayAudio':'guidePlayPrevious');
+        $('#guidePreviousAudio').hidden=player.hidden||audioState==='ready';
+        const update=$('#guideUpdateSlide');
+        update.hidden=!(activeSlide?.recordingSource==='local'&&narrationSource(activeSlide)==='local'&&activeSlide.recordingStaleReason==='script'&&
+          audioState==='stale'&&canUseMethod('local'));
+        update.disabled=busy;
+        const run=$('#localTtsRun');
+        const runAnchor=state.localInlineSlide===activeSlide?$('#guideSlideAudio'):$('.guide-main-actions');
+        if(runAnchor.nextElementSibling!==run) runAnchor.after(run);
         $('#localTtsDefaultLanguage').disabled=busy;
         $('#localTtsLanguage').disabled=busy;
         for(const button of $$('[data-narration-source]')){
@@ -3147,9 +3207,10 @@
       async function generateGuideSample(index){
         const slide=state.slides[index];
         if(!slide) return;
+        if(state.selectedSlideIndex!==index) selectSlide(index);
         const ready=guidedAudioState(slide,'local')==='ready';
         if(!ready) await generateLocalAudio(false,index);
-        if(state.slides[index]===slide&&guidedAudioState(slide,'local')==='ready'){
+        if(state.slides[state.selectedSlideIndex]===slide&&guidedAudioState(slide,'local')==='ready'){
           playSceneRecording(index,{created:!ready});
         }
       }
@@ -3186,12 +3247,12 @@
             break;
         }
       }
-      function prepareSelectedLocal(){
+      function prepareSelectedLocal({inline=false}={}){
         const index=state.selectedSlideIndex, slide=state.slides[index];
         if(!slide) return;
         const missing=missingLocalFiles(slide);
         if(!missing.length){
-          generateLocalAudio();
+          generateLocalAudio(false,index,inline);
         }else{
           state.guideSetupIndex=index;
           renderGuidedNarration();
@@ -3209,6 +3270,14 @@
       $('#guideMethod').addEventListener('change',event=>changeDeckMethod(event.currentTarget.value));
       $('#guideContinuePC').addEventListener('click',saveProject);
       $('#guidePlaySlide').addEventListener('click',()=>playSceneRecording(state.selectedSlideIndex));
+      $('#guideUpdateSlide').addEventListener('click',()=>prepareSelectedLocal({inline:true}));
+      $('#guideAudioPlayer').addEventListener('ended',event=>{
+        if(!event.target.ended) return;
+        const focused=document.activeElement===event.target;
+        closeGuideAudioPlayer();
+        renderGuidedNarration();
+        if(focused) $('#guidePlaySlide').focus({preventScroll:true});
+      });
       $('#guideFilter').addEventListener('change',renderGuidedNarration);
       $('#guideInherit').addEventListener('click',()=>setNarrationSource(state.deckMethod,{inherit:true}));
       $('#guideReviewDraft').addEventListener('click',()=>openGuideSlide(state.slides.findIndex(slide=>!slide.notesText?.trim()&&slide.script?.trim())));
@@ -3303,9 +3372,18 @@
         input.value='';
         await selectLocalFile(name,file);
         if(!restoreFocus||state.guidePage!=='script'||![button,document.body].includes(document.activeElement)) return;
+        const selected=state.slides[state.selectedSlideIndex];
         if(!button.hidden) button.focus();
+        else if(selected&&state.guideSetupIndex===state.selectedSlideIndex&&!missingLocalFiles(selected).length){
+          state.guideSetupIndex=-1;
+          if(!$('#guideUpdateSlide').hidden) focusGuideControl('#guideUpdateSlide');
+          else{
+            $('#guideSlideSettings').open=true;
+            focusGuideControl('#localTtsGenerate');
+          }
+        }
         else if(!$('#guideModelSetup').hidden) focusGuideControl('#guideModelFiles [data-model-file]:not([hidden]) [data-load-local-file]:not([hidden])');
-        else focusGuideControl(state.guideSetupIndex===state.selectedSlideIndex?'#localTtsGenerate':'#guidePrimary');
+        else focusGuideControl('#guidePrimary');
       });
       $('#localTtsNotices').addEventListener('click',()=>{
         const notice=$('#local-tts-notices');

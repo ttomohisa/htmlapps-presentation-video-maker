@@ -49,6 +49,19 @@ test('model and language voices have independent single-file inputs', () => {
   assert.ok(inputs.every(match=>!/\bmultiple\b/.test(match[0])));
 });
 
+test('a script edit stays marked for regeneration across voice and source changes', () => {
+  const {markSceneRecordingStale} = production(['markSceneRecordingStale']);
+  const slide = {recordingBlob: new Blob(['audio']), recordingStatus: 'success'};
+  markSceneRecordingStale(slide, 'settings');
+  markSceneRecordingStale(slide, 'source');
+  assert.equal(slide.recordingStaleReason, 'settings');
+  markSceneRecordingStale(slide, 'script');
+  markSceneRecordingStale(slide, 'settings');
+  markSceneRecordingStale(slide, 'source');
+  assert.equal(slide.recordingStaleReason, 'script');
+  assert.equal(slide.recordingStatus, 'stale');
+});
+
 test('a file must match its own Kokoro slot and an invalid choice keeps loaded files', async () => {
   const context=production(['selectLocalFile']);
   const valid={name:'downloaded voice (1).bin',size:1,arrayBuffer:async()=>Uint8Array.of(0x12).buffer};
